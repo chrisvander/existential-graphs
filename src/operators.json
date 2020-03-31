@@ -1,0 +1,14 @@
+{
+  "binary": {
+    "<->": "\\leftrightarrow",
+    "%": "\\leftrightarrow",
+    "->": "\\rightarrow",
+    "$": "\\rightarrow",
+    "&": "\\land",
+    "|": "\\lor"
+  },
+  "unary": {
+    "~": "\\lnot",
+    "!": "\\lnot"
+  }
+}

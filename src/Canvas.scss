@@ -1,0 +1,14 @@
+@import 'colors';
+
+canvas { 
+  display:block; 
+}
+
+.hoverEl {
+  padding: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: $tan;
+  }
+}

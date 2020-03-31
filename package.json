@@ -3,11 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@createjs/easeljs": "^2.0.0-beta.4",
+    "@matejmazur/react-katex": "^3.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "html2canvas": "^1.0.0-rc.5",
+    "infinite-canvas": "^1.0.0",
+    "katex": "^0.11.1",
+    "nanoid": "^2.1.11",
+    "node-sass": "^4.13.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-mathjax": "^1.0.1",
     "react-scripts": "3.4.0"
   },
   "scripts": {

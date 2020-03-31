@@ -1,0 +1,22 @@
+@import 'colors';
+
+.formulaTable {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  tr {
+    border: 1px solid #DDD;
+    height: 40px;
+  }
+  td {
+    vertical-align: middle;
+    padding: 5px;
+    height: 25px;
+    background-color: #F5F5F5;
+    input {
+      height: 25px;
+      width: 100%;
+      padding: 15px;
+    }
+  }
+}
