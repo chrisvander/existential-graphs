@@ -12,7 +12,7 @@ class Canvas extends React.Component {
     this.canvas = React.createRef();
     this.deviceScale = window.devicePixelRatio
     this.state = {
-
+      proof: this.props.proof,
     };
   }
 

@@ -17,6 +17,13 @@ html, body, .App {
   transition: background-color 1s;
 }
 
+input {
+  font-size: 1em;
+  highlight: none;
+  border-radius: 0;
+  outline: none;
+}
+
 button {
   background-color: #9AA899;
   border: none;
