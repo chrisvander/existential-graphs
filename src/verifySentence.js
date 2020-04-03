@@ -18,7 +18,7 @@ function arrToRegex(arr) {
 } 
 
 const uReg = arrToRegex(Object.keys(unary));
-const regexStr = `^(?:${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))${arrToRegex(Object.keys(binary))}(?:${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))$`
+const regexStr = `^(${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))(${arrToRegex(Object.keys(binary))})(${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))$`
 let binaryRegex = new RegExp(regexStr) // eslint-disable-line
 let atomicRegex = new RegExp(`^${uReg}*[A-Za-z]+$`)
 let parenthesisRegex = new RegExp(`^${uReg}*\\((.*)\\)$`)
@@ -31,14 +31,20 @@ function verifyRecursive(sentence) {
   else {
     let res = binaryRegex.exec(sentence);
     if (res == null) return false;
-    if (res[1] && res[2]) 
-      return verifyRecursive(res[1]) && verifyRecursive(res[2]);
-    else if (res[1]) 
-      return verifyRecursive(res[1]);
+    if (res[2] && res[5]) 
+      return verifyRecursive(res[2]) && verifyRecursive(res[5]);
     else if (res[2]) 
       return verifyRecursive(res[2]);
+    else if (res[5]) 
+      return verifyRecursive(res[5]);
     else return true;
   }
+}
+
+export {
+  binaryRegex,
+  atomicRegex,
+  parenthesisRegex
 }
 
 export default (sentence) => {

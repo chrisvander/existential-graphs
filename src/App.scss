@@ -6,10 +6,15 @@ html, body, .App {
   overflow: hidden; 
 }
 
+.whiteBG {
+  background-color: #FFFFFF !important;
+}
+
 .initial {
   background-color: #F0F0F0;
   height: 100vh;
   width: 100vw;
+  transition: background-color 1s;
 }
 
 button {

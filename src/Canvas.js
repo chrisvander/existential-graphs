@@ -1,7 +1,6 @@
 import React from 'react';
 import InfiniteCanvas from 'infinite-canvas';
 import { Stage, Shape, Ticker, Bitmap } from "@createjs/easeljs";
-import html2canvas from 'html2canvas';
 
 class Canvas extends React.Component {
   constructor(props) {

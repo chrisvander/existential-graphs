@@ -1,9 +1,14 @@
+.floating-window.shown {
+  top: 50% !important;
+}
+
 .floating-window {
+  transition: top 1s;
   position: absolute;
   height: 720px;
   width: 980px;
   border-radius: 25px;
-  top: 50%;
+  top: -50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
@@ -20,6 +25,17 @@
     flex-direction: row-reverse;
     padding: 6px;
     padding-right: 20px;
+    .svg {
+      padding-right: 10px;
+    }
+    .back {
+      position: absolute;
+      top: 8px;
+      left: 20px;
+      background: none;
+      color: #848484;
+      box-shadow: none !important;
+    }
     button {
       width: 126px;
       border-radius: 15px;
@@ -39,9 +55,13 @@
       }
     }
   }
+  .full-width {
+    padding: 40px 60px !important;
+  }
   .content {
     padding: 20px;
     height: 720px;
+    overflow: auto;
     p {
       font-size: 18px;
       line-height: 25px;
@@ -53,8 +73,9 @@
     }
     &:after {
       content: "";
-      display: table;
+      display: block;
       clear: both;
+      height: 80px;
     }
     .divider {
       position: absolute;

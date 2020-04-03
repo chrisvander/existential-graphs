@@ -1,0 +1,47 @@
+@import '../colors';
+
+.formulaTable {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  .plus {
+    &:before {
+      content: '+';
+    }
+    padding-right: 5px;
+    padding-left: 3px;
+  }
+  tr {
+    border: 1px solid #DDD;
+    height: 40px;
+  }
+  td {
+    vertical-align: middle;
+    padding: 5px;
+    height: 25px;
+    background-color: #FAFAFA;  
+  }
+  td.interactive {
+    cursor: pointer;
+    color: #848484;
+    &:hover {
+      color: #545454;
+    }
+  }
+  td.close {
+    width: 30px;
+  }
+}
+
+h2 {
+  padding-top: 15px;
+}
+
+input {
+  height: 25px;
+  width: 100%;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #DDD;
+  max-width: 375px;
+}
