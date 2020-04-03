@@ -58,6 +58,10 @@ class CreateNew extends React.Component {
     console.log("Verification concluded " + this.verify())
     if (this.verify()) {
       let { premises, conclusion } = this.state;
+      for (let i in premises) {
+        premises[i] = convertToEG(premises[i])
+      }
+      conclusion = convertToEG(conclusion)
       this.props.setupFunc(premises, conclusion)
     }
   }
