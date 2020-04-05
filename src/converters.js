@@ -83,22 +83,44 @@ const convertToEG = (formula) => {
   else return null;
 }
 
+/*  Given a string and the index of the open parenthesis, this
+ *  will return the index of the closed parenthesis
+ */
+const getMatchingParen = (formula, start) => {
+  // hold the number of '(' minus the number of ')'
+  let parens = 0
+  let j = start
+  while (j < formula.length) {
+    if (formula[j] == '(') {
+      parens++
+    }
+    else if (formula[j] == ')') {
+      parens--
+      // if parens is 0, then the current ')' matches the start parenthesis
+      if (parens == 0)
+        return j
+    }
+    j++
+  }
+}
+
 /*  Converts a string representing an Existential Graph into
  *  a nested array. Acts recursively, calling iteslf again
- *  When a pair of parentehses are found.
+ *  When a pair of parentehses are found. If given an index i,
+ *  this will start from that index.
  *  For example: 
  *  "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
  */
-const convertToArray = (formula) => {
+const convertToArray = (formula, i = 0) => {
   if (typeof formula === 'string' || formula instanceof String) {
     // hold the array of the current level that will be returned
     let arr = []
     // loop through the string
-    let i = 0;
     while (i < formula.length) {
+      // if closing parenthesis, return the array for this subexpression
       if (formula[i] == '(') {
         // find the matching pair of parentheses of the subexpression
-        let j = formula.lastIndexOf(')');
+        let j = getMatchingParen(formula, i)
         // push the subexpression into the array
         arr.push(convertToArray(formula.substr(i+1, j-1)))
         i = j
