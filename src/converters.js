@@ -84,34 +84,33 @@ const convertToEG = (formula) => {
 }
 
 /*  Converts a string representing an Existential Graph into
- *  a nested array. For example: 
+ *  a nested array. Acts recursively, calling iteslf again
+ *  When a pair of parentehses are found.
+ *  For example: 
  *  "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
  */
 const convertToArray = (formula) => {
   if (typeof formula === 'string' || formula instanceof String) {
-    // hold the current index we are looking at in the string
-    let i = 0;
+    // hold the array of the current level that will be returned
     let arr = []
-    // loop until parentheses found to add all elements at this level to the array
+    // loop through the string
+    let i = 0;
     while (i < formula.length) {
-      // if parenthesis found, recursively call this function on the subexpression
       if (formula[i] == '(') {
-        // find the matching closing parenthesis
+        // find the matching pair of parentheses of the subexpression
         let j = formula.lastIndexOf(')');
-        //((({P})){Q}{R}){P}
-        console.log("Found parens at " + i + " and " + j)
+        // push the subexpression into the array
         arr.push(convertToArray(formula.substr(i+1, j-1)))
         i = j
       }
-      // if a variable is found, add it
+      // if a variable is found, push it to the array
       else if(formula[i] == '{') {
         arr.push(formula[++i])
         i++
       }
       i++
     }
-    // otherwise, return the array that values this expression
-    console.log("array at this level: " + arr)
+    // return the array that values the current expression
     return arr
   }
   else return null
