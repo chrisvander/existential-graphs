@@ -83,8 +83,24 @@ const convertToEG = (formula) => {
   else return null;
 }
 
+/*  Converts a string representing an Existential Graph into
+ *  a nested array. For example: 
+ *  "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
+ */
+const convertToArray = (formula) => {
+  if (typeof formula === 'string' || formula instanceof String) {
+    //let index = 0;
+    return null
+
+
+
+  }
+  else return null
+}
+
 export {
   convertToTeX,
   convertToEG,
+  convertToArray,
   verifySentence
 }
