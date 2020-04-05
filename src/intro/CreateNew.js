@@ -60,9 +60,10 @@ class CreateNew extends React.Component {
       let { premises, conclusion } = this.state;
       for (let i in premises) {
         premises[i] = convertToEG(premises[i])
+        console.log(premises[i])
       }
       conclusion = convertToEG(conclusion)
-      this.props.setupFunc(premises, conclusion)
+      this.props.setupFunc(premises, conclusion, [])
     }
   }
 

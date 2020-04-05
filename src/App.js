@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.scss';
-import Canvas from './Canvas';
+import Canvas from './canvas/Canvas';
 import IntroWindow from './intro/IntroWindow';
 
 class App extends React.Component {
@@ -10,6 +10,7 @@ class App extends React.Component {
     this.createNewProof = this.createNewProof.bind(this);
     this.setupProof = this.setupProof.bind(this);
     this.openCanvas = this.openCanvas.bind(this);
+    this.saveProof = this.saveProof.bind(this);
     this.introWindow = React.createRef();
     this.state = {
       initialCSS: 'initial',
@@ -21,6 +22,10 @@ class App extends React.Component {
         steps: []
       }
     };
+  }
+
+  saveProof(proof) {
+    this.setState({ proof: proof });
   }
 
   setupProof(premises, conclusion, steps) {
@@ -50,7 +55,7 @@ class App extends React.Component {
     if (this.state.canvasOpen) {
       return (
         <div className="App">
-          <Canvas proof={this.state.proof} />
+          <Canvas saveProof={this.saveProof} proof={this.state.proof} />
         </div>
       );
     }

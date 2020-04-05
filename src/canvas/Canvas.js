@@ -2,14 +2,6 @@ import React from 'react';
 import InfiniteCanvas from 'infinite-canvas';
 import { Stage, Shape, Ticker, Bitmap, Text } from "@createjs/easeljs";
 
-function render(stage, step) {
-  for (let subgraph in step) {
-    if (step[subgraph].isArray()) {
-      render(stage, step[subgraph]);
-    }
-  }
-}
-
 class Canvas extends React.Component {
   constructor(props) {
     super(props);
@@ -54,16 +46,12 @@ class Canvas extends React.Component {
     // if there are no existing steps, init first step
     let { steps } = this.state;
     if (steps.length === 0) {
-      steps = []
+      let { premises, conclusion } = this.state;
       this.setState({ currentStep: 1 });
       console.log("INITIALIZING")
-      let initialState = this.state.proof.premises.join('')
-      // TODO: implement transition from premise string to array
-      // steps.push(convert(initialState))
-      steps.push([[[{ val: 'P', x: 100, y: 100 }], { val: 'Q', x: 180, y: 100 }]])
+      console.log(premises)
     }
-
-    render(this.stage, this.state.steps[this.state.currentStep])
+    console.log(this.state)
   }
 
   componentWillUnmount() {

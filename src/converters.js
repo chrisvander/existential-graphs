@@ -54,8 +54,8 @@ const stripUnary = (s, convertStatement) => {
     convertStatement = true;
   let c = countUnary(s);
   let statement = s.substr(c)
-  console.log(statement)
   if (convertStatement) statement = convertToEG(statement)
+  else statement = '{' + statement + '}'
   return "(".repeat(c) + statement + ")".repeat(c)
 }
 
