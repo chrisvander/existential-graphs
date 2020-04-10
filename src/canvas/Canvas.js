@@ -1,10 +1,43 @@
 import React from 'react';
+import { convertToArray } from '../converters';
+import Toolbox from './Toolbox';
+import StepMenu from './StepMenu';
+import './Canvas.scss';
+import Panzoom from 'panzoom';
+const nanoid = require('nanoid');
+
+let prevLevel = 0
+let currentX = 0
+let currentY = 0
+
+function initXY(step, level) {
+  prevLevel = 0
+  currentX = 0
+  currentY = 0
+  return initXYRecurse(step, level)
+}
+
+function initXYRecurse(step, level) {
+  for (let s in step) {
+    if (step[s] instanceof Array) {
+      prevLevel = level
+      step[s] = initXYRecurse(step[s], level + 1)
+    } else {
+      step[s] = { var: step[s], id: nanoid(), x: currentX + Math.abs(prevLevel - level) * 25, y: currentY }
+      prevLevel = level
+      currentX += 50
+    }
+  }
+  return step
+}
+
 
 class Canvas extends React.Component {
   constructor(props) {
     super(props);
-
-    console.log(this.props.proof)
+    this.canvas = React.createRef();
+    this.renderStep = this.renderStep.bind(this);
+    this.renderRecurse = this.renderRecurse.bind(this);
 
     let { premises, conclusion, steps } = this.props.proof;
     this.state = {
@@ -13,19 +46,44 @@ class Canvas extends React.Component {
         conclusion: conclusion
       },
       steps: steps,
-      currentStep: 1,
+      currentStep: 0,
     };
   }
 
-  componentDidMount() {
-    
+  renderStep(stepIndex) {
+    console.log(stepIndex)
+    return this.renderRecurse(this.state.steps[stepIndex])
+  }
+
+  renderRecurse(step) {
+    console.log(step)
+    let jsx = [];
+    for (let s in step) {
+      if (step[s] instanceof Array) {
+        jsx.push(this.renderRecurse(step[s]));
+      } else {
+        const position = {
+          display: 'inline-block',
+          position: 'absolute',
+          top: step[s].y,
+          left: step[s].x
+        }
+        jsx.push(<div key={step[s].id} style={position}>{step[s].var}</div>);
+      }
+    }
+    return jsx;
+  }
+
+  componentDidMount() {  
+    const panzoom = Panzoom(this.canvas.current, {
+      maxScale: 5
+    })
     // if there are no existing steps, init first step
     let { steps } = this.state;
     if (steps.length === 0) {
-      let { premises, conclusion } = this.state;
-      this.setState({ currentStep: 1 });
-      console.log("INITIALIZING")
-      console.log(premises)
+      let { premises, conclusion } = this.state.proof;
+      this.setState({ currentStep: 0 });
+      steps.push(initXY(convertToArray(premises.join('')), 0))
     }
     console.log(this.state)
   }
@@ -36,7 +94,13 @@ class Canvas extends React.Component {
 
   render() {
     return (
-      <canvas ref={this.canvas} />
+      <div>
+        <Toolbox />
+        <div className="canvas" ref={this.canvas}>
+          {this.renderStep(this.state.currentStep)}
+        </div>
+        <StepMenu currentStep={this.state.currentStep+1} stepInfo={this.state.steps} />
+      </div>
     );
   }
 }

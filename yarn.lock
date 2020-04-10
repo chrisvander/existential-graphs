@@ -904,26 +904,6 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@createjs/core@^2.0.0-beta.4":
-  version "2.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@createjs/core/-/core-2.0.0-beta.4.tgz#f98c7c60b35659c35dc2646da9af2b9ed14333fd"
-  integrity sha512-+csRjNJozE+C+4JfPEOV7lL6czWHB/+hBpA/oY4JeuVwEsLisaTzwEvfDd6XUUeK3ldlU14RzxZZYD5fDx7gBw==
-
-"@createjs/easeljs@^2.0.0-beta.4":
-  version "2.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@createjs/easeljs/-/easeljs-2.0.0-beta.4.tgz#48dc7d05f9bab8ce48d644be5838311577963fdc"
-  integrity sha512-jaZQ4qm71177xJ4NT1EAWNSf3eI5EfWvDHufJ9QaVMQxjW+eMkh8QTZg7U9jPwll/6l9XegSToZZokTYaPM59A==
-  dependencies:
-    "@createjs/core" "^2.0.0-beta.4"
-    "@createjs/tweenjs" "^2.0.0-beta.4"
-
-"@createjs/tweenjs@^2.0.0-beta.4":
-  version "2.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@createjs/tweenjs/-/tweenjs-2.0.0-beta.4.tgz#909afc765892bc0d2260c472b1e12d9197ebe732"
-  integrity sha512-8TBzHn76mKR0PSUcLx3qxfJSMysOdsgYbJFoG/YeH/ViTWBOwmGVeZr6SIylFbqGHLtUyXDQEvSa1enSGUT5XQ==
-  dependencies:
-    "@createjs/core" "^2.0.0-beta.4"
-
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -1755,6 +1735,13 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
+amator@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/amator/-/amator-1.1.0.tgz#08c6b60bc93aec2b61bbfc0c4d677d30323cc0f1"
+  integrity sha1-CMa2C8k67Cthu/wMTWd9MDI8wPE=
+  dependencies:
+    bezier-easing "^2.0.3"
+
 amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
@@ -2221,11 +2208,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-base64-arraybuffer@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/base64-arraybuffer/-/base64-arraybuffer-0.2.0.tgz#4b944fac0191aa5907afe2d8c999ccc57ce80f45"
-  integrity sha512-7emyCsu1/xiBXgQZrscw/8KPRT44I4Yq9Pe6EGs3aPRTsWuggML1/1DTuZUuIaJPIm1FTDUVXl4x/yW8s0kQDQ==
-
 base64-js@^1.0.2:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
@@ -2255,6 +2237,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bezier-easing@^2.0.3:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/bezier-easing/-/bezier-easing-2.1.0.tgz#c04dfe8b926d6ecaca1813d69ff179b7c2025d86"
+  integrity sha1-wE3+i5JtbsrKGBPWn/F5t8ICXYY=
 
 big.js@^5.2.2:
   version "5.2.2"
@@ -2639,13 +2626,6 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001020, can
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001027.tgz#283e2ef17d94889cc216a22c6f85303d78ca852d"
   integrity sha512-7xvKeErvXZFtUItTHgNtLgS9RJpVnwBlWX8jSo/BO8VsF6deszemZSkJJJA1KOKrXuzZH4WALpAJdq5EyfgMLg==
 
-canvas@^1.2.7:
-  version "1.6.13"
-  resolved "https://registry.yarnpkg.com/canvas/-/canvas-1.6.13.tgz#8cb4e9abbea9e615a377890ffac50277a1167c73"
-  integrity sha512-XAfzfEOHZ3JIPjEV+WSI6PpISgUta3dgmndWbsajotz+0TQOX/jDpp2kawjRERatOGv9sMMzk5auB3GKEKA6hg==
-  dependencies:
-    nan "^2.10.0"
-
 capture-exit@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/capture-exit/-/capture-exit-2.0.0.tgz#fb953bfaebeb781f62898239dabb426d08a509a4"
@@ -2776,11 +2756,6 @@ clean-stack@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
-
-clear-canvas@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/clear-canvas/-/clear-canvas-1.0.4.tgz#efbec7d4641cf2e6d46b1bde4f2d891ef6c00f40"
-  integrity sha1-777H1GQc8ubUaxveTy2JHvbAD0A=
 
 cli-cursor@^3.1.0:
   version "3.1.0"
@@ -3046,14 +3021,6 @@ cookie@0.4.0:
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.0.tgz#beb437e7022b3b6d49019d088665303ebe9c14ba"
   integrity sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==
 
-copy-canvas@~0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/copy-canvas/-/copy-canvas-0.0.1.tgz#c57def1a9aaf069388293dba4c84d838d2650ca8"
-  integrity sha1-xX3vGpqvBpOIKT26TITYONJlDKg=
-  dependencies:
-    create-canvas "^1.0.0"
-    draw-to-canvas "^0.0.4"
-
 copy-concurrently@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/copy-concurrently/-/copy-concurrently-1.0.5.tgz#92297398cae34937fcafd6ec8139c18051f0b5e0"
@@ -3119,13 +3086,6 @@ cosmiconfig@^6.0.0:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.7.2"
-
-create-canvas@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/create-canvas/-/create-canvas-1.0.2.tgz#8f5aa679bb025b37d962451126839117f53d38e2"
-  integrity sha1-j1qmebsCWzfZYkURJoORF/U9OOI=
-  optionalDependencies:
-    canvas "^1.2.7"
 
 create-ecdh@^4.0.0:
   version "4.0.3"
@@ -3230,13 +3190,6 @@ css-has-pseudo@^0.10.0:
   dependencies:
     postcss "^7.0.6"
     postcss-selector-parser "^5.0.0-rc.4"
-
-css-line-break@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/css-line-break/-/css-line-break-1.1.1.tgz#d5e9bdd297840099eb0503c7310fd34927a026ef"
-  integrity sha512-1feNVaM4Fyzdj4mKPIQNL2n70MmuYzAXZ1aytlROFX1JsOo070OsugwGjj7nl6jnDJWHDM8zRZswkmeYVWZJQA==
-  dependencies:
-    base64-arraybuffer "^0.2.0"
 
 css-loader@3.4.2:
   version "3.4.2"
@@ -3763,20 +3716,6 @@ dotenv@8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
-
-draw-to-canvas@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/draw-to-canvas/-/draw-to-canvas-0.0.4.tgz#224e25e17d372b0c8d6c5542a75c2ee0355871e9"
-  integrity sha1-Ik4l4X03KwyNbFVCp1wu4DVYcek=
-  dependencies:
-    force-canvas-context "^0.0.4"
-
-draw-to-canvas@~0.0.0, draw-to-canvas@~0.0.4:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/draw-to-canvas/-/draw-to-canvas-0.0.5.tgz#ead44f21edfeab15d7cc3aa8051ae75d47193de1"
-  integrity sha1-6tRPIe3+qxXXzDqoBRrnXUcZPeE=
-  dependencies:
-    force-canvas-context "~0.0.4"
 
 duplexer@^0.1.1:
   version "0.1.1"
@@ -4563,20 +4502,6 @@ for-own@^0.1.3:
   dependencies:
     for-in "^1.0.1"
 
-force-canvas-context@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/force-canvas-context/-/force-canvas-context-0.0.4.tgz#493bf60b7f5922e0b414921bfbb785a0ce009a30"
-  integrity sha1-STv2C39ZIuC0FJIb+7eFoM4AmjA=
-  dependencies:
-    is-canvas-context "^0.0.2"
-
-force-canvas-context@~0.0.4:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/force-canvas-context/-/force-canvas-context-0.0.5.tgz#fedfac8354d073c89c03e06d96512dafc6661570"
-  integrity sha1-/t+sg1TQc8icA+BtllEtr8ZmFXA=
-  dependencies:
-    is-canvas-context "~0.0.2"
-
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -4776,11 +4701,6 @@ getpass@^0.1.1:
   integrity sha1-Xv+OPmhNVprkyysSgmBOi6YhSfo=
   dependencies:
     assert-plus "^1.0.0"
-
-gl-vec2@^1.0.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/gl-vec2/-/gl-vec2-1.3.0.tgz#83d472ed46034de8e09cbc857123fb6c81c51199"
-  integrity sha512-YiqaAuNsheWmUV0Sa8k94kBB0D6RWjwZztyO+trEYS8KzJ6OQB/4686gdrf59wld4hHFIvaxynO3nRxpk1Ij/A==
 
 glob-parent@^3.1.0:
   version "3.1.0"
@@ -5088,13 +5008,6 @@ html-webpack-plugin@4.0.0-beta.11:
     tapable "^1.1.3"
     util.promisify "1.0.0"
 
-html2canvas@^1.0.0-rc.5:
-  version "1.0.0-rc.5"
-  resolved "https://registry.yarnpkg.com/html2canvas/-/html2canvas-1.0.0-rc.5.tgz#4ee3cac9f6e20a0fa0c2f35a6f99c960ae7ec4c1"
-  integrity sha512-DtNqPxJNXPoTajs+lVQzGS1SULRI4GQaROeU5R41xH8acffHukxRh/NBVcTBsfCkJSkLq91rih5TpbEwUP9yWA==
-  dependencies:
-    css-line-break "1.1.1"
-
 htmlparser2@^3.3.0:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.10.1.tgz#bd679dc3f59897b6a34bb10749c855bb53a9392f"
@@ -5298,17 +5211,6 @@ infer-owner@^1.0.3, infer-owner@^1.0.4:
   resolved "https://registry.yarnpkg.com/infer-owner/-/infer-owner-1.0.4.tgz#c4cefcaa8e51051c2a40ba2ce8a3d27295af9467"
   integrity sha512-IClj+Xz94+d7irH5qRyfJonOdfTzuDaifE6ZPWfx0N0+/ATZCbuTPq2prFl526urkQd90WyUKIh1DfBQ2hMz9A==
 
-infinite-canvas@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/infinite-canvas/-/infinite-canvas-1.0.0.tgz#6f6eeb7db409bea9a74c4b77997178ec9b751f79"
-  integrity sha1-b27rfbQJvqmnTEt3mXF47Jt1H3k=
-  dependencies:
-    clear-canvas "^1.0.3"
-    copy-canvas "~0.0.1"
-    draw-to-canvas "~0.0.0"
-    gl-vec2 "^1.0.0"
-    resize-canvas "^1.0.0"
-
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -5463,11 +5365,6 @@ is-callable@^1.1.4, is-callable@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/is-callable/-/is-callable-1.1.5.tgz#f7e46b596890456db74e7f6e976cb3273d06faab"
   integrity sha512-ESKv5sMCJB2jnHTWZ3O5itG+O128Hsus4K4Qh1h2/cgn2vbgnLSVqfV46AeJA9D5EeeLa9w81KUXMtn34zhX+Q==
-
-is-canvas-context@^0.0.2, is-canvas-context@~0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/is-canvas-context/-/is-canvas-context-0.0.2.tgz#ad97ee5cf3137ffd23b6fb1becf78e0c38881a3f"
-  integrity sha1-rZfuXPMTf/0jtvsb7PeODDiIGj8=
 
 is-ci@^2.0.0:
   version "2.0.0"
@@ -6993,15 +6890,15 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-nan@^2.10.0, nan@^2.12.1, nan@^2.13.2:
+nan@^2.12.1, nan@^2.13.2:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
-nanoid@^2.1.11:
-  version "2.1.11"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
-  integrity sha512-s/snB+WGm6uwi0WjsZdaVcuf3KJXlfGl2LcxgwkEwJF0D/BWzVWAZW/XY4bFaiR7s0Jk3FPvlnepg1H1b1UwlA==
+nanoid@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.0.2.tgz#37e91e6f5277ce22335be473e2a5db1bd96dd026"
+  integrity sha512-WOjyy/xu3199NlQiQWlx7VbspSFlGtOxa1bRX9ebmXOnp1fje4bJfjPs1wLQ8jZbJUfD+yceJmw879ZSaVJkdQ==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -7039,6 +6936,11 @@ next-tick@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
+
+ngraph.events@^1.0.0:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/ngraph.events/-/ngraph.events-1.2.1.tgz#6e40425ef9dec1e074bbef6da56c8d79b9188fd8"
+  integrity sha512-D4C+nXH/RFxioGXQdHu8ELDtC6EaCiNsZtih0IvyGN81OZSUby4jXoJ5+RNWasfsd0FnKxxpAROyUMzw64QNsw==
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -7556,6 +7458,15 @@ pako@~1.0.5:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
+panzoom@^9.2.1:
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/panzoom/-/panzoom-9.2.1.tgz#0598aa3a08b0d72239b59beb14fc120e80ca2c13"
+  integrity sha512-jFEpjlttb++pJfpODp76VAPh5RpQynRqrtlgVvvCHFQEmH0y+lQ17fzL/vnnAeNWZgc2b7eI1fNgug7M1TvT2w==
+  dependencies:
+    amator "^1.1.0"
+    ngraph.events "^1.0.0"
+    wheel "^1.0.0"
 
 parallel-transform@^1.1.0:
   version "1.2.0"
@@ -9192,15 +9103,6 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
-
-resize-canvas@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/resize-canvas/-/resize-canvas-1.0.0.tgz#8835a0396213ac1acb5866ffa9efd446215bb801"
-  integrity sha1-iDWgOWITrBrLWGb/qe/URiFbuAE=
-  dependencies:
-    copy-canvas "~0.0.1"
-    draw-to-canvas "~0.0.4"
-    gl-vec2 "^1.0.0"
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
@@ -10856,6 +10758,11 @@ whatwg-url@^7.0.0:
     lodash.sortby "^4.7.0"
     tr46 "^1.0.1"
     webidl-conversions "^4.0.2"
+
+wheel@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/wheel/-/wheel-1.0.0.tgz#6cf46e06a854181adb8649228077f8b0d5c574ce"
+  integrity sha512-XiCMHibOiqalCQ+BaNSwRoZ9FDTAvOsXxGHXChBugewDj7HC8VBIER71dEOiRH1fSdLbRCQzngKTSiZ06ZQzeA==
 
 which-module@^1.0.0:
   version "1.0.0"

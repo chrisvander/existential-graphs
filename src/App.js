@@ -12,15 +12,21 @@ class App extends React.Component {
     this.openCanvas = this.openCanvas.bind(this);
     this.saveProof = this.saveProof.bind(this);
     this.introWindow = React.createRef();
+    // this.state = {
+    //   initialCSS: 'initial',
+    //   canvasOpen: false,
+    //   popupOpen: false,
+    //   proof: {
+    //     premises: [],
+    //     conclusion: '',
+    //     steps: []
+    //   }
+    // };
     this.state = {
       initialCSS: 'initial',
-      canvasOpen: false,
+      canvasOpen: true,
       popupOpen: false,
-      proof: {
-        premises: [],
-        conclusion: '',
-        steps: []
-      }
+      proof: {premises: ["({P}({Q}))(({P}){Q})"], conclusion: "{Q}", steps: []}
     };
   }
 
@@ -55,7 +61,9 @@ class App extends React.Component {
     if (this.state.canvasOpen) {
       return (
         <div className="App">
-          <Canvas saveProof={this.saveProof} proof={this.state.proof} />
+          <Canvas 
+            saveProof={this.saveProof} 
+            proof={this.state.proof} />
         </div>
       );
     }
