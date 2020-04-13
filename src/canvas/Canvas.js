@@ -4,7 +4,7 @@ import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
-const nanoid = require('nanoid');
+const nanoid = require('nanoid').nanoid;
 
 let prevLevel = 0
 let currentX = 0
@@ -13,11 +13,12 @@ let currentY = 0
 function initXY(step, level) {
   prevLevel = 0
   currentX = 0
-  currentY = 0
+  currentY = -50
   return initXYRecurse(step, level)
 }
 
 function initXYRecurse(step, level) {
+  console.log(nanoid)
   for (let s in step) {
     if (step[s] instanceof Array) {
       prevLevel = level
@@ -62,13 +63,7 @@ class Canvas extends React.Component {
       if (step[s] instanceof Array) {
         jsx.push(this.renderRecurse(step[s]));
       } else {
-        const position = {
-          display: 'inline-block',
-          position: 'absolute',
-          top: step[s].y,
-          left: step[s].x
-        }
-        jsx.push(<div key={step[s].id} style={position}>{step[s].var}</div>);
+        jsx.push(<text x={step[s].x} y={step[s].y} key={step[s].id}>{step[s].var}</text>);
       }
     }
     return jsx;
@@ -76,7 +71,9 @@ class Canvas extends React.Component {
 
   componentDidMount() {  
     const panzoom = Panzoom(this.canvas.current, {
-      maxScale: 5
+      maxScale: 5,
+      ignoreChildrensEvents: true,
+      refreshRate: 60
     })
     // if there are no existing steps, init first step
     let { steps } = this.state;
@@ -96,9 +93,11 @@ class Canvas extends React.Component {
     return (
       <div>
         <Toolbox />
-        <div className="canvas" ref={this.canvas}>
-          {this.renderStep(this.state.currentStep)}
-        </div>
+        <svg className="canvas">
+          <g ref={this.canvas}>
+            {this.renderStep(this.state.currentStep)}
+          </g>
+        </svg>
         <StepMenu currentStep={this.state.currentStep+1} stepInfo={this.state.steps} />
       </div>
     );
