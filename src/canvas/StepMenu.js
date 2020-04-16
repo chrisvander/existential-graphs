@@ -11,7 +11,12 @@ class StepMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      backColor:"rgb(68, 68, 68)",
+      nextColor:"rgb(68, 68, 68)"
     };
+    if(this.props.currentStep == 1){
+      this.state.backColor = "rgb(136, 136, 136)";
+    }
   }
 
   componentDidMount() {  
@@ -20,8 +25,8 @@ class StepMenu extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="step-menu">
-          <ReactSVG src="/assets/step-first.svg" />
+        <div className="step-menu" style={{color:this.state.backColor}}>
+          <ReactSVG src="/assets/step-first.svg"/>
           <ReactSVG src="/assets/step-prev.svg" />
           <ReactSVG src="/assets/step-next.svg" />
           <ReactSVG src="/assets/step-last.svg" />
