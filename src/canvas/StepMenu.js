@@ -1,6 +1,12 @@
 import React from 'react';
 import { ReactSVG } from 'react-svg';
 
+// TODO: 
+//   Align the buttons vertically center
+//   Gray out the back buttons if currentStep == 0
+//   Gray out the next buttons if currentStep == stepInfo.length
+//   Call this.props.setStep(step) to change
+
 class StepMenu extends React.Component {
   constructor(props) {
     super(props);
