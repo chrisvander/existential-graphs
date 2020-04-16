@@ -117,8 +117,6 @@ const convertToArray = (formula, i = 0) => {
     let arr = []
     // loop through the string
     while (i < formula.length) {
-      console.log(i,formula)
-      console.log(arr)
       // if closing parenthesis, return the array for this subexpression
       if (formula[i] === '(') {
         // find the matching pair of parentheses of the subexpression
@@ -131,7 +129,9 @@ const convertToArray = (formula, i = 0) => {
       }
       // if a variable is found, push it to the array
       else if (formula[i] === '{') {
-        arr.push(formula[++i])
+        let text = formula[++i];
+        if (text === '}') arr.push('\u00A0')
+        else arr.push(text)
         i++
       }
       i++

@@ -13,9 +13,9 @@ class StepMenu extends React.Component {
     };
     // changes the color of the prev or next buttons to be grayed out
     // if the current step is the first or last step
-    if(this.props.currentStep == 0){
+    // if(this.props.currentStep == 0){
       this.state.backColor = "rgb(136, 136, 136)";
-    }
+    // }
     if(this.props.currentStep == this.props.stepInfo.length){
       this.state.nextColor = "rgb(136, 136, 136)";
     }
