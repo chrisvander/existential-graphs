@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="33" viewBox="0 0 18 33">
+  <defs>
+    <path id="path-1" fill-rule="evenodd" d="M16.5 1.5l-15 15 15 15v-30z"/>
+  </defs>
+  <g transform="matrix(-1 0 0 1 18 0)">
+    <use fill="rgb(68,68,68)" xlink:href="#path-1"/>
+    <use fill-opacity="0" stroke="rgb(68,68,68)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" xlink:href="#path-1"/>
+  </g>
+</svg>

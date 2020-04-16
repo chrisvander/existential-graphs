@@ -9,6 +9,16 @@
   display: absolute;
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Opera and Firefox */
+}
+
 .toolbox {
   position: absolute;
   display: inline-block;
@@ -54,9 +64,18 @@
   bottom: 53px;
   box-sizing: border-box;
   height: 73px;
+  line-height: 73px;
   width: 278px;
   border-radius: 36.5px;
   background-color: #EAEAEA;
   border: 1px solid #E6E6E6;
   box-shadow: 0 0 8px 0 rgba(0,0,0,0.28);
+  text-align: center;
+  div {
+    display: inline-block;
+    margin-left: 22px;
+    &:first-child {
+      margin-left: 0;
+    }
+  }
 }

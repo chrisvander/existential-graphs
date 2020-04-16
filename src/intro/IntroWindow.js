@@ -1,5 +1,6 @@
 import React from 'react';
 import CreateNew from './CreateNew';
+import { ReactSVG } from 'react-svg';
 import './intro.scss';
 
 const IntroContent = () => (
@@ -59,10 +60,8 @@ class IntroWindow extends React.Component {
           {createShown && (
             <div className="toolbar">
               <button className="back" onClick={() => this.setState({ createShown: false })}>
-                <span className="svg">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14.5" height="11.5" viewBox="0 0 14.5 11.5">
-                    <path fill="none" stroke="rgb(132,132,132)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.0743187 10.7499998L.75000029 5.4999927 7.07432994.7499998.75000028 5.4999927l13 .0000146"/>
-                  </svg>
+                <span >
+                  <ReactSVG className="svg" src="/assets/back-caret.svg" />
                 </span>
                 Back 
               </button>

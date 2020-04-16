@@ -24,7 +24,6 @@ let atomicRegex = new RegExp(`^${uReg}*[A-Za-z]+$`)
 let parenthesisRegex = new RegExp(`^${uReg}*\\((.*)\\)$`)
 
 function verifyRecursive(sentence) {
-  console.log(sentence)
   let res
   if (sentence.match(atomicRegex)) return true;
   else if ((res = binaryRegex.exec(sentence)) !== null) {
