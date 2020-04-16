@@ -3,14 +3,18 @@
     <path id="path-1" fill-rule="evenodd" d="M16.5 1.5l-15 15 15 15v-30z"/>
     <path id="path-2" fill-rule="evenodd" d="M30.5 1.5l-15 15 15 15v-30z"/>
   </defs>
+  <style type="text/css">
+    .st0{fill: currentColor;}
+    .st1{fill-opacity="0"; fill:currentColor; stroke:currentColor; stroke-linecap="round"; stroke-linejoin="round";}
+  </style>
   <g>
     <g transform="matrix(-1 0 0 1 18 0)">
-      <use fill="rgb(68,68,68)" xlink:href="#path-1"/>
-      <use fill-opacity="0" stroke="rgb(68,68,68)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" xlink:href="#path-1"/>
+      <use class="st0" xlink:href="#path-1"/>
+      <use class="st1" stroke-width="3" xlink:href="#path-1"/>
     </g>
     <g transform="matrix(-1 0 0 1 46 0)">
-      <use fill="rgb(68,68,68)" xlink:href="#path-2"/>
-      <use fill-opacity="0" stroke="rgb(68,68,68)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" xlink:href="#path-2"/>
+      <use class="st0" xlink:href="#path-2"/>
+      <use class="st1" stroke-width="3" xlink:href="#path-2"/>
     </g>
   </g>
 </svg>
