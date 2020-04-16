@@ -3,8 +3,10 @@ import { convertToArray } from '../converters';
 import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
 import DraggableText from './DraggableText';
+import Cut from './Cut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
+import config from './config';
 const nanoid = require('nanoid').nanoid;
 
 // some defaults: 
@@ -31,8 +33,8 @@ function initXY(step, level) {
         let id = nanoid()
         data[id] = { 
           var: step[s], 
-          x: X, 
-          y: Y 
+          x: Math.round(X/config.gridSize)*config.gridSize, 
+          y: Math.round(Y/config.gridSize)*config.gridSize
         }
         step[s] = id
         maxY = Y > maxY ? Y : maxY;
@@ -78,23 +80,29 @@ class Canvas extends React.Component {
   renderStep(stepIndex) {
     let step = this.state.steps[stepIndex]
     if (step) {
-      let svg = []
+      const setXY = (id,x,y) => {
+        let { data } = this.state;
+        data[id].x = x;
+        data[id].y = y;
+        this.setState({ data: data })
+      }
 
       const renderRecurse = (step) => {
         let jsx = [];
         for (let s in step) {
           if (step[s] instanceof Array) {
-            jsx.push(<g>{renderRecurse(step[s])}</g>);
+            let groupElement = <Cut>{renderRecurse(step[s])}</Cut>;
+            jsx.push(groupElement);
           } else {
             let el = this.state.data[step[s]]
-            jsx.push(
+            jsx.unshift(
               <DraggableText 
                 x={el.x} 
                 y={el.y} 
                 id={step[s]} 
                 panzoom={this.panzoom}
                 getCoords={this.getSVGCoords}
-                addMoveListener={this.addMoveListener.bind(this)}
+                setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>
                 {el.var}
               </DraggableText>
@@ -104,12 +112,9 @@ class Canvas extends React.Component {
         return jsx;
       }
       renderRecurse.bind(this);
-      svg.push(renderRecurse(step.data))
-      return svg
+      return renderRecurse(step.data)
     }
   }
-
-  
 
   componentDidMount() {  
     this.panzoom = Panzoom(this.canvas.current, {
@@ -125,32 +130,18 @@ class Canvas extends React.Component {
       let { premises, conclusion } = this.state.proof;
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
-      console.log(data)
       this.setState({ steps: steps, currentStep: 0, data: data });
     }
-    console.log(steps)
     let step = this.state.steps[this.state.currentStep];
 
     this.panzoom.moveTo(vw/2 - step.w, vh/2 - step.h);
     this.panzoom.zoomTo(vw/2 - step.w, vh/2 - step.h, 2);
+
+    console.log(this.state)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this);
-  }
-
-  addMoveListener(callback) {
-    let { moveListeners } = this.state;
-    moveListeners.push(callback);
-    this.setState({ moveListeners: moveListeners });
-  }
-
-  callMoveListener(evt) {
-    if (this.state.moveListeners.length > 0) {
-      for (let listener in this.state.moveListeners) {
-        this.state.moveListeners[listener](evt)
-      }
-    }
   }
 
   getSVGCoords(domX, domY) {
@@ -172,7 +163,6 @@ class Canvas extends React.Component {
         <svg 
           ref={this.canvasContainer}
           className="canvas noselect" 
-          onMouseMove={this.callMoveListener.bind(this)}
           onWheel={zoomWithWheel} >
           <g ref={this.canvas}>
             {this.renderStep(this.state.currentStep)}

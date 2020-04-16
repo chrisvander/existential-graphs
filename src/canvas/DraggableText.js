@@ -1,4 +1,5 @@
 import React from 'react';
+import config from './config';
 
 class DraggableText extends React.Component {
   constructor(props) {
@@ -8,10 +9,13 @@ class DraggableText extends React.Component {
     this.state = {
       x: props.x,
       y: props.y,
+      cursorOver: false,
       dragging: false
     };
 
-    this.props.addMoveListener(this.onMouseMove.bind(this))
+    window.addEventListener('mousemove', this.onMouseMove.bind(this))
+    window.addEventListener('mousedown', this.handleDragStart.bind(this))
+    window.addEventListener('mouseup', this.handleDragEnd.bind(this))
   }
 
   componentDidMount() {  
@@ -19,18 +23,25 @@ class DraggableText extends React.Component {
   }
 
   handleDragStart(evt) {
-    this.props.panzoom.pause()
-    this.setState({ dragging: true });
+    if (this.state.cursorOver) {
+      this.props.panzoom.pause()
+      this.setState({ dragging: true })
+    }
   }
 
   handleDragEnd(evt) {
     this.props.panzoom.resume()
-    this.setState({ dragging: false });
+    let { x, y } = this.state;
+    this.props.setCoords(x, y);
+    this.setState({ dragging: false })
   }
 
   onMouseMove(evt) {
     if (this.state.dragging) {
       let { x, y } = this.getCoords(evt.clientX, evt.clientY)
+      x = Math.round(x/config.gridSize)*config.gridSize
+      y = Math.round(y/config.gridSize)*config.gridSize
+      this.props.setCoords(x, y);
       this.setState({ x: x, y: y })
     }
   }
@@ -42,8 +53,8 @@ class DraggableText extends React.Component {
         x={this.state.x} 
         y={this.state.y} 
         id={this.props.id}
-        onMouseDown={this.handleDragStart.bind(this)}
-        onMouseUp={this.handleDragEnd.bind(this)}
+        onMouseEnter={() => this.setState({ cursorOver: true })}
+        onMouseLeave={() => this.setState({ cursorOver: false })}
         ref={this.text}>
         {this.props.children}
       </text>
