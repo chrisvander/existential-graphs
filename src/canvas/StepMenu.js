@@ -11,23 +11,58 @@ class StepMenu extends React.Component {
       backColor:"rgb(68, 68, 68)",
       nextColor:"rgb(68, 68, 68)"
     };
+    this.updateColor();
+    
+
+  }
+
+  updateColor() {
+    console.log(this.props.currentStep + " - " + (this.props.stepInfo.length));
     // changes the color of the prev or next buttons to be grayed out
     // if the current step is the first or last step
     if(this.props.currentStep == 0){
       this.state.backColor = "rgb(136, 136, 136)";
     }
+    else{
+      this.state.backColor = "rgb(68, 68, 68)";
+    }
     if(this.props.currentStep == this.props.stepInfo.length){
       this.state.nextColor = "rgb(136, 136, 136)";
+    }
+    else{
+      this.state.nextColor = "rgb(68, 68, 68)";
     }
   }
 
   componentDidMount() {  
+
   }
 
-  handleClick(event, clickType){
+  /* Handles clicking of the SVG components
+   * event is the click itself, clicktype tells which
+   * SVG button was clicked with a string
+   */
+  handleClick(event, clickType) {
     event.preventDefault();
-    this.props.setStep(this.props.currentStep+1);
-    console.log("TeStInG" + clickType);
+    switch(clickType) {
+      case "first":
+        this.props.setStep(0);
+        break;
+      case "prev":
+        if(this.props.currentStep != 0)
+          this.props.setStep(this.props.currentStep-1);
+        break;
+      case "next":
+        if(this.props.currentStep != this.props.stepInfo.length)
+          this.props.setStep(this.props.currentStep+1);
+          break;
+      case "last":
+        this.props.setStep(this.props.stepInfo.length);
+        break;
+      default:
+        break;
+    }
+    this.updateColor();
   }
 
   render() {
