@@ -8,10 +8,9 @@ class StepMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      backColor:"rgb(68, 68, 68)",
+      backColor:"rgb(134, 134, 134)",
       nextColor:"rgb(68, 68, 68)"
     };
-    this.updateColor(this.props.currentStep);
   }
 
   /* Updates the colors in the state given a step number.
@@ -60,8 +59,7 @@ class StepMenu extends React.Component {
           step++;
           break;
       case "last":
-        step = 10;
-        this.props.setStep(this.props.stepInfo.length);
+        step = this.props.stepInfo.length;
         break;
       default:
         break;
