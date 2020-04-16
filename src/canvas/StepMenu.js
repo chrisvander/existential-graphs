@@ -2,9 +2,6 @@ import React from 'react';
 import { ReactSVG } from 'react-svg';
 
 // TODO: 
-//   Align the buttons vertically center
-//   Gray out the back buttons if currentStep == 0
-//   Gray out the next buttons if currentStep == stepInfo.length
 //   Call this.props.setStep(step) to change
 
 class StepMenu extends React.Component {
@@ -14,8 +11,13 @@ class StepMenu extends React.Component {
       backColor:"rgb(68, 68, 68)",
       nextColor:"rgb(68, 68, 68)"
     };
-    if(this.props.currentStep == 1){
+    // changes the color of the prev or next buttons to be grayed out
+    // if the current step is the first or last step
+    if(this.props.currentStep == 0){
       this.state.backColor = "rgb(136, 136, 136)";
+    }
+    if(this.props.currentStep == this.props.stepInfo.length){
+      this.state.nextColor = "rgb(136, 136, 136)";
     }
   }
 
@@ -25,11 +27,15 @@ class StepMenu extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="step-menu" style={{color:this.state.backColor}}>
+        <div className="step-menu">
+        <div style={{color:this.state.backColor}}>
           <ReactSVG src="/assets/step-first.svg"/>
           <ReactSVG src="/assets/step-prev.svg" />
+        </div>
+        <div style={{color:this.state.nextColor}}>
           <ReactSVG src="/assets/step-next.svg" />
           <ReactSVG src="/assets/step-last.svg" />
+        </div>
         </div>
         <div className="step-text">
           Step {this.props.currentStep} of {this.props.stepInfo.length}
