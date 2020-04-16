@@ -179,7 +179,7 @@ class Canvas extends React.Component {
           </g>
         </svg>
         <StepMenu 
-          currentStep={this.state.currentStep+1} 
+          currentStep={this.state.currentStep} 
           stepInfo={this.state.steps} 
           setStep={s => this.setState({ currentStep: s })}
         />
