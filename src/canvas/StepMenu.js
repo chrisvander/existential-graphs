@@ -24,17 +24,31 @@ class StepMenu extends React.Component {
   componentDidMount() {  
   }
 
+  handleClick(event, clickType){
+    event.preventDefault();
+    this.props.setStep(this.props.currentStep+1);
+    console.log("TeStInG" + clickType);
+  }
+
   render() {
     return (
       <React.Fragment>
         <div className="step-menu">
         <div style={{color:this.state.backColor}}>
-          <ReactSVG src="/assets/step-first.svg"/>
-          <ReactSVG src="/assets/step-prev.svg" />
+          <div onClick={(event) => this.handleClick(event, "first")}>
+            <ReactSVG src="/assets/step-first.svg"/>
+          </div>
+          <div onClick={(event) => this.handleClick(event, "prev")}>
+            <ReactSVG src="/assets/step-prev.svg" />
+          </div>
         </div>
         <div style={{color:this.state.nextColor}}>
-          <ReactSVG src="/assets/step-next.svg" />
-          <ReactSVG src="/assets/step-last.svg" />
+          <div onClick={(event) => this.handleClick(event, "next")}>
+            <ReactSVG src="/assets/step-next.svg" />
+            </div>
+          <div onClick={(event) => this.handleClick(event, "last")}>
+            <ReactSVG src="/assets/step-last.svg" />
+          </div>
         </div>
         </div>
         <div className="step-text">
