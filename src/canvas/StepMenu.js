@@ -11,22 +11,24 @@ class StepMenu extends React.Component {
       backColor:"rgb(68, 68, 68)",
       nextColor:"rgb(68, 68, 68)"
     };
-    this.updateColor();
-    
-
+    this.updateColor(this.props.currentStep);
   }
 
-  updateColor() {
-    console.log(this.props.currentStep + " - " + (this.props.stepInfo.length));
+  /* Updates the colors in the state given a step number.
+   * Does not reference props so that the color can be updated
+   * before the props changes and the component is rerendered
+   */
+  updateColor(step) {
     // changes the color of the prev or next buttons to be grayed out
     // if the current step is the first or last step
-    if(this.props.currentStep == 0){
+    console.log(this.props.stepInfo.length);
+    if(step == 0){
       this.state.backColor = "rgb(136, 136, 136)";
     }
     else{
       this.state.backColor = "rgb(68, 68, 68)";
     }
-    if(this.props.currentStep == this.props.stepInfo.length){
+    if(step == this.props.stepInfo.length){
       this.state.nextColor = "rgb(136, 136, 136)";
     }
     else{
@@ -44,25 +46,30 @@ class StepMenu extends React.Component {
    */
   handleClick(event, clickType) {
     event.preventDefault();
+    let step = this.props.currentStep;
     switch(clickType) {
       case "first":
-        this.props.setStep(0);
+        step = 0;
         break;
       case "prev":
         if(this.props.currentStep != 0)
-          this.props.setStep(this.props.currentStep-1);
+          step--;
         break;
       case "next":
         if(this.props.currentStep != this.props.stepInfo.length)
-          this.props.setStep(this.props.currentStep+1);
+          step++;
           break;
       case "last":
+        step = 10;
         this.props.setStep(this.props.stepInfo.length);
         break;
       default:
         break;
     }
-    this.updateColor();
+    // Must update color before updating props to allow component to
+    // render with the proper current color rather than the state before
+    this.updateColor(step);
+    this.props.setStep(step);
   }
 
   render() {
