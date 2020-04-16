@@ -91,13 +91,13 @@ const getMatchingParen = (formula, start) => {
   let parens = 0
   let j = start
   while (j < formula.length) {
-    if (formula[j] == '(') {
+    if (formula[j] === '(') {
       parens++
     }
-    else if (formula[j] == ')') {
+    else if (formula[j] === ')') {
       parens--
       // if parens is 0, then the current ')' matches the start parenthesis
-      if (parens == 0)
+      if (parens === 0)
         return j
     }
     j++
@@ -117,16 +117,20 @@ const convertToArray = (formula, i = 0) => {
     let arr = []
     // loop through the string
     while (i < formula.length) {
+      console.log(i,formula)
+      console.log(arr)
       // if closing parenthesis, return the array for this subexpression
-      if (formula[i] == '(') {
+      if (formula[i] === '(') {
         // find the matching pair of parentheses of the subexpression
         let j = getMatchingParen(formula, i)
         // push the subexpression into the array
-        arr.push(convertToArray(formula.substr(i+1, j-1)))
+        let subExp = formula.substr(i+1, j-1)
+        if (subExp)
+          arr.push(convertToArray(formula.substr(i+1, j-1)))
         i = j
       }
       // if a variable is found, push it to the array
-      else if(formula[i] == '{') {
+      else if (formula[i] === '{') {
         arr.push(formula[++i])
         i++
       }
