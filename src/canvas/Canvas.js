@@ -16,31 +16,31 @@ const TEXT_H = 22;
 
 function initXY(step, level) {
   let data = {}
-  let prevLevel = 0
   let currentX = 0
   let currentY = 0
   let maxX = 0
   let maxY = 0
 
-  function initXYRecurse(step, level) {
+  // gapSize should be equal to the number of level changes
+  // in between two variables, so that we can evenly place 
+  // them initially across the screen
+  function initXYRecurse(step, level, gapSize) {
     for (let s in step) {
-      if (step[s] instanceof Array) {
-        prevLevel = level
+      if (step[s] instanceof Array && step[s].length > 0) {
         step[s] = initXYRecurse(step[s], level + 1)
       } else {
-        let X = currentX + Math.abs(prevLevel - level) * 25;
+        let X = currentX;
         let Y = currentY;
         let id = nanoid()
         data[id] = { 
           var: step[s], 
           x: Math.round(X/config.gridSize)*config.gridSize, 
-          y: Math.round(Y/config.gridSize)*config.gridSize
+          y: Math.round(Y/config.gridSize)*config.gridSize,
         }
         step[s] = id
         maxY = Y > maxY ? Y : maxY;
         maxX = X > maxX ? X : maxX;
-        prevLevel = level
-        currentX += 50
+        currentX += config.initialSeparation
       }
     }
     return step
@@ -130,6 +130,7 @@ class Canvas extends React.Component {
       let { premises, conclusion } = this.state.proof;
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
+      console.log(data)
       this.setState({ steps: steps, currentStep: 0, data: data });
     }
     let step = this.state.steps[this.state.currentStep];
@@ -169,7 +170,7 @@ class Canvas extends React.Component {
           </g>
         </svg>
         <StepMenu 
-          currentStep={this.state.currentStep+1} 
+          currentStep={this.state.currentStep} 
           stepInfo={this.state.steps} 
           setStep={s => this.setState({ currentStep: s })}
         />

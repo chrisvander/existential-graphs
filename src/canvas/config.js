@@ -1,5 +1,9 @@
 export default {
-  gridSize: 1,
-  cutPadding: 5,
-  cutCornerRadius: 7
+  gridSize: 5,
+  cutPadding: {
+    horizontal: 10,
+    vertical: 5
+  },
+  cutCornerRadius: 7,
+  initialSeparation: 80,
 }
