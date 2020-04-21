@@ -20,22 +20,22 @@ class StepMenu extends React.Component {
   updateColor(step) {
     // changes the color of the prev or next buttons to be grayed out
     // if the current step is the first or last step
-    if(step == 0){
+    if (step == 0){
       this.state.backColor = "rgb(136, 136, 136)";
     }
-    else{
+    else {
       this.state.backColor = "rgb(68, 68, 68)";
     }
-    if(step == this.props.stepInfo.length){
+    if (step == this.props.stepInfo.length - 1){
       this.state.nextColor = "rgb(136, 136, 136)";
     }
-    else{
+    else {
       this.state.nextColor = "rgb(68, 68, 68)";
     }
   }
 
   componentDidMount() {  
-
+    this.updateColor(this.props.currentStep)
   }
 
   /* Handles clicking of the SVG components
@@ -54,11 +54,11 @@ class StepMenu extends React.Component {
           step--;
         break;
       case "next":
-        if(this.props.currentStep != this.props.stepInfo.length)
+        if(this.props.currentStep != this.props.stepInfo.length - 1)
           step++;
           break;
       case "last":
-        step = this.props.stepInfo.length;
+        step = this.props.stepInfo.length - 1;
         break;
       default:
         break;
@@ -84,14 +84,14 @@ class StepMenu extends React.Component {
         <div style={{color:this.state.nextColor}}>
           <div onClick={(event) => this.handleClick(event, "next")}>
             <ReactSVG src="/assets/step-next.svg" />
-            </div>
+          </div>
           <div onClick={(event) => this.handleClick(event, "last")}>
             <ReactSVG src="/assets/step-last.svg" />
           </div>
         </div>
         </div>
         <div className="step-text">
-          Step {this.props.currentStep} of {this.props.stepInfo.length}
+          Step {this.props.currentStep + 1} of {this.props.stepInfo.length}
         </div>
       </React.Fragment>
     );
