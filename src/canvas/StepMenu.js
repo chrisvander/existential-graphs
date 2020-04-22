@@ -8,8 +8,8 @@ class StepMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      backColor:"rgb(134, 134, 134)",
-      nextColor:"rgb(68, 68, 68)"
+      backColor:"rgb(165, 165, 165)",
+      nextColor:"rgb(165, 165, 165)"
     };
   }
 
@@ -20,21 +20,24 @@ class StepMenu extends React.Component {
   updateColor(step) {
     // changes the color of the prev or next buttons to be grayed out
     // if the current step is the first or last step
-    if (step == 0){
-      this.state.backColor = "rgb(136, 136, 136)";
+    let backColor, nextColor
+    if (step === 0){
+      backColor = "rgb(136, 136, 136)";
     }
     else {
-      this.state.backColor = "rgb(68, 68, 68)";
+      backColor = "rgb(68, 68, 68)";
     }
-    if (step == this.props.stepInfo.length - 1){
-      this.state.nextColor = "rgb(136, 136, 136)";
+    if (step === (this.props.stepInfo.length - 1) || this.props.stepInfo.length === 0) {
+      nextColor = "rgb(136, 136, 136)";
     }
     else {
-      this.state.nextColor = "rgb(68, 68, 68)";
+      nextColor = "rgb(68, 68, 68)";
     }
+
+    this.setState({ backColor: backColor, nextColor: nextColor });
   }
 
-  componentDidMount() {  
+  componentDidMount() {
     this.updateColor(this.props.currentStep)
   }
 
@@ -50,11 +53,11 @@ class StepMenu extends React.Component {
         step = 0;
         break;
       case "prev":
-        if(this.props.currentStep != 0)
+        if (this.props.currentStep != 0)
           step--;
         break;
       case "next":
-        if(this.props.currentStep != this.props.stepInfo.length - 1)
+        if (this.props.currentStep != this.props.stepInfo.length - 1)
           step++;
           break;
       case "last":

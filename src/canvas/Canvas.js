@@ -2,8 +2,8 @@ import React from 'react';
 import { convertToArray } from '../converters';
 import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
-import DraggableText from './DraggableText';
-import Cut from './Cut';
+import EGVariable from './EGVariable';
+import EGCut from './EGCut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
 import config from './config';
@@ -27,12 +27,15 @@ function initXY(step, level) {
   function initXYRecurse(step, level, gapSize) {
     for (let s in step) {
       if (step[s] instanceof Array && step[s].length > 0) {
-        step[s] = initXYRecurse(step[s], level + 1)
+        let id = nanoid()
+        step[s] = { data: initXYRecurse(step[s], level + 1), type: "cut", id: id }
+        data[id] = { type: "cut" }
       } else {
         let X = currentX;
         let Y = currentY;
         let id = nanoid()
         data[id] = { 
+          type: "var",
           var: step[s], 
           x: Math.round(X/config.gridSize)*config.gridSize, 
           y: Math.round(Y/config.gridSize)*config.gridSize,
@@ -68,7 +71,25 @@ class Canvas extends React.Component {
       data: {},
       currentStep: 0,
       moveListeners: [],
+      functions: {
+        insert: () => {
+
+        },
+        erase: () => {
+
+        },
+        iterate: () => {
+
+        },
+        dc: () => {
+          
+        }
+      }
     };
+  }
+
+  addElement() {
+
   }
 
   changePos(id, x, y) {
@@ -90,13 +111,13 @@ class Canvas extends React.Component {
       const renderRecurse = (step) => {
         let jsx = [];
         for (let s in step) {
-          if (step[s] instanceof Array) {
-            let groupElement = <Cut>{renderRecurse(step[s])}</Cut>;
+          if (step[s].type === "cut") {
+            let groupElement = <EGCut>{renderRecurse(step[s].data)}</EGCut>;
             jsx.push(groupElement);
           } else {
             let el = this.state.data[step[s]]
             jsx.unshift(
-              <DraggableText 
+              <EGVariable 
                 x={el.x} 
                 y={el.y} 
                 id={step[s]} 
@@ -105,7 +126,7 @@ class Canvas extends React.Component {
                 setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>
                 {el.var}
-              </DraggableText>
+              </EGVariable>
             );
           }
         }
@@ -137,8 +158,6 @@ class Canvas extends React.Component {
 
     this.panzoom.moveTo(vw/2 - step.w, vh/2 - step.h);
     this.panzoom.zoomTo(vw/2 - step.w, vh/2 - step.h, 2);
-
-    console.log(this.state)
   }
 
   componentWillUnmount() {
@@ -155,6 +174,7 @@ class Canvas extends React.Component {
   }
 
   render() {
+    console.log(this.state)
     let zoomWithWheel = () => {}
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel

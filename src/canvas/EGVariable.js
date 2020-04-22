@@ -1,7 +1,7 @@
 import React from 'react';
 import config from './config';
 
-class DraggableText extends React.Component {
+class EGVariable extends React.Component {
   constructor(props) {
     super(props);
     this.text = React.createRef()
@@ -62,4 +62,4 @@ class DraggableText extends React.Component {
   }
 }
 
-export default DraggableText;
+export default EGVariable;

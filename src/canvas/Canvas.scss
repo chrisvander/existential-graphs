@@ -26,10 +26,27 @@
   float: left;
   background-color: $white-gray;
   margin: 10px;
-  border-radius: 30px;
+  border-radius: 25px;
   padding: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
   box-shadow: 0 0px 7px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.24);
   z-index: 1;
+  h3 {
+    margin-left: 5px;
+  }
+}
+
+.tool {
+  background-color: #DFDFDA;
+  border-radius: 15px;
+  padding: 4px;
+  margin-top: 5px;
+  padding-left: 16px;
+  &:hover {
+    background-color: #DADACA;
+    cursor: pointer;
+  }
 }
 
 .hoverEl {
@@ -73,7 +90,7 @@
   text-align: center;
   div {
     display: inline-block;
-    margin-top: 3.5px;
+    margin-top: 2.6px;
     margin-left: 22px;
     &:first-child {
       margin-left: 0;

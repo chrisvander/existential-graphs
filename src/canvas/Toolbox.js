@@ -4,6 +4,24 @@ class Toolbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      functions: [
+        {
+          str: "Iterate/Deiterate",
+          func: this.props.functions.iterate()
+        },
+        {
+          str: "Double Cut",
+          func: this.props.functions.dc()
+        },
+        {
+          str: "Insertion",
+          func: this.props.functions.insert()
+        },
+        {
+          str: "Erasure",
+          func: this.props.functions.erase()
+        }
+      ]
     };
   }
 
@@ -14,6 +32,9 @@ class Toolbox extends React.Component {
     return (
       <div className="toolbox" ref={this.canvas}>
         <h3>Tools</h3>
+        {this.state.functions.map(el => (
+          <div className="tool">{el.str}</div>
+        ))}
       </div>
     );
   }

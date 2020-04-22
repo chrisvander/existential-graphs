@@ -1,7 +1,7 @@
 import React from 'react';
 import config from './config';
 
-class DraggableText extends React.Component {
+class EGCut extends React.Component {
   constructor(props) {
     super(props);
     this.cut = React.createRef();
@@ -39,7 +39,7 @@ class DraggableText extends React.Component {
     let b = this.getBBoxData();
     let childEl = this.props.children;
     if (childEl.length < 1) {
-      childEl = <DraggableText>{" "}</DraggableText>
+      childEl = <EGCut>{" "}</EGCut>
     }
     return (
       <React.Fragment>
@@ -65,4 +65,4 @@ class DraggableText extends React.Component {
   }
 }
 
-export default DraggableText;
+export default EGCut;
