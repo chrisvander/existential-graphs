@@ -73,13 +73,13 @@ class Canvas extends React.Component {
       moveListeners: [],
       functions: {
         insert: () => {
-
+          console.log("INSERTION")
         },
         erase: () => {
-
+          console.log("ERASURE")
         },
         iterate: () => {
-
+          console.log("ITERATION")
         },
         dc: () => {
           console.log("DOUBLE CUT")

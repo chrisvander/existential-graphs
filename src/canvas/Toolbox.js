@@ -7,19 +7,19 @@ class Toolbox extends React.Component {
       functions: [
         {
           str: "Iterate/Deiterate",
-          func: this.props.functions.iterate()
+          func: this.props.functions.iterate
         },
         {
           str: "Double Cut",
-          func: this.props.functions.dc()
+          func: this.props.functions.dc
         },
         {
           str: "Insertion",
-          func: this.props.functions.insert()
+          func: this.props.functions.insert
         },
         {
           str: "Erasure",
-          func: this.props.functions.erase()
+          func: this.props.functions.erase
         }
       ]
     };
@@ -33,7 +33,7 @@ class Toolbox extends React.Component {
       <div className="toolbox" ref={this.canvas}>
         <h3>Tools</h3>
         {this.state.functions.map(el => (
-          <div className="tool" onClick={console.log(el.str)}>{el.str}</div>
+          <div className="tool" onClick={el.func}>{el.str}</div>
         ))}
       </div>
     );
