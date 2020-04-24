@@ -82,7 +82,7 @@ class Canvas extends React.Component {
 
         },
         dc: () => {
-          
+          console.log("DOUBLE CUT")
         }
       }
     };
@@ -180,7 +180,9 @@ class Canvas extends React.Component {
       zoomWithWheel = this.panzoom.zoomWithWheel
     return (
       <div>
-        <Toolbox />
+        <Toolbox 
+          functions={this.state.functions}
+        />
         <svg 
           ref={this.canvasContainer}
           className="canvas noselect" 

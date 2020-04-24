@@ -33,7 +33,7 @@ class Toolbox extends React.Component {
       <div className="toolbox" ref={this.canvas}>
         <h3>Tools</h3>
         {this.state.functions.map(el => (
-          <div className="tool">{el.str}</div>
+          <div className="tool" onClick={console.log(el.str)}>{el.str}</div>
         ))}
       </div>
     );
