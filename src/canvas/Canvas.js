@@ -14,17 +14,19 @@ const nanoid = require('nanoid').nanoid;
 
 const TEXT_H = 22;
 
-function initXY(step, level) {
-  let data = {}
+function initXY(step, level, tdata = {}) {
+  let data = tdata
   let currentX = 0
   let currentY = 0
   let maxX = 0
   let maxY = 0
 
+
   // gapSize should be equal to the number of level changes
   // in between two variables, so that we can evenly place 
   // them initially across the screen
   function initXYRecurse(step, level, gapSize) {
+    console.log(data)
     for (let s in step) {
       if (step[s] instanceof Array && step[s].length > 0) {
         let id = nanoid()
@@ -83,6 +85,21 @@ class Canvas extends React.Component {
         },
         dc: () => {
           console.log("DOUBLE CUT")
+
+          let { steps, currentStep } = this.state;
+          let { premises, conclusion } = this.state.proof;
+          let { stepZero, data } = initXY(convertToArray(premises.join('')), 0, this.state.data);
+          steps.push(stepZero);
+          currentStep+=1;
+          this.setState({ steps: steps, currentStep: currentStep, data:data });
+
+          //console.log(premises)
+          //console.log(convertToArray(premises.join('')))
+          //console.log([[ ["P",["Q"]] , [["P"],"Q"] ]])
+          //console.log(initXY(convertToArray(premises.join(''))[0]), 0)
+          //let { stepZero, data } = initXY([ ["P",["Q"]] , [["P"],"Q"] ], 0);
+          //steps.push(stepZero);
+          //  this.setState({ steps: steps, currentStep: 1, data: data });
         }
       }
     };
@@ -116,6 +133,8 @@ class Canvas extends React.Component {
             jsx.push(groupElement);
           } else {
             let el = this.state.data[step[s]]
+            console.log("ELEMENT")
+            console.log(el)
             jsx.unshift(
               <EGVariable 
                 x={el.x} 
@@ -151,7 +170,6 @@ class Canvas extends React.Component {
       let { premises, conclusion } = this.state.proof;
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
-      console.log(data)
       this.setState({ steps: steps, currentStep: 0, data: data });
     }
     let step = this.state.steps[this.state.currentStep];
