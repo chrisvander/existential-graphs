@@ -14,8 +14,8 @@ const nanoid = require('nanoid').nanoid;
 
 const TEXT_H = 22;
 
-function initXY(step, level, tdata = {}) {
-  let data = tdata
+function initXY(step, level, currData = {}) {
+  let data = currData
   let currentX = 0
   let currentY = 0
   let maxX = 0
@@ -89,6 +89,24 @@ class Canvas extends React.Component {
           let { steps, currentStep } = this.state;
           let { premises, conclusion } = this.state.proof;
           let { stepZero, data } = initXY(convertToArray(premises.join('')), 0, this.state.data);
+          console.log("stepZero")
+          console.log(stepZero)
+          console.log(stepZero.data)
+          let i = 1
+          let firstCut = stepZero.data[i]
+          let newContents;
+          if (firstCut.type === "cut") {
+            console.log("FOUND CUT")
+            console.log(firstCut)
+            let secondCut = firstCut.data;
+            if(secondCut.length === 1 && secondCut[0].type === "cut") {
+              console.log("FOUND DOUBLE CUT")
+              console.log(secondCut)
+              newContents = secondCut[0]
+              console.log(newContents)
+            }
+          }
+          stepZero.data[i] = newContents
           steps.push(stepZero);
           currentStep+=1;
           this.setState({ steps: steps, currentStep: currentStep, data:data });
