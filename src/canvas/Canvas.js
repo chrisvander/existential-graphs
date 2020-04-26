@@ -112,13 +112,15 @@ class Canvas extends React.Component {
             return
           }
           let step = steps[currentStep]
-          steps.push(step)
+          
           console.log(step)
           let cutID = step.data[1].data[0].id
           console.log(cutID)
-          this.findID(step, cutID)
-
+          let firstCut = this.findID(step, cutID)
+          console.log(firstCut)
+          step = firstCut
           currentStep+=1;
+          steps.push(step)
           this.setState({ steps: steps, currentStep: currentStep/*, data:data*/ });
 
 
@@ -171,7 +173,7 @@ class Canvas extends React.Component {
   // finds and returns the item with the specified ID in a given step
   findID(searchedStep, id) {
     let data = this.state.data;
-    console.log("findID")
+    //console.log("findID")
 
     // Find the ID in an array
     function findIDArray(arr) {
@@ -180,19 +182,19 @@ class Canvas extends React.Component {
         if (typeof arr[a] === 'string') {
           // return the ID if found
           if (arr[a] == id) {
-            console.log("FOUND THE SEARCHED ID: ", arr[a], id)
+            //console.log("FOUND THE SEARCHED ID: ", arr[a], id)
             return id
           }
-          console.log("FOUND STRING IN ARR", arr[a])
+          //console.log("FOUND STRING IN ARR", arr[a])
         }
         // if a data map is found with the correct id, return the data map
         else if (arr[a].id === id) {
-          console.log("arr[a].id: ", arr[a].id)
-          console.log(arr[a])
+          //console.log("arr[a].id: ", arr[a].id)
+          //console.log(arr[a])
           return arr[a];
         // otherwise, call findID step on the datamap that has the incorrect ID
         } else {
-          console.log("ELSE", arr[a])
+          //console.log("ELSE", arr[a])
           return findIDStep(arr[a], id)
         }
       }
@@ -203,22 +205,22 @@ class Canvas extends React.Component {
       for (let s in step) {
         // if an array is found, call findIDArray on each element
         if (step[s] instanceof Array) {
-          console.log("FOUND ARRAY", step[s])
+          //console.log("FOUND ARRAY", step[s])
           return findIDArray(step[s], id)
         // if an id is found, check if it matches and return the data if so
         } else if (s === "id") {
-          console.log("FOUND ID", id, step[s])
-          console.log(step)
+          //console.log("FOUND ID", id, step[s])
+          //console.log(step)
           if (step[s] === id)
             return step
         // Otherwise if the element is something else (w, h, type, etc.), do nothing
         } else if (typeof s === 'string') {
-          console.log("FOUND STRING", step[s])
+          //console.log("FOUND STRING", step[s])
         }
       }
     }
-    console.log("Step: ",searchedStep)
-    console.log("ID: ", id)
+    //console.log("Step: ",searchedStep)
+    //console.log("ID: ", id)
     let c = findIDStep(searchedStep, id)
     console.log("C: ", c)
     return c
