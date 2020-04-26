@@ -83,21 +83,32 @@ class Canvas extends React.Component {
         iterate: () => {
           console.log("ITERATION")
         },
-        dc: (id) => {
-          console.log("DOUBLE CUT")
-          this.doubleCut(id);
+        dcRemove: (id) => {
+          console.log("DOUBLE CUT Remove")
+          this.doubleCutRemove(id);
+        },
+        dcAdd: (id) => {
+          console.log("DOUBLE CUT Add")
+          this.doubleCutAdd(id);
         }
       }
     };
   }
 
-  /* Performs a double cut given the ID of the outside cut.
+  /* Adds a double cut given the ID of the data that will be inside the cut.
+  *  Will only run if the current step is the last step.
+  */
+  doubleCutAdd(ID) {
+    
+  }
+
+  /* Removes a double cut given the ID of the outside cut.
   *  Will only run if the current step is the last step.
   *  Creates a deep copy of the current step, and replaces the cut with
   *  the given ID with the contents of the second cut, only if they exist.
   *  Then adds the edited copy of the current step to the end of the step array.
   */
-  doubleCut(cutID) {
+  doubleCutRemove(cutID) {
     let { steps, currentStep, data } = this.state;
     // only allow steps to be conducted at the end of a proof
     if (currentStep+1 != steps.length) {
@@ -108,7 +119,7 @@ class Canvas extends React.Component {
 
     // Temporary, used for testing on premise "({P})({P}{Q}({R}))(((((({Q})){R}))))"
     // Manually sets the cutID to equal the otuside cut of the third portion of the premise
-    // cutID = step.data[2].id
+    cutID = step.data[2].id
 
     // use findID to find the cut with the given ID
     let firstCut = this.findID(step, cutID);

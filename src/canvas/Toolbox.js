@@ -10,8 +10,12 @@ class Toolbox extends React.Component {
           func: this.props.functions.iterate
         },
         {
-          str: "Double Cut",
-          func: this.props.functions.dc
+          str: "Remove Double Cut",
+          func: this.props.functions.dcRemove
+        },
+        {
+          str: "Add Double Cut",
+          func: this.props.functions.dcAdd
         },
         {
           str: "Insertion",
