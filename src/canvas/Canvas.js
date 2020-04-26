@@ -90,10 +90,21 @@ class Canvas extends React.Component {
         iterate: (id) => {
           console.log("ITERATION")
         },
-        dc: (id) => {
-          console.log("DOUBLE CUT")
-
-          let successful = this.doubleCut(id);
+        dcRemove: (id) => {
+          console.log("DOUBLE CUT Remove")
+          let successful = this.doubleCutRemove(id);
+          if (successful) 
+            this.setState({ 
+              highlights: {
+                cut: 'none', 
+                var: 'none'
+              },
+              interaction: true, 
+              cbFunction: null });
+        },
+        dcAdd: (id) => {
+          console.log("DOUBLE CUT Add")
+          let successful = this.doubleCutAdd(id);
           if (successful) 
             this.setState({ 
               highlights: {
@@ -120,14 +131,20 @@ class Canvas extends React.Component {
     });
   }
 
-  /* 
-  *  Performs a double cut given the ID of the outside cut.
+  /* Adds a double cut given the ID of the data that will be inside the cut.
+  *  Will only run if the current step is the last step.
+  */
+  doubleCutAdd(ID) {
+    
+  }
+
+  /* Removes a double cut given the ID of the outside cut.
   *  Will only run if the current step is the last step.
   *  Creates a deep copy of the current step, and replaces the cut with
   *  the given ID with the contents of the second cut, only if they exist.
   *  Then adds the edited copy of the current step to the end of the step array.
   */
-  doubleCut(cutID) {
+  doubleCutRemove(cutID) {
     let { steps, currentStep, data } = this.state;
     // Create a new step
     let step = this.copyStep(steps[currentStep]);

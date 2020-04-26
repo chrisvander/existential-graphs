@@ -11,8 +11,13 @@ class Toolbox extends React.Component {
           highlight: { 'cut': 'all' }
         },
         {
-          str: "Double Cut",
-          func: 'dc',
+          str: "Remove Double Cut",
+          func: 'dcRemove',
+          highlight: { 'cut': 'all' }
+        },
+        {
+          str: "Add Double Cut",
+          func: 'dcAdd',
           highlight: { 'cut': 'all' }
         },
         {
