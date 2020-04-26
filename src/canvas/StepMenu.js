@@ -73,6 +73,7 @@ class StepMenu extends React.Component {
   }
 
   render() {
+    if (this.props.hide) return (<React.Fragment />);
     return (
       <React.Fragment>
         <div className="step-menu">

@@ -13,6 +13,8 @@ class EGVariable extends React.Component {
       dragging: false
     };
 
+    this.panzoom = this.props.panzoom
+
     window.addEventListener('mousemove', this.onMouseMove.bind(this))
     window.addEventListener('mousedown', this.handleDragStart.bind(this))
     window.addEventListener('mouseup', this.handleDragEnd.bind(this))
@@ -24,13 +26,13 @@ class EGVariable extends React.Component {
 
   handleDragStart(evt) {
     if (this.state.cursorOver) {
-      this.props.panzoom.pause()
+      this.panzoom.pause()
       this.setState({ dragging: true })
     }
   }
 
   handleDragEnd(evt) {
-    this.props.panzoom.resume()
+    this.panzoom.resume()
     let { x, y } = this.state;
     this.props.setCoords(x, y);
     this.setState({ dragging: false })

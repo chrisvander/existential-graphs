@@ -28,8 +28,8 @@ function initXY(step, level) {
     for (let s in step) {
       if (step[s] instanceof Array && step[s].length > 0) {
         let id = nanoid()
-        step[s] = { data: initXYRecurse(step[s], level + 1), type: "cut", id: id }
-        data[id] = { type: "cut" }
+        step[s] = { data: initXYRecurse(step[s], level + 1), id: id, type: "cut" }
+        data[id] = { type: "cut", level: level }
       } else {
         let X = currentX;
         let Y = currentY;
@@ -61,31 +61,32 @@ class Canvas extends React.Component {
     this.changePos = this.changePos.bind(this);
     this.getSVGCoords = this.getSVGCoords.bind(this);
 
-    let { premises, conclusion, steps } = this.props.proof;
+    let { premises, conclusion, steps, data } = this.props.proof;
     this.state = {
       proof: {
         premises: premises,
         conclusion: conclusion
       },
-      steps: steps,
-      data: {},
+      steps: steps || [],
+      data: data || {},
       currentStep: 0,
-      moveListeners: [],
-      functions: {
-        insert: () => {
-
-        },
-        erase: () => {
-
-        },
-        iterate: () => {
-
-        },
-        dc: () => {
-          
-        }
-      }
+      moveListeners: []
     };
+
+    this.functions = {
+      insert: () => {
+
+      },
+      erase: () => {
+
+      },
+      iterate: () => {
+
+      },
+      dc: () => {
+        
+      }
+    }
   }
 
   addElement() {
@@ -99,10 +100,10 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
+    let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
       const setXY = (id,x,y) => {
-        let { data } = this.state;
         data[id].x = x;
         data[id].y = y;
         this.setState({ data: data })
@@ -112,7 +113,11 @@ class Canvas extends React.Component {
         let jsx = [];
         for (let s in step) {
           if (step[s].type === "cut") {
-            let groupElement = <EGCut>{renderRecurse(step[s].data)}</EGCut>;
+            let groupElement = (
+              <EGCut level={data[step[s].id].level}>
+                {renderRecurse(step[s].data)}
+              </EGCut>
+            );
             jsx.push(groupElement);
           } else {
             let el = this.state.data[step[s]]
@@ -138,6 +143,7 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {  
+
     this.panzoom = Panzoom(this.canvas.current, {
       maxZoom: 6,
       minZoom: 0.5
@@ -151,9 +157,10 @@ class Canvas extends React.Component {
       let { premises, conclusion } = this.state.proof;
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
-      console.log(data)
-      this.setState({ steps: steps, currentStep: 0, data: data });
+      this.setState({ steps: steps, data: data });
     }
+    // required to use setState to trigger re-render after creation of panzoom
+    this.setState({ currentStep: 0 });
     let step = this.state.steps[this.state.currentStep];
 
     this.panzoom.moveTo(vw/2 - step.w, vh/2 - step.h);
@@ -180,13 +187,13 @@ class Canvas extends React.Component {
       zoomWithWheel = this.panzoom.zoomWithWheel
     return (
       <div>
-        <Toolbox />
+        <Toolbox functions={this.functions}/>
         <svg 
           ref={this.canvasContainer}
           className="canvas noselect" 
           onWheel={zoomWithWheel} >
           <g ref={this.canvas}>
-            {this.renderStep(this.state.currentStep)}
+            {this.panzoom && this.renderStep(this.state.currentStep)}
           </g>
         </svg>
         <StepMenu 
