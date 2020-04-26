@@ -100,57 +100,58 @@ class Canvas extends React.Component {
         iterate: () => {
           console.log("ITERATION")
         },
-        dc: () => {
+        dc: (id) => {
           console.log("DOUBLE CUT")
-          //let { steps, currentStep } = this.state;
-          //let step = steps[currentStep]
-          //this.cloneStep(step)
-          
-
-          let { steps, currentStep, data } = this.state;
-          // only allow steps to be conducted at the end of a proof
-          if (currentStep+1 != steps.length) {
-            return
-          }
-
-          let step = {};
-          this.copyStep(step, steps[currentStep]);
-          
-          // Temporary assignment: the ID of the outside cut should be given and set to cutID
-          let cutID = step.data[1].id//.data[0].id
-          console.log(cutID)
-          // use findID to find the cut with the given ID
-          let firstCut = this.findID(step, cutID)
-          console.log(firstCut)
-
-          let newContents;
-
-          if (firstCut.type === "cut") {
-            console.log("FOUND CUT")
-            let secondCut = firstCut.data;
-            if(secondCut.length === 1 && secondCut[0].type === "cut") {
-              console.log("FOUND SECOND CUT")
-              newContents = secondCut[0].data
-              console.log("NewContents:", newContents)
-            }
-          }
-          // Remove the current cut from the data array
-          const index = step.data.indexOf(firstCut);
-          console.log("INDEX: ", index)
-          if (index > -1) {
-            console.log("SPLICING")
-            step.data.splice(index, 1);
-          }
-          // Add the contents of the second cut to the data array
-          step.data = step.data.concat(newContents)
-          //step.data[1].data = newContents
-          currentStep+=1;
-          steps.push(step)
-          this.setState({ steps: steps, currentStep: currentStep, data:data });
-
+          this.doubleCut(id);
         }
       }
     };
+  }
+
+  doubleCut(id) {
+    let { steps, currentStep, data } = this.state;
+    // only allow steps to be conducted at the end of a proof
+    if (currentStep+1 != steps.length) {
+      return
+    }
+
+    // Create a new step
+    let step = {};
+    this.copyStep(step, steps[currentStep]);
+    console.log("STEP AND COPY")
+    console.log(steps[currentStep])
+    console.log(step)
+    // Temporary assignment: the ID of the outside cut should be given and set to cutID
+    let cutID = step.data[1].id//.data[0].id
+    console.log(cutID)
+    // use findID to find the cut with the given ID
+    let firstCut = this.findID(step, cutID)
+    console.log(firstCut)
+
+    let newContents;
+    if (firstCut.type === "cut") {
+      console.log("FOUND CUT")
+      let secondCut = firstCut.data;
+      if(secondCut.length === 1 && secondCut[0].type === "cut") {
+        console.log("FOUND SECOND CUT")
+        newContents = secondCut[0].data
+        console.log("NewContents:", newContents)
+
+        // Remove the current cut from the data array
+        const index = step.data.indexOf(firstCut);
+        console.log("INDEX: ", index)
+        if (index > -1) {
+          console.log("SPLICING")
+          step.data.splice(index, 1);
+        }
+        // Add the contents of the second cut to the data array
+        step.data = step.data.concat(newContents)
+        // Update the state
+        currentStep+=1;
+        steps.push(step)
+        this.setState({ steps: steps, currentStep: currentStep, data:data });
+      }
+    }
   }
 
   // Performs a deep copy on a step, used to not change previous steps
@@ -192,8 +193,7 @@ class Canvas extends React.Component {
 
   // finds and returns the item with the specified ID in a given step
   findID(searchedStep, id) {
-    let data = this.state.data;
-    //console.log("findID")
+    console.log("findID")
 
     // Find the ID in an array
     function findIDArray(arr) {
@@ -202,20 +202,22 @@ class Canvas extends React.Component {
         if (typeof arr[a] === 'string') {
           // return the ID if found
           if (arr[a] == id) {
-            //console.log("FOUND THE SEARCHED ID: ", arr[a], id)
+            console.log("FOUND THE SEARCHED ID: ", arr[a], id)
             return id
           }
-          //console.log("FOUND STRING IN ARR", arr[a])
+          console.log("FOUND STRING IN ARR", arr[a])
         }
         // if a data map is found with the correct id, return the data map
         else if (arr[a].id === id) {
-          //console.log("arr[a].id: ", arr[a].id)
-          //console.log(arr[a])
+          console.log("arr[a].id: ", arr[a].id)
+          console.log(arr[a])
           return arr[a];
         // otherwise, call findID step on the datamap that has the incorrect ID
         } else {
-          //console.log("ELSE", arr[a])
-          return findIDStep(arr[a], id)
+          console.log("ELSE", arr[a])
+          let s = findIDStep(arr[a])
+          if (s)
+          return s
         }
       }
     }
@@ -225,17 +227,17 @@ class Canvas extends React.Component {
       for (let s in step) {
         // if an array is found, call findIDArray on each element
         if (step[s] instanceof Array) {
-          //console.log("FOUND ARRAY", step[s])
-          return findIDArray(step[s], id)
+          console.log("FOUND ARRAY", step[s])
+          return findIDArray(step[s])
         // if an id is found, check if it matches and return the data if so
         } else if (s === "id") {
-          //console.log("FOUND ID", id, step[s])
-          //console.log(step)
+          console.log("FOUND ID", id, step[s])
+          console.log(step)
           if (step[s] === id)
             return step
         // Otherwise if the element is something else (w, h, type, etc.), do nothing
         } else if (typeof s === 'string') {
-          //console.log("FOUND STRING", step[s])
+          console.log("FOUND STRING", step[s])
         }
       }
     }
