@@ -107,67 +107,87 @@ class Canvas extends React.Component {
           //this.cloneStep(step)
           
 
-          let { steps, currentStep } = this.state;
+          let { steps, currentStep, data } = this.state;
+          // only allow steps to be conducted at the end of a proof
           if (currentStep+1 != steps.length) {
             return
           }
-          let step = steps[currentStep]
+
+          let step = {};
+          this.copyStep(step, steps[currentStep]);
           
-          console.log(step)
-          let cutID = step.data[1].data[0].id
+          // Temporary assignment: the ID of the outside cut should be given and set to cutID
+          let cutID = step.data[1].id//.data[0].id
           console.log(cutID)
+          // use findID to find the cut with the given ID
           let firstCut = this.findID(step, cutID)
           console.log(firstCut)
-          step = firstCut
-          currentStep+=1;
-          steps.push(step)
-          this.setState({ steps: steps, currentStep: currentStep/*, data:data*/ });
 
-
-          /*
-          let { steps, currentStep } = this.state;
-          if (currentStep+1 != steps.length) {
-            return
-          }
-          let { premises, conclusion } = this.state.proof;
-          let step = steps[currentStep]
-          let i = 1
-          let firstCut = step.data[i]
           let newContents;
+
           if (firstCut.type === "cut") {
             console.log("FOUND CUT")
-            console.log(firstCut)
             let secondCut = firstCut.data;
             if(secondCut.length === 1 && secondCut[0].type === "cut") {
-              console.log("FOUND DOUBLE CUT")
-              console.log(secondCut)
-              newContents = secondCut[0]
-              console.log(newContents)
-
-              let { stepZero, data } = initXY(convertToArray(premises.join('')), 0, this.state.data);
-              console.log("stepZero")
-              console.log(stepZero)
-              console.log("step")
-              console.log(step)
-              stepZero.data[i] = newContents.data[0]
-              steps.push(stepZero);
-              currentStep+=1;
-              this.setState({ steps: steps, currentStep: currentStep, data:data });
+              console.log("FOUND SECOND CUT")
+              newContents = secondCut[0].data
+              console.log("NewContents:", newContents)
             }
           }
-          */
-          
+          // Remove the current cut from the data array
+          const index = step.data.indexOf(firstCut);
+          console.log("INDEX: ", index)
+          if (index > -1) {
+            console.log("SPLICING")
+            step.data.splice(index, 1);
+          }
+          // Add the contents of the second cut to the data array
+          step.data = step.data.concat(newContents)
+          //step.data[1].data = newContents
+          currentStep+=1;
+          steps.push(step)
+          this.setState({ steps: steps, currentStep: currentStep, data:data });
 
-          //console.log(premises)
-          //console.log(convertToArray(premises.join('')))
-          //console.log([[ ["P",["Q"]] , [["P"],"Q"] ]])
-          //console.log(initXY(convertToArray(premises.join(''))[0]), 0)
-          //let { stepZero, data } = initXY([ ["P",["Q"]] , [["P"],"Q"] ], 0);
-          //steps.push(stepZero);
-          //  this.setState({ steps: steps, currentStep: 1, data: data });
         }
       }
     };
+  }
+
+  // Performs a deep copy on a step, used to not change previous steps
+  // By allowing them to be copied without using a reference
+  copyStep(newStep, oldStep) {
+    function copyDataMap(oldData) {
+      let newData = {};
+      for (let d in oldData) {
+        // If an id or type if found, copy directly
+        if(typeof oldData[d] === 'string') {
+          newData[d] = oldData[d];
+        }
+        // Otherwise if an array is found, copy using helper function
+        else {
+          newData[d] = copyDataArray(oldData[d])
+        }
+      }
+      return newData;
+    }
+    function copyDataArray(oldData) {
+      let newData = [];
+      for (let d in oldData) {
+        // If an ID is found (variable), copy directly
+        if(typeof oldData[d] === 'string') {
+          newData.push(oldData[d])
+        }
+        // If a map was found (cut), copy using helper function
+        else {
+          newData.push(copyDataMap(oldData[d]))
+        }
+      }
+      return newData;
+    }
+    // Copy the data, width, and height of the original into the new step
+    newStep.data = copyDataArray(oldStep.data);
+    newStep.h = oldStep.h
+    newStep.w = oldStep.w
   }
 
   // finds and returns the item with the specified ID in a given step
