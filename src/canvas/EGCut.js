@@ -7,7 +7,24 @@ class EGCut extends React.Component {
     this.cut = React.createRef();
     this.BB = React.createRef();
     this.getBBoxData = this.getBBoxData.bind(this);
-    this.state = {};
+    this.handleClick = this.handleClick.bind(this);
+    this.state = { highlight: false };
+
+    this.eventListener = window.addEventListener('click', this.handleClick)
+  }
+
+  handleClick() {
+    if (this.state.highlight 
+      && this.props.enableHighlight 
+      && this.props.selectedCallback) 
+    {
+      this.props.selectedCallback(this.props.id);
+      this.setState({ highlight: false });
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleClick);
   }
 
   getBBoxData() {
@@ -41,6 +58,7 @@ class EGCut extends React.Component {
     if (childEl.length < 1) {
       childEl = <EGCut>{" "}</EGCut>
     }
+    let highlight = this.state.highlight && this.props.enableHighlight;
     return (
       <React.Fragment>
         <rect
@@ -52,10 +70,11 @@ class EGCut extends React.Component {
           fillOpacity="0.7" 
           strokeOpacity="1"
           stroke="black"
-          fill="white"
-          pointerEvents="none"
+          fill={highlight ? "#9AA899" : "white"}
+          onMouseEnter={() => this.setState({ highlight: true })}
+          onMouseLeave={() => this.setState({ highlight: false })}
           rx={config.cutCornerRadius.toString()} 
-          ry={config.cutCornerRadius.toString()} 
+          ry={config.cutCornerRadius.toString()}
         />
         <g ref={this.cut}>
           {this.props.children}

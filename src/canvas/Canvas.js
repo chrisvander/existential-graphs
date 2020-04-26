@@ -25,6 +25,7 @@ function initXY(step, level) {
   // in between two variables, so that we can evenly place 
   // them initially across the screen
   function initXYRecurse(step, level, gapSize) {
+    console.log(data)
     for (let s in step) {
       if (step[s] instanceof Array && step[s].length > 0) {
         let id = nanoid()
@@ -60,6 +61,8 @@ class Canvas extends React.Component {
     this.renderStep = this.renderStep.bind(this);
     this.changePos = this.changePos.bind(this);
     this.getSVGCoords = this.getSVGCoords.bind(this);
+    this.highlightCut = this.highlightCut.bind(this);
+    this.startSelection = this.startSelection.bind(this);
 
     let { premises, conclusion, steps, data } = this.props.proof;
     this.state = {
@@ -70,26 +73,166 @@ class Canvas extends React.Component {
       steps: steps || [],
       data: data || {},
       currentStep: 0,
-      moveListeners: []
-    };
-
-    this.functions = {
-      insert: () => {
-
+      moveListeners: [],
+      highlights: {
+        cut: 'none', // 'none', 'odd', 'even', 'all'
+        var: 'none'
       },
-      erase: () => {
+      cbFunction: null,
+      interaction: true,
+      functions: {
+        insert: (id) => {
+          console.log("INSERTION")
+        },
+        erase: (id) => {
+          console.log("ERASURE")
+        },
+        iterate: (id) => {
+          console.log("ITERATION")
+        },
+        dc: (id) => {
+          console.log("DOUBLE CUT")
 
-      },
-      iterate: () => {
-
-      },
-      dc: () => {
-        
+          let successful = this.doubleCut(id);
+          if (successful) 
+            this.setState({ 
+              highlights: {
+                cut: 'none', 
+                var: 'none'
+              },
+              interaction: true, 
+              cbFunction: null });
+        }
       }
     }
   }
 
-  addElement() {
+  startSelection(selectable, nameOfFunction) {
+    let { steps, currentStep } = this.state;
+    // only allow steps to be conducted at the end of a proof
+    if (currentStep+1 !== steps.length) {
+      return
+    }
+    this.setState({ highlights: selectable, interaction: false, cbFunction: this.state.functions[nameOfFunction] });
+  }
+
+  /* 
+  *  Performs a double cut given the ID of the outside cut.
+  *  Will only run if the current step is the last step.
+  *  Creates a deep copy of the current step, and replaces the cut with
+  *  the given ID with the contents of the second cut, only if they exist.
+  *  Then adds the edited copy of the current step to the end of the step array.
+  */
+  doubleCut(cutID) {
+    let { steps, currentStep, data } = this.state;
+    // Create a new step
+    let step = this.copyStep(steps[currentStep]);
+
+    // use findID to find the cut with the given ID
+    let firstCut = this.findID(step, cutID);
+    // If it is actually a cut and has another cut inside
+    if (firstCut && firstCut.type === "cut") {
+      let secondCut = firstCut.data;
+      if (secondCut && secondCut.length === 1 && secondCut[0].type === "cut") {
+        // Get the data inside the second cut
+        let newContents = secondCut[0].data;
+        // Remove the first cut from the data array
+        const index = step.data.indexOf(firstCut);
+        if (index > -1) {
+          step.data.splice(index, 1);
+        }
+        // Add the contents of the second cut to the data array
+        step.data = step.data.concat(newContents);
+        // Update the state
+        currentStep+=1;
+        steps.push(step);
+        this.setState({ steps: steps, currentStep: currentStep, data:data });
+      }
+      else return false;
+    }
+    else return false;
+    return true;
+  }
+
+  // Performs a deep copy of oldStep into newStep, used to not change previous steps
+  // By allowing them to be copied without using a reference
+  copyStep(oldStep) {
+    let newStep = {};
+    function copyDataMap(oldData) {
+      let newData = {};
+      for (let d in oldData) {
+        // If an id or type if found, copy directly
+        if(typeof oldData[d] === 'string') {
+          newData[d] = oldData[d];
+        }
+        // Otherwise if an array is found, copy using helper function
+        else {
+          newData[d] = copyDataArray(oldData[d]);
+        }
+      }
+      return newData;
+    }
+    function copyDataArray(oldData) {
+      let newData = [];
+      for (let d in oldData) {
+        // If an ID is found (variable), copy directly
+        if(typeof oldData[d] === 'string') {
+          newData.push(oldData[d]);
+        }
+        // If a map was found (cut), copy using helper function
+        else {
+          newData.push(copyDataMap(oldData[d]));
+        }
+      }
+      return newData;
+    }
+    // Copy the data, width, and height of the original into the new step
+    newStep.data = copyDataArray(oldStep.data);
+    newStep.h = oldStep.h;
+    newStep.w = oldStep.w;
+    return newStep;
+  }
+
+  // finds and returns the item with the specified ID in a given step
+  findID(searchedStep, id) {
+    // Find the ID in an array
+    function findIDArray(arr) {
+      for (let a in arr) {
+        // if a string, aka an ID
+        if (typeof arr[a] === 'string') {
+          // return the ID if found
+          if (arr[a] == id) {
+            return id;
+          }
+        }
+        // if a data map is found with the correct id, return the data map
+        else if (arr[a].id === id) {
+          return arr[a];
+        // otherwise, call findID step on the datamap that has the incorrect ID
+        } else {
+          let s = findIDMap(arr[a]);
+          if (s)
+            return s;
+        }
+      }
+    }
+    // Finds the ID in a data map representing a step
+    function findIDMap(step) {
+      for (let s in step) {
+        // if an array is found, call findIDArray on each element
+        if (step[s] instanceof Array) {
+          return findIDArray(step[s]);
+        // if an id is found, check if it matches and return the data if so
+        } else if (s === "id") {
+          if (step[s] === id)
+            return step;
+        }
+      }
+    }
+    return findIDMap(searchedStep);
+  }
+
+  selected(id) {
 
   }
 
@@ -97,6 +240,15 @@ class Canvas extends React.Component {
     let { data } = this.state;
     Object.assign(data[id], { x: x, y: y })
     this.setState(data)
+  }
+
+  highlightCut(level) {
+    if (this.state.highlights.cut === 'all') return true;
+    let odd = false;
+    if (level % 2 === 1) odd = true;
+    if (this.state.highlights.cut === 'odd' && odd) return true;
+    else if (this.state.highlights.cut === 'even' && !odd) return true;
+    return false;
   }
 
   renderStep(stepIndex) {
@@ -113,8 +265,13 @@ class Canvas extends React.Component {
         let jsx = [];
         for (let s in step) {
           if (step[s].type === "cut") {
+            let level = data[step[s].id].level;
             let groupElement = (
-              <EGCut level={data[step[s].id].level}>
+              <EGCut 
+                level={level} 
+                enableHighlight={this.highlightCut(level)}
+                id={step[s].id}
+                selectedCallback={this.state.cbFunction}>
                 {renderRecurse(step[s].data)}
               </EGCut>
             );
@@ -127,6 +284,7 @@ class Canvas extends React.Component {
                 y={el.y} 
                 id={step[s]} 
                 panzoom={this.panzoom}
+                interaction={this.state.interaction}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>
@@ -181,13 +339,17 @@ class Canvas extends React.Component {
   }
 
   render() {
-    console.log(this.state)
     let zoomWithWheel = () => {}
+    let { steps, currentStep } = this.state;
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel
     return (
       <div>
-        <Toolbox functions={this.functions}/>
+        <Toolbox 
+          hidden={currentStep+1 !== steps.length}
+          functions={this.state.functions}
+          setSelection={this.startSelection}
+        />
         <svg 
           ref={this.canvasContainer}
           className="canvas noselect" 
@@ -199,7 +361,7 @@ class Canvas extends React.Component {
         <StepMenu 
           currentStep={this.state.currentStep} 
           stepInfo={this.state.steps} 
-          setStep={s => this.setState({ currentStep: s })}
+          setStep={s => this.setState({ currentStep: s, interaction: s === this.state.steps.length - 1 })}
         />
       </div>
     );

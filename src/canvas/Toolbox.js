@@ -7,19 +7,23 @@ class Toolbox extends React.Component {
       functions: [
         {
           str: "Iterate/Deiterate",
-          func: this.props.functions.iterate()
+          func: 'iterate',
+          highlight: { 'cut': 'all' }
         },
         {
           str: "Double Cut",
-          func: this.props.functions.dc()
+          func: 'dc',
+          highlight: { 'cut': 'all' }
         },
         {
           str: "Insertion",
-          func: this.props.functions.insert()
+          func: 'insert',
+          highlight: { 'cut': 'odd', 'var': 'odd' }
         },
         {
           str: "Erasure",
-          func: this.props.functions.erase()
+          func: 'erase',
+          highlight: { 'cut': 'even', 'var': 'even' }
         }
       ]
     };
@@ -29,11 +33,12 @@ class Toolbox extends React.Component {
   }
 
   render() {
+    if (this.props.hidden) return <React.Fragment />;
     return (
       <div className="toolbox" ref={this.canvas}>
         <h3>Tools</h3>
         {this.state.functions.map(el => (
-          <div className="tool">{el.str}</div>
+          <div className="tool" onClick={() => this.props.setSelection(el.highlight, el.func)}>{el.str}</div>
         ))}
       </div>
     );
