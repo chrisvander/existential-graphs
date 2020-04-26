@@ -14,25 +14,8 @@ const nanoid = require('nanoid').nanoid;
 
 const TEXT_H = 22;
 
-function initXY(step, level, currData = {}) {
-  /*
-
-
-
-
-
-
-          FIX CURRDATA TO NOT EXIST ANYMORE
-
-
-
-
-
-
-
-
-  */
-  let data = currData
+function initXY(step, level) {
+  let data = {}
   let currentX = 0
   let currentY = 0
   let maxX = 0
@@ -122,7 +105,11 @@ class Canvas extends React.Component {
     }
     // Create a new step
     let step = this.copyStep(steps[currentStep]);
-    cutID = step.data[2].id
+
+    // Temporary, used for testing on premise "({P})({P}{Q}({R}))(((((({Q})){R}))))"
+    // Manually sets the cutID to equal the otuside cut of the third portion of the premise
+    // cutID = step.data[2].id
+
     // use findID to find the cut with the given ID
     let firstCut = this.findID(step, cutID);
     // If it is actually a cut and has another cut inside
@@ -202,14 +189,14 @@ class Canvas extends React.Component {
           return arr[a];
         // otherwise, call findID step on the datamap that has the incorrect ID
         } else {
-          let s = findIDStep(arr[a]);
+          let s = findIDMap(arr[a]);
           if (s)
             return s;
         }
       }
     }
-    // Finds the ID in a step, or a data map representing a step
-    function findIDStep(step) {
+    // Finds the ID in a data map representing a step
+    function findIDMap(step) {
       for (let s in step) {
         // if an array is found, call findIDArray on each element
         if (step[s] instanceof Array) {
@@ -221,35 +208,7 @@ class Canvas extends React.Component {
         }
       }
     }
-    return findIDStep(searchedStep);
-  }
-
-  cloneStep(oldStep) {
-    let i = 0
-    function cloneData(oldData) {
-      i++;
-      console.log("LEVEL", i)
-      for (let s in oldData) {
-        if (oldData[s] instanceof Array) {
-          console.log("ARRAY", oldData[s])
-        }
-        else if (typeof oldData[s] === 'string') {
-          console.log("STRING", oldData[s])
-          if (s === "id")
-            console.log("ID FOUND", s, oldData[s] )
-        }
-        else {
-          console.log(typeof oldData[s], s, oldData[s])
-          cloneData(oldData[s])
-        }
-      }
-    }
-    let newStep = {
-      data: cloneData(oldStep.data),
-      h: oldStep.h,
-      w: oldStep.w
-    }
-    console.log(newStep)
+    return findIDMap(searchedStep);
   }
 
   addElement() {
