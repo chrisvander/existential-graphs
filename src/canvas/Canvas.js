@@ -232,10 +232,6 @@ class Canvas extends React.Component {
     return findIDMap(searchedStep);
   }
 
-  selected(id) {
-
-  }
-
   changePos(id, x, y) {
     let { data } = this.state;
     Object.assign(data[id], { x: x, y: y })
