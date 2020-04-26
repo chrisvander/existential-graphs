@@ -113,7 +113,11 @@ class Canvas extends React.Component {
     if (currentStep+1 !== steps.length) {
       return
     }
-    this.setState({ highlights: selectable, interaction: false, cbFunction: this.state.functions[nameOfFunction] });
+    this.setState({ 
+      highlights: selectable, 
+      interaction: false, 
+      cbFunction: this.state.functions[nameOfFunction] 
+    });
   }
 
   /* 
@@ -201,7 +205,7 @@ class Canvas extends React.Component {
         // if a string, aka an ID
         if (typeof arr[a] === 'string') {
           // return the ID if found
-          if (arr[a] == id) {
+          if (arr[a] === id) {
             return id;
           }
         }
