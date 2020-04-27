@@ -135,7 +135,52 @@ class Canvas extends React.Component {
   *  Will only run if the current step is the last step.
   */
   doubleCutAdd(ID) {
-    
+    let { steps, currentStep, data } = this.state;
+    // create a new step
+    let step = this.copyStep(steps[currentStep]);
+    // use findID to find the data represented by the id
+    // this is the data that will be inside the two new cuts
+    let inside = this.findID(step, ID);
+    if (!inside) {
+      return false;
+    }
+    // create a new cut with another one inside it
+    let cut1_id = nanoid();
+    let cut2_id = nanoid();
+    let cut2 = {
+      data: [inside],
+      id: cut2_id,
+      type: "cut"
+    }
+    let cut1 = {
+      data: [cut2],
+      id: cut1_id,
+      type: "cut"
+    }
+    // Set the levels of the two cuts
+    let level = data[ID].level
+    data[cut2_id] = { type: "cut", level: level };
+    data[cut1_id] = { type: "cut", level: level + 1 };
+    // increase the level of the inside cut along with all cuts inside of it by 2
+    this.changeCutLevel(step, ID, 2)
+
+    // get the parent of the selection
+    let parent = this.findParent(step, ID)
+    if (!parent) {
+      return false;
+    }
+    // Add the contents of the new cuts to the data array
+    // after removing the original contents
+    const index = parent.data.indexOf(inside);
+    if (index > -1) {
+      parent.data.splice(index, 1);
+    }
+    parent.data = parent.data.concat(cut1);
+    // Change the state data accordingly
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
   }
 
   /* Removes a double cut given the ID of the outside cut.
@@ -157,22 +202,68 @@ class Canvas extends React.Component {
       if (secondCut && secondCut.length === 1 && secondCut[0].type === "cut") {
         // Get the data inside the second cut
         let newContents = secondCut[0].data;
+        // Get the parent of the original cut being removed
+        let parent = this.findParent(step, cutID)
+        if (!parent) {
+          return false;
+        }
         // Remove the first cut from the data array
-        const index = step.data.indexOf(firstCut);
+        const index = parent.data.indexOf(firstCut);
         if (index > -1) {
-          step.data.splice(index, 1);
+          parent.data.splice(index, 1);
         }
         // Add the contents of the second cut to the data array
-        step.data = step.data.concat(newContents);
+        parent.data = parent.data.concat(newContents);
         // Update the state
         currentStep+=1;
         steps.push(step);
         this.setState({ steps: steps, currentStep: currentStep, data:data });
+        return true;
       }
       else return false;
     }
     else return false;
     return true;
+  }
+
+  /* Given a step and the ID of a cut, will iterate through all cuts within
+   * that cut and change their level by a specified amount.
+  */
+  changeCutLevel(step, id, change) {
+    let { data } = this.state
+    // when true, the levels should change in the functions below
+    let idFound = false
+    // Changes the 
+    function changeLevelMap(map) {
+      // get the id for the current map
+      let mapID;
+      if (map.id) {
+        mapID = map.id
+        // if it matches the id being searched, update the boolean
+        if (mapID === id) {
+          idFound = true;
+        }
+      }
+      // If the ID has been found, update the level of the current cut
+      if (idFound) {
+        data[mapID].level += change;
+      }
+      // call the function of the data array if it exists
+      if (map.data){
+        changeLevelArray(map.data);
+      }
+    }
+    function changeLevelArray(arr) {
+      for (let a in arr) {
+        // If a non-string is found (a cut)
+        if (typeof arr[a] !== 'string') {
+          // Change the level of the cut
+          changeLevelMap(arr[a])
+        }
+      }
+    }
+    changeLevelArray(step.data)
+    this.setState({ data: data })
   }
 
   // Performs a deep copy of oldStep into newStep, used to not change previous steps
@@ -212,6 +303,48 @@ class Canvas extends React.Component {
     newStep.h = oldStep.h;
     newStep.w = oldStep.w;
     return newStep;
+  }
+
+  /* Finds and returns the item that is the parent of the item
+   * with the specified ID, given the step to search as well.
+  */
+  findParent(searchedStep, id) {
+    // holds the parent of the id
+    let parent = searchedStep
+    // Searches an array for the ID, returns true if it is found
+    function findInArray(arr) {
+      for (let a in arr) {
+        // If an ID is found, compare it
+        if (typeof arr[a] === 'string') {
+          if (arr[a] === id) {
+            return true;
+          }
+        }
+        // Otherwise if a datamap is found, check the ID
+        else {
+          // If ID matches, return true
+          if (arr[a].id && arr[a].id === id) {
+            return true;
+          }
+          // Otherwise, search the datamap
+          else {
+            findInMap(arr[a])
+          }
+        }
+      }
+      return false;
+    }
+    function findInMap(map) {
+      // if the map contains data, search the data
+      if (map.data) {
+        // if found, set parent to this map
+        if(findInArray(map.data)) {
+          parent = map;
+        }
+      }
+    }
+    findInArray(searchedStep.data);
+    return parent;
   }
 
   // finds and returns the item with the specified ID in a given step
