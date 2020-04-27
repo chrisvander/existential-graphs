@@ -89,6 +89,15 @@ class Canvas extends React.Component {
         },
         iterate: (id) => {
           console.log("ITERATION")
+          let successful = this.iteration(id, id);
+          if (successful) 
+            this.setState({ 
+              highlights: {
+                cut: 'none', 
+                var: 'none'
+              },
+              interaction: true, 
+              cbFunction: null });
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
@@ -119,6 +128,7 @@ class Canvas extends React.Component {
   }
 
   startSelection(selectable, nameOfFunction) {
+    console.log("startSelection", selectable, nameOfFunction);
     let { steps, currentStep } = this.state;
     // only allow steps to be conducted at the end of a proof
     if (currentStep+1 !== steps.length) {
@@ -129,6 +139,33 @@ class Canvas extends React.Component {
       interaction: false, 
       cbFunction: this.state.functions[nameOfFunction] 
     });
+  }
+
+  /* Given a copyID and insertID, the iteration function creates a new step,
+   * and adds a copy of the data represented by copyID at the location of insertID
+   * only if the location of insertID is a child of copyID
+   */
+  async iteration(copyID, insertID) {
+    console.log("iteration(id, id)", copyID, insertID)
+    let { steps, currentStep, data } = this.state;
+    let step = this.copyStep(steps[currentStep]);
+    // use findID to find the data represented by the two IDs
+    let copy = this.copyContents(this.findID(step, copyID));
+    if (!copy) {
+      console.log("Copy ID could not be found in Iterate");
+      return false;
+    }
+    let insert = this.findID(step, insertID);
+    if (!insert) {
+      console.log("Insert ID could not be found in Iterate");
+      return false;
+    }
+    //insert.data = insert.data.concat(copy);
+    console.log(copy, insert);
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
   }
 
   /* Adds a double cut given the ID of the data that will be inside the cut.
@@ -224,6 +261,55 @@ class Canvas extends React.Component {
     }
     else return false;
     return true;
+  }
+
+  /* Given a step or a cut, will copy the contents inside with new IDs
+   * and return the new data. This permits inserting new data into the graph.
+   */
+  copyContents(step) {
+    let { data } = this.state;
+    // Copies the data of a map and returns it
+    // Also updates the state.data map according to new generated IDs
+    function copyDataMap(map) {
+      let newMap = {};
+      let id = nanoid();
+      for (let m in map) {
+        // If an ID is found, generate a new one
+        if (m === 'id') {
+          console.log("ID FOUND", map[m])
+          newMap[m] = nanoid();
+        }
+        // Otherwise, if not a data array, copy the contents
+        else if (m !== 'data'){
+          newMap[m] = map[m]
+        }
+        // If a data array, copy using helper function
+        else {
+          newMap[m] = copyDataArray(map[m])
+        }
+      }
+      return newMap;
+    }
+    // Copies the data of an array and returns it
+    // Also updates state.data according to new generated IDs
+    function copyDataArray(arr) {
+      let newArr = [];
+      for (let a in arr) {
+        // If an ID found, generate a new one
+        if (typeof arr[a] === 'string') {
+          let id = nanoid();
+          newArr.push(id);
+        }
+        // otherwise, call the other helper function to copy contents
+        else {
+          newArr.push(copyDataMap(arr[a]))
+        }
+      }
+      return newArr;
+    }
+    let newStep = copyDataMap(step);
+    console.log(newStep, step);
+    return newStep;
   }
 
   /* Given a step and the ID of a cut, will iterate through all cuts within
@@ -402,6 +488,7 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
+    console.log(this.state)
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
