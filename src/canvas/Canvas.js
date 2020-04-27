@@ -148,13 +148,11 @@ class Canvas extends React.Component {
     let erased = this.findID(step, id);
     console.log(erased)
     if (!erased) {
-      console.log("Selection ID not found for Erasure.")
       return false;
     }
     // Get the parent of the erased section
     let parent = this.findParent(step, id)
     if (!parent) {
-      console.log("Parent of ID not found for Erasure.")
       return false;
     }
     // Remove the erased data from the parent's data array
@@ -162,7 +160,6 @@ class Canvas extends React.Component {
     if (index > -1)
       parent.data.splice(index, 1);
     else {
-      console.log("Selection not found under its parent.")
       return false;
     }
     // Update the state
