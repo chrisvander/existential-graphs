@@ -93,6 +93,7 @@ class Canvas extends React.Component {
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
           let successful = this.doubleCutRemove(id);
+          console.log(successful);
           if (successful) 
             this.setState({ 
               highlights: {
@@ -135,7 +136,15 @@ class Canvas extends React.Component {
   *  Will only run if the current step is the last step.
   */
   doubleCutAdd(ID) {
-    
+    let { steps, currentStep, data } = this.state;
+    // create a new step
+    let step = this.copyStep(steps[currentStep]);
+    // use findID to find the data represented by the id
+    // this is the data that will be inside the two new cuts
+    let inside = this.findID(step, ID);
+    console.log(inside);
+    // create a new cut
+    //let cut = 
   }
 
   /* Removes a double cut given the ID of the outside cut.
@@ -157,6 +166,7 @@ class Canvas extends React.Component {
       if (secondCut && secondCut.length === 1 && secondCut[0].type === "cut") {
         // Get the data inside the second cut
         let newContents = secondCut[0].data;
+        console.log(firstCut)
         // Remove the first cut from the data array
         const index = step.data.indexOf(firstCut);
         if (index > -1) {
@@ -168,6 +178,7 @@ class Canvas extends React.Component {
         currentStep+=1;
         steps.push(step);
         this.setState({ steps: steps, currentStep: currentStep, data:data });
+        return true;
       }
       else return false;
     }
