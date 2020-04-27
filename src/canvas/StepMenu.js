@@ -1,9 +1,6 @@
 import React from 'react';
 import { ReactSVG } from 'react-svg';
 
-// TODO: 
-//   Call this.props.setStep(step) to change
-
 class StepMenu extends React.Component {
   handleClick(event, step) {
     event.preventDefault();
