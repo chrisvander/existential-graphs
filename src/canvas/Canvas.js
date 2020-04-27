@@ -86,6 +86,15 @@ class Canvas extends React.Component {
         },
         erase: (id) => {
           console.log("ERASURE")
+          let successful = this.erasure(id);
+          if (successful)
+            this.setState({ 
+              highlights: {
+                cut: 'none', 
+                var: 'none'
+              },
+              interaction: true, 
+              cbFunction: null });
         },
         iterate: (id) => {
           console.log("ITERATION")
@@ -129,6 +138,38 @@ class Canvas extends React.Component {
       interaction: false, 
       cbFunction: this.state.functions[nameOfFunction] 
     });
+  }
+
+  erasure(id) {
+    let { steps, currentStep, data } = this.state;
+    // Create a new step
+    let step = this.copyStep(steps[currentStep]);
+    // Find the data that will be erased
+    let erased = this.findID(step, id);
+    console.log(erased)
+    if (!erased) {
+      console.log("Selection ID not found for Erasure.")
+      return false;
+    }
+    // Get the parent of the erased section
+    let parent = this.findParent(step, id)
+    if (!parent) {
+      console.log("Parent of ID not found for Erasure.")
+      return false;
+    }
+    // Remove the erased data from the parent's data array
+    const index = parent.data.indexOf(erased);
+    if (index > -1)
+      parent.data.splice(index, 1);
+    else {
+      console.log("Selection not found under its parent.")
+      return false;
+    }
+    // Update the state
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
   }
 
   /* Adds a double cut given the ID of the data that will be inside the cut.
