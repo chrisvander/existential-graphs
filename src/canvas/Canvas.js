@@ -223,7 +223,6 @@ class Canvas extends React.Component {
       else return false;
     }
     else return false;
-    return true;
   }
 
   /* Given a step and the ID of a cut, will iterate through all cuts within
