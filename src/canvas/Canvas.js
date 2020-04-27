@@ -169,7 +169,6 @@ class Canvas extends React.Component {
     if (!parent) {
       return false;
     }
-    console.log("PARENT: ", parent)
     // Add the contents of the new cuts to the data array
     // after removing the original contents
     const index = parent.data.indexOf(inside);
@@ -203,13 +202,18 @@ class Canvas extends React.Component {
       if (secondCut && secondCut.length === 1 && secondCut[0].type === "cut") {
         // Get the data inside the second cut
         let newContents = secondCut[0].data;
+        // Get the parent of the original cut being removed
+        let parent = this.findParent(step, cutID)
+        if (!parent) {
+          return false;
+        }
         // Remove the first cut from the data array
-        const index = step.data.indexOf(firstCut);
+        const index = parent.data.indexOf(firstCut);
         if (index > -1) {
-          step.data.splice(index, 1);
+          parent.data.splice(index, 1);
         }
         // Add the contents of the second cut to the data array
-        step.data = step.data.concat(newContents);
+        parent.data = parent.data.concat(newContents);
         // Update the state
         currentStep+=1;
         steps.push(step);
@@ -313,7 +317,6 @@ class Canvas extends React.Component {
         // If an ID is found, compare it
         if (typeof arr[a] === 'string') {
           if (arr[a] === id) {
-            console.log("FOUND IDvar", arr[a]);
             return true;
           }
         }
@@ -321,7 +324,6 @@ class Canvas extends React.Component {
         else {
           // If ID matches, return true
           if (arr[a].id && arr[a].id === id) {
-            console.log("FOUND IDcut", arr[a].id);
             return true;
           }
           // Otherwise, search the datamap
@@ -337,7 +339,6 @@ class Canvas extends React.Component {
       if (map.data) {
         // if found, set parent to this map
         if(findInArray(map.data)) {
-          console.log("FOUND PARENT", map);
           parent = map;
         }
       }
@@ -401,7 +402,6 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
-    console.log(this.state)
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
