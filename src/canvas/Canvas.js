@@ -93,7 +93,6 @@ class Canvas extends React.Component {
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
           let successful = this.doubleCutRemove(id);
-          console.log(successful);
           if (successful) 
             this.setState({ 
               highlights: {
@@ -142,9 +141,38 @@ class Canvas extends React.Component {
     // use findID to find the data represented by the id
     // this is the data that will be inside the two new cuts
     let inside = this.findID(step, ID);
-    console.log(inside);
-    // create a new cut
-    //let cut = 
+    // create a new cut with another one inside it
+    let cut1_id = nanoid();
+    let cut2_id = nanoid();
+    let cut2 = {
+      data: [inside],
+      id: cut2_id,
+      type: "cut"
+    }
+    let cut1 = {
+      data: [cut2],
+      id: cut1_id,
+      type: "cut"
+    }
+    // Set the levels of the two cuts
+    let level = data[ID].level
+    data[cut2_id] = { type: "cut", level: level };
+    data[cut1_id] = { type: "cut", level: level + 1 };
+    // increase the level of the inside cut along with all cuts inside of it by 2
+    this.changeCutLevel(step, ID, 2)
+
+    // Add the contents of the new cuts to the data array
+    // after removing the original contents
+    const index = step.data.indexOf(inside);
+    if (index > -1) {
+      step.data.splice(index, 1);
+    }
+    step.data = step.data.concat(cut1);
+    // Change the state data accordingly
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
   }
 
   /* Removes a double cut given the ID of the outside cut.
@@ -166,7 +194,6 @@ class Canvas extends React.Component {
       if (secondCut && secondCut.length === 1 && secondCut[0].type === "cut") {
         // Get the data inside the second cut
         let newContents = secondCut[0].data;
-        console.log(firstCut)
         // Remove the first cut from the data array
         const index = step.data.indexOf(firstCut);
         if (index > -1) {
@@ -184,6 +211,20 @@ class Canvas extends React.Component {
     }
     else return false;
     return true;
+  }
+
+  // Given a step and the ID of a cut, will iterate through all cuts within
+  /* that cut and change their level by a specified amount.
+  /* Change defaults at 2 for the DoubleCut addition
+  */
+  changeCutLevel(step, ID, change = 2) {
+    console.log("here to change cut levels")
+    function changeLevelMap(map) {
+
+    }
+    function changeLevelArray(arr) {
+
+    }
   }
 
   // Performs a deep copy of oldStep into newStep, used to not change previous steps
@@ -280,6 +321,7 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
+    console.log(this.state)
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
