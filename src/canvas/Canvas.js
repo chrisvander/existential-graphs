@@ -217,14 +217,46 @@ class Canvas extends React.Component {
   /* that cut and change their level by a specified amount.
   /* Change defaults at 2 for the DoubleCut addition
   */
-  changeCutLevel(step, ID, change = 2) {
+  changeCutLevel(step, id, change = 2) {
+    let { data } = this.state
     console.log("here to change cut levels")
+    // when true, the levels should change in the functions below
+    let idFound = false
+    // Changes the 
     function changeLevelMap(map) {
-
+      // get the id for the current map
+      let mapID;
+      if (map.id) {
+        mapID = map.id
+        // if it matches the id being searched, update the boolean
+        if (mapID === id) {
+          console.log("ID FOUND IN ChangeLevel", mapID, id);
+          idFound = true;
+        }
+      }
+      // If the ID has been found, update the level of the current cut
+      if (idFound) {
+        console.log("LOGDATA",data[mapID]);
+        data[mapID].level += change;
+      }
+      // call the function of the data array if it exists
+      if (map.data){
+        console.log("C-Array")
+        changeLevelArray(map.data);
+      }
     }
     function changeLevelArray(arr) {
-
+      for (let a in arr) {
+        // If a non-string is found (a cut)
+        if (typeof arr[a] !== 'string') {
+          // Change the level of the cut
+          console.log("C-Map")
+          changeLevelMap(arr[a])
+        }
+      }
     }
+    changeLevelArray(step.data)
+    this.setState({ data: data })
   }
 
   // Performs a deep copy of oldStep into newStep, used to not change previous steps
