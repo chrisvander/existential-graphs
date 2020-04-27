@@ -141,6 +141,9 @@ class Canvas extends React.Component {
     // use findID to find the data represented by the id
     // this is the data that will be inside the two new cuts
     let inside = this.findID(step, ID);
+    if (!inside) {
+      return false;
+    }
     // create a new cut with another one inside it
     let cut1_id = nanoid();
     let cut2_id = nanoid();
@@ -161,13 +164,19 @@ class Canvas extends React.Component {
     // increase the level of the inside cut along with all cuts inside of it by 2
     this.changeCutLevel(step, ID, 2)
 
+    // get the parent of the selection
+    let parent = this.findParent(step, ID)
+    if (!parent) {
+      return false;
+    }
+    console.log("PARENT: ", parent)
     // Add the contents of the new cuts to the data array
     // after removing the original contents
-    const index = step.data.indexOf(inside);
+    const index = parent.data.indexOf(inside);
     if (index > -1) {
-      step.data.splice(index, 1);
+      parent.data.splice(index, 1);
     }
-    step.data = step.data.concat(cut1);
+    parent.data = parent.data.concat(cut1);
     // Change the state data accordingly
     currentStep+=1;
     steps.push(step);
@@ -213,13 +222,11 @@ class Canvas extends React.Component {
     return true;
   }
 
-  // Given a step and the ID of a cut, will iterate through all cuts within
-  /* that cut and change their level by a specified amount.
-  /* Change defaults at 2 for the DoubleCut addition
+  /* Given a step and the ID of a cut, will iterate through all cuts within
+   * that cut and change their level by a specified amount.
   */
-  changeCutLevel(step, id, change = 2) {
+  changeCutLevel(step, id, change) {
     let { data } = this.state
-    console.log("here to change cut levels")
     // when true, the levels should change in the functions below
     let idFound = false
     // Changes the 
@@ -230,18 +237,15 @@ class Canvas extends React.Component {
         mapID = map.id
         // if it matches the id being searched, update the boolean
         if (mapID === id) {
-          console.log("ID FOUND IN ChangeLevel", mapID, id);
           idFound = true;
         }
       }
       // If the ID has been found, update the level of the current cut
       if (idFound) {
-        console.log("LOGDATA",data[mapID]);
         data[mapID].level += change;
       }
       // call the function of the data array if it exists
       if (map.data){
-        console.log("C-Array")
         changeLevelArray(map.data);
       }
     }
@@ -250,7 +254,6 @@ class Canvas extends React.Component {
         // If a non-string is found (a cut)
         if (typeof arr[a] !== 'string') {
           // Change the level of the cut
-          console.log("C-Map")
           changeLevelMap(arr[a])
         }
       }
@@ -296,6 +299,51 @@ class Canvas extends React.Component {
     newStep.h = oldStep.h;
     newStep.w = oldStep.w;
     return newStep;
+  }
+
+  /* Finds and returns the item that is the parent of the item
+   * with the specified ID, given the step to search as well.
+  */
+  findParent(searchedStep, id) {
+    // holds the parent of the id
+    let parent = searchedStep
+    // Searches an array for the ID, returns true if it is found
+    function findInArray(arr) {
+      for (let a in arr) {
+        // If an ID is found, compare it
+        if (typeof arr[a] === 'string') {
+          if (arr[a] === id) {
+            console.log("FOUND IDvar", arr[a]);
+            return true;
+          }
+        }
+        // Otherwise if a datamap is found, check the ID
+        else {
+          // If ID matches, return true
+          if (arr[a].id && arr[a].id === id) {
+            console.log("FOUND IDcut", arr[a].id);
+            return true;
+          }
+          // Otherwise, search the datamap
+          else {
+            findInMap(arr[a])
+          }
+        }
+      }
+      return false;
+    }
+    function findInMap(map) {
+      // if the map contains data, search the data
+      if (map.data) {
+        // if found, set parent to this map
+        if(findInArray(map.data)) {
+          console.log("FOUND PARENT", map);
+          parent = map;
+        }
+      }
+    }
+    findInArray(searchedStep.data);
+    return parent;
   }
 
   // finds and returns the item with the specified ID in a given step
