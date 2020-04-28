@@ -61,7 +61,7 @@ class IntroWindow extends React.Component {
             <div className="toolbar">
               <button className="back" onClick={() => this.setState({ createShown: false })}>
                 <span >
-                  <ReactSVG className="svg" src="/assets/back-caret.svg" />
+                  <ReactSVG className="svg" src={process.env.PUBLIC_URL + "/assets/back-caret.svg"} />
                 </span>
                 Back 
               </button>
