@@ -8,7 +8,7 @@ class Toolbox extends React.Component {
         {
           str: "Iterate/Deiterate",
           func: 'iterate',
-          highlight: { 'cut': 'all' }
+          highlight: { 'cut': 'all', 'var': 'all' }
         },
         {
           str: "Remove Double Cut",
