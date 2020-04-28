@@ -91,15 +91,7 @@ class Canvas extends React.Component {
         },
         iterate: (id) => {
           console.log("ITERATION")
-          let successful = this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
