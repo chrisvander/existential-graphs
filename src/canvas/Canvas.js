@@ -118,14 +118,14 @@ class Canvas extends React.Component {
       interaction: false, 
       cbFunction: (id) => {
         let successful = this.state.functions[nameOfFunction](id); 
-        if (successful) 
-          this.setState({ 
-            highlights: {
-              cut: 'none', 
-              var: 'none'
-            },
-            interaction: true, 
-            cbFunction: null });
+        // if (successful) 
+        this.setState({ 
+          highlights: {
+            cut: 'none', 
+            var: 'none'
+          },
+          interaction: true, 
+          cbFunction: null });
       }
     });
   }
