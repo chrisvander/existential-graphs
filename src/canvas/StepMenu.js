@@ -2,32 +2,40 @@ import React from 'react';
 import { ReactSVG } from 'react-svg';
 
 class StepMenu extends React.Component {
-  handleClick(event, step) {
+  handleClick(event, step, disabled) {
     event.preventDefault();
-    // Must update color before updating props to allow component to
-    // render with the proper current color rather than the state before
-    this.props.setStep(step);
+    if (!disabled) {
+      // Must update color before updating props to allow component to
+      // render with the proper current color rather than the state before
+      this.props.setStep(step);
+    }
+  }
+
+  getColor(disabled) {
+    return disabled ? "rgb(136, 136, 136)" : "rgb(68, 68, 68)";
   }
 
   render() {
     let { hide, currentStep, stepInfo } = this.props;
     if (hide) return (<React.Fragment />);
+    let backEnabled = currentStep === (stepInfo.length - 1);
+    let forwardEnabled = currentStep === 0;
     return (
       <React.Fragment>
         <div className="step-menu">
-        <div style={{ color: currentStep === 0 ? "rgb(136, 136, 136)" : "rgb(68, 68, 68)"}}>
-          <div onClick={(event) => this.handleClick(event, 0)}>
+        <div style={{ color: this.getColor(forwardEnabled)}}>
+          <div onClick={(event) => this.handleClick(event, 0, forwardEnabled)}>
             <ReactSVG src="/assets/step-first.svg"/>
           </div>
-          <div onClick={(event) => this.handleClick(event, currentStep - 1)}>
+          <div onClick={(event) => this.handleClick(event, currentStep - 1, forwardEnabled)}>
             <ReactSVG src="/assets/step-prev.svg" />
           </div>
         </div>
-        <div style={{ color: currentStep === (stepInfo.length - 1) ? "rgb(136, 136, 136)" : "rgb(68, 68, 68)" }}>
-          <div onClick={(event) => this.handleClick(event, currentStep + 1)}>
+        <div style={{ color: this.getColor(backEnabled)  }}>
+          <div onClick={(event) => this.handleClick(event, currentStep + 1, backEnabled)}>
             <ReactSVG src="/assets/step-next.svg" />
           </div>
-          <div onClick={(event) => this.handleClick(event, stepInfo.length - 1)}>
+          <div onClick={(event) => this.handleClick(event, stepInfo.length - 1, backEnabled)}>
             <ReactSVG src="/assets/step-last.svg" />
           </div>
         </div>

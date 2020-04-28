@@ -7,6 +7,7 @@ import EGCut from './EGCut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
 import config from './config';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 const nanoid = require('nanoid').nanoid;
 
 // some defaults: 
@@ -86,15 +87,7 @@ class Canvas extends React.Component {
         },
         erase: (id) => {
           console.log("ERASURE")
-          let successful = this.erasure(id);
-          if (successful)
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.erasure(id);
         },
         iterate: (id) => {
           console.log("ITERATION")
@@ -110,27 +103,12 @@ class Canvas extends React.Component {
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
-          let successful = this.doubleCutRemove(id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.doubleCutRemove(id);
         },
         dcAdd: (id) => {
           console.log("DOUBLE CUT Add")
-          let successful = this.doubleCutAdd(id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.doubleCutAdd(id);
+          
         }
       }
     }
@@ -146,7 +124,17 @@ class Canvas extends React.Component {
     this.setState({ 
       highlights: selectable, 
       interaction: false, 
-      cbFunction: this.state.functions[nameOfFunction] 
+      cbFunction: (id) => {
+        let successful = this.state.functions[nameOfFunction](id); 
+        if (successful) 
+          this.setState({ 
+            highlights: {
+              cut: 'none', 
+              var: 'none'
+            },
+            interaction: true, 
+            cbFunction: null });
+      }
     });
   }
 
@@ -561,6 +549,15 @@ class Canvas extends React.Component {
     return false;
   }
 
+  highlightVar(level) {
+    if (this.state.highlights.var === 'all') return true;
+    let odd = false;
+    if (level % 2 === 1) odd = true;
+    if (this.state.highlights.var === 'odd' && odd) return true;
+    else if (this.state.highlights.var === 'even' && !odd) return true;
+    return false;
+  }
+
   renderStep(stepIndex) {
     console.log(this.state)
     let { data } = this.state;
@@ -588,14 +585,17 @@ class Canvas extends React.Component {
             );
             jsx.push(groupElement);
           } else {
-            let el = this.state.data[step[s]]
+            let el = this.state.data[step[s]];
+            let level = data[step[s]].level;
             jsx.unshift(
               <EGVariable 
                 x={el.x} 
                 y={el.y} 
                 id={step[s]} 
+                enableHighlight={this.highlightVar(level)}
+                selectedCallback={this.state.cbFunction}
                 panzoom={this.panzoom}
-                interaction={this.state.interaction}
+                interaction={this.state.interaction || this.highlightVar(level)}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>
