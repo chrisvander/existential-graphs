@@ -145,7 +145,7 @@ class Canvas extends React.Component {
    * and adds a copy of the data represented by copyID at the location of insertID
    * only if the location of insertID is a child of copyID
    */
-  async iteration(copyID, insertID) {
+  iteration(copyID, insertID) {
     console.log("iteration(id, id)", copyID, insertID)
     let { steps, currentStep, data } = this.state;
     let step = this.copyStep(steps[currentStep]);
@@ -161,7 +161,8 @@ class Canvas extends React.Component {
       return false;
     }
     insert.data = insert.data.concat(copy);
-    console.log(copy, insert);
+    // Change the levels of the copy data
+    this.changeCutLevel(step, copy.id, data[insert.id].level + 1)
     currentStep+=1;
     steps.push(step);
     this.setState({ steps: steps, currentStep: currentStep, data:data });
@@ -265,23 +266,23 @@ class Canvas extends React.Component {
 
   /* Given a step or a cut, will copy the contents inside with new IDs
    * and return the new data. This permits inserting new data into the graph.
+   * Levels for cuts will start at 0 and increase accordingly
    */
   copyContents(step) {
     let { data } = this.state;
     // Copies the data of a map and returns it
     // Also updates the state.data map according to new generated IDs
-    function copyDataMap(map) {
+    function copyDataMap(map, level) {
       let newMap = {};
       for (let m in map) {
         // If an ID is found, generate a new one
         if (m === 'id') {
-          console.log("ID FOUND", map[m])
           let id = nanoid();
           newMap[m] = id;
           // Add the new data to state.data via a deep copy
           data[id] = {
             type: "cut",
-            level: data[map[m]].level
+            level: level
           }
         }
         // Otherwise, if not a data array, copy the contents
@@ -290,14 +291,14 @@ class Canvas extends React.Component {
         }
         // If a data array, copy using helper function
         else {
-          newMap[m] = copyDataArray(map[m])
+          newMap[m] = copyDataArray(map[m], level+1)
         }
       }
       return newMap;
     }
     // Copies the data of an array and returns it
     // Also updates state.data according to new generated IDs
-    function copyDataArray(arr) {
+    function copyDataArray(arr, level) {
       let newArr = [];
       for (let a in arr) {
         // If an ID found, generate a new one
@@ -314,13 +315,12 @@ class Canvas extends React.Component {
         }
         // otherwise, call the other helper function to copy contents
         else {
-          newArr.push(copyDataMap(arr[a]))
+          newArr.push(copyDataMap(arr[a], level))
         }
       }
       return newArr;
     }
-    let newStep = copyDataMap(step);
-    console.log(newStep, step);
+    let newStep = copyDataMap(step, 0);
     this.setState({ data: data })
     return newStep;
   }
