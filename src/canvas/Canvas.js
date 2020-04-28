@@ -154,8 +154,12 @@ class Canvas extends React.Component {
       return false;
     }
     insert.data = insert.data.concat(copy);
+    let newCopyID = copy;
+    if (typeof copy !== 'string')
+      newCopyID =  copy.id
     // Change the levels of the copy data
-    this.changeCutLevel(step, copy.id, data[insert.id].level + 1)
+    this.setState( { data: data });
+    this.changeCutLevel(step, newCopyID, data[insert.id].level + 1)
     // Update the state
     currentStep+=1;
     steps.push(step);
@@ -313,6 +317,19 @@ class Canvas extends React.Component {
     // Copies the data of a map and returns it
     // Also updates the state.data map according to new generated IDs
     function copyDataMap(map, level) {
+      // If a variable is passed it, add it to the data and return the new ID
+      if (typeof map === 'string') {
+        let id = nanoid();
+        console.log("TEST")
+        data[id] = {
+            type: "var",
+            var: data[map].var,
+            x: data[map].x,
+            y: data[map].y,
+            level: data[map].level
+        }
+        return id;
+      }
       let newMap = {};
       for (let m in map) {
         // If an ID is found, generate a new one
@@ -351,6 +368,7 @@ class Canvas extends React.Component {
             var: data[arr[a]].var,
             x: data[arr[a]].x,
             y: data[arr[a]].y,
+            level: data[arr[a]].level
           }
         }
         // otherwise, call the other helper function to copy contents
@@ -371,7 +389,7 @@ class Canvas extends React.Component {
   changeCutLevel(step, id, change) {
     let { data } = this.state
     // If the ID is for a variable, only increase it's level
-    if (data[id].type === "var") {
+    if (data[id] && data[id].type === "var") {
       data[id].level += change;
       return
     }
@@ -520,6 +538,12 @@ class Canvas extends React.Component {
     }
     // Finds the ID in a data map representing a step
     function findIDMap(step) {
+      if (typeof step === 'string') {
+        if (step === id)
+          return step;
+        else
+          return
+      }
       for (let s in step) {
         // if an array is found, call findIDArray on each element
         if (step[s] instanceof Array) {
