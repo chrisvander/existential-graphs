@@ -37,11 +37,26 @@ class EGCut extends React.Component {
 
   componentDidMount() { 
     this.interval = setInterval(() => this.setState(this.getBBoxData()), 1);
+    setTimeout(() => {
+        clearInterval(this.interval);
+        this.interval = null;
+    }, 100);
+  }
+
+  componentDidUpdate() {
+    if (!this.interval) {
+      this.interval = setInterval(() => this.setState(this.getBBoxData()), 1);
+      setTimeout(() => {
+        clearInterval(this.interval);
+        this.interval = null;
+      }, 100);
+    }
   }
 
   componentWillUnmount() {
     window.removeEventListener('click', this.handleClick);
-    clearInterval(this.interval);
+    if (this.interval)
+      clearInterval(this.interval);
   }
 
   render() {

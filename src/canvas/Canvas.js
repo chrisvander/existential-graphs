@@ -7,6 +7,7 @@ import EGCut from './EGCut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
 import config from './config';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 const nanoid = require('nanoid').nanoid;
 
 // some defaults: 
