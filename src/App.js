@@ -12,22 +12,22 @@ class App extends React.Component {
     this.openCanvas = this.openCanvas.bind(this);
     this.saveProof = this.saveProof.bind(this);
     this.introWindow = React.createRef();
-    this.state = {
-      initialCSS: 'initial',
-      canvasOpen: false,
-      popupOpen: false,
-      proof: {
-        premises: [],
-        conclusion: '',
-        steps: []
-      }
-    };
     // this.state = {
     //   initialCSS: 'initial',
-    //   canvasOpen: true,
+    //   canvasOpen: false,
     //   popupOpen: false,
-    //   proof: {premises: ["(({Q}))(({P}){Q})"], conclusion: "{Q}", steps:[] }
+    //   proof: {
+    //     premises: [],
+    //     conclusion: '',
+    //     steps: []
+    //   }
     // };
+    this.state = {
+      initialCSS: 'initial',
+      canvasOpen: true,
+      popupOpen: false,
+      proof: {premises: ["(({Q}))(({P}){Q})"], conclusion: "{Q}", steps:[] }
+    };
   }
 
   saveProof(proof) {

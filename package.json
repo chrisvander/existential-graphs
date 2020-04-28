@@ -16,6 +16,7 @@
     "react-dom": "^16.13.0",
     "react-mathjax": "^1.0.1",
     "react-scripts": "3.4.0",
+    "react-sizeme": "^2.6.12",
     "react-svg": "^11.0.18"
   },
   "scripts": {
