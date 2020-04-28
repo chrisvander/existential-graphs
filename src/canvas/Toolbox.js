@@ -6,7 +6,7 @@ class Toolbox extends React.Component {
     this.state = {
       functions: [
         {
-          str: "Iterate/Deiterate",
+          str: "Iterate",
           func: 'iterate',
           highlight: { 'cut': 'all', 'var': 'all' }
         },
@@ -20,11 +20,11 @@ class Toolbox extends React.Component {
           func: 'dcAdd',
           highlight: { 'cut': 'all', 'var': 'all' }
         },
-        {
-          str: "Insertion",
-          func: 'insert',
-          highlight: { 'cut': 'odd', 'var': 'odd' }
-        },
+        // {
+        //   str: "Insertion",
+        //   func: 'insert',
+        //   highlight: { 'cut': 'odd', 'var': 'odd' }
+        // },
         {
           str: "Erasure",
           func: 'erase',
