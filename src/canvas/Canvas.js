@@ -86,6 +86,15 @@ class Canvas extends React.Component {
         },
         erase: (id) => {
           console.log("ERASURE")
+          let successful = this.erasure(id);
+          if (successful)
+            this.setState({ 
+              highlights: {
+                cut: 'none', 
+                var: 'none'
+              },
+              interaction: true, 
+              cbFunction: null });
         },
         iterate: (id) => {
           console.log("ITERATION")
@@ -163,6 +172,36 @@ class Canvas extends React.Component {
     insert.data = insert.data.concat(copy);
     // Change the levels of the copy data
     this.changeCutLevel(step, copy.id, data[insert.id].level + 1)
+    // Update the state
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
+  }
+
+  erasure(id) {
+    let { steps, currentStep, data } = this.state;
+    // Create a new step
+    let step = this.copyStep(steps[currentStep]);
+    // Find the data that will be erased
+    let erased = this.findID(step, id);
+    console.log(erased)
+    if (!erased) {
+      return false;
+    }
+    // Get the parent of the erased section
+    let parent = this.findParent(step, id)
+    if (!parent) {
+      return false;
+    }
+    // Remove the erased data from the parent's data array
+    const index = parent.data.indexOf(erased);
+    if (index > -1)
+      parent.data.splice(index, 1);
+    else {
+      return false;
+    }
+    // Update the state
     currentStep+=1;
     steps.push(step);
     this.setState({ steps: steps, currentStep: currentStep, data:data });
@@ -261,7 +300,6 @@ class Canvas extends React.Component {
       else return false;
     }
     else return false;
-    return true;
   }
 
   /* Given a step or a cut, will copy the contents inside with new IDs

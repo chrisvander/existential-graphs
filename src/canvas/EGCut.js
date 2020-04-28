@@ -23,10 +23,6 @@ class EGCut extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('click', this.handleClick);
-  }
-
   getBBoxData() {
     if (this.cut.current) {
       let { x, y, width, height } = this.cut.current.getBBox();
@@ -40,33 +36,28 @@ class EGCut extends React.Component {
   }
 
   componentDidMount() { 
-    this.setState(this.getBBoxData());
+    this.interval = setInterval(() => this.setState(this.getBBoxData()), 1);
   }
 
-  componentDidUpdate() {
-    let bb = this.BB.current;
-    let b = this.getBBoxData();
-    bb.setAttribute('x', b._x);
-    bb.setAttribute('y', b._y);
-    bb.setAttribute('width', b._w);
-    bb.setAttribute('height', b._h);
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleClick);
+    clearInterval(this.interval);
   }
 
   render() {
-    let b = this.getBBoxData();
     let childEl = this.props.children;
     if (childEl.length < 1) {
       childEl = <EGCut>{" "}</EGCut>
     }
     let highlight = this.state.highlight && this.props.enableHighlight;
+    let { _x, _y, _w, _h } = this.state;
     return (
       <React.Fragment>
         <rect
-          x={b._x}
-          y={b._y}
-          width={b._w}
-          height={b._h}
-          ref={this.BB}
+          x={_x}
+          y={_y}
+          width={_w}
+          height={_h}
           fillOpacity="0.7" 
           strokeOpacity="1"
           stroke="black"
