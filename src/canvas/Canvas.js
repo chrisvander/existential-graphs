@@ -41,6 +41,7 @@ function initXY(step, level) {
           var: step[s], 
           x: Math.round(X/config.gridSize)*config.gridSize, 
           y: Math.round(Y/config.gridSize)*config.gridSize,
+          level: level
         }
         step[s] = id
         maxY = Y > maxY ? Y : maxY;
@@ -107,7 +108,6 @@ class Canvas extends React.Component {
   }
 
   startSelection(selectable, nameOfFunction) {
-    console.log("startSelection", selectable, nameOfFunction);
     let { steps, currentStep } = this.state;
     // only allow steps to be conducted at the end of a proof
     if (currentStep+1 !== steps.length) {
@@ -135,7 +135,6 @@ class Canvas extends React.Component {
    * only if the location of insertID is a child of copyID
    */
   iteration(copyID, insertID) {
-    console.log("iteration(id, id)", copyID, insertID)
     let { steps, currentStep, data } = this.state;
     let step = this.copyStep(steps[currentStep]);
     // If the insertID data is not in a subgraph of the copID data, return
@@ -170,7 +169,6 @@ class Canvas extends React.Component {
     let step = this.copyStep(steps[currentStep]);
     // Find the data that will be erased
     let erased = this.findID(step, id);
-    console.log(erased)
     if (!erased) {
       return false;
     }
@@ -221,8 +219,8 @@ class Canvas extends React.Component {
     }
     // Set the levels of the two cuts
     let level = data[ID].level
-    data[cut2_id] = { type: "cut", level: level };
-    data[cut1_id] = { type: "cut", level: level + 1 };
+    data[cut2_id] = { type: "cut", level: level + 1};
+    data[cut1_id] = { type: "cut", level: level};
     // increase the level of the inside cut along with all cuts inside of it by 2
     this.changeCutLevel(step, ID, 2)
 
@@ -269,6 +267,7 @@ class Canvas extends React.Component {
         if (!parent) {
           return false;
         }
+        this.changeCutLevel(step, secondCut[0].id, -2)
         // Remove the first cut from the data array
         const index = parent.data.indexOf(firstCut);
         if (index > -1) {
@@ -371,6 +370,11 @@ class Canvas extends React.Component {
   */
   changeCutLevel(step, id, change) {
     let { data } = this.state
+    // If the ID is for a variable, only increase it's level
+    if (data[id].type === "var") {
+      data[id].level += change;
+      return
+    }
     // when true, the levels should change in the functions below
     let idFound = false
     // Changes the 
@@ -399,6 +403,10 @@ class Canvas extends React.Component {
         if (typeof arr[a] !== 'string') {
           // Change the level of the cut
           changeLevelMap(arr[a])
+        }
+        // If string is found, change the level of the variable
+        else if (idFound){
+          data[arr[a]].level += change;
         }
       }
     }
