@@ -542,7 +542,6 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
-    console.log(this.state)
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
@@ -592,7 +591,6 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {  
-
     this.panzoom = Panzoom(this.canvas.current, {
       maxZoom: 6,
       minZoom: 0.5
