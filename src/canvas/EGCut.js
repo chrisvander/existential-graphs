@@ -11,7 +11,7 @@ class EGCut extends React.Component {
     this.update = this.update.bind(this);
     this.state = { highlight: false, bounding: {_x:0,_y:0,_w:0,_h:0} };
 
-    this.eventListener = window.addEventListener('click', this.handleClick)
+    window.addEventListener('click', this.handleClick)
   }
 
   handleClick() {

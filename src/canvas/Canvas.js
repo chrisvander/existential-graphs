@@ -426,6 +426,15 @@ class Canvas extends React.Component {
     return false;
   }
 
+  highlightVar(level) {
+    if (this.state.highlights.var === 'all') return true;
+    let odd = false;
+    if (level % 2 === 1) odd = true;
+    if (this.state.highlights.var === 'odd' && odd) return true;
+    else if (this.state.highlights.var === 'even' && !odd) return true;
+    return false;
+  }
+
   renderStep(stepIndex) {
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
@@ -452,14 +461,17 @@ class Canvas extends React.Component {
             );
             jsx.push(groupElement);
           } else {
-            let el = this.state.data[step[s]]
+            let el = this.state.data[step[s]];
+            let level = data[step[s]].level;
             jsx.unshift(
               <EGVariable 
                 x={el.x} 
                 y={el.y} 
                 id={step[s]} 
+                enableHighlight={this.highlightVar(level)}
+                selectedCallback={this.state.cbFunction}
                 panzoom={this.panzoom}
-                interaction={this.state.interaction}
+                interaction={this.state.interaction || this.highlightVar(level)}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>

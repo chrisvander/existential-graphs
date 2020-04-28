@@ -18,7 +18,7 @@ class Toolbox extends React.Component {
         {
           str: "Add Double Cut",
           func: 'dcAdd',
-          highlight: { 'cut': 'all' }
+          highlight: { 'cut': 'all', 'var': 'all' }
         },
         {
           str: "Insertion",

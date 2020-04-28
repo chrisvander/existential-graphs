@@ -6,6 +6,7 @@ class EGVariable extends React.Component {
     super(props);
     this.text = React.createRef()
     this.getCoords = this.props.getCoords
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
       x: props.x,
       y: props.y,
@@ -18,6 +19,17 @@ class EGVariable extends React.Component {
     window.addEventListener('mousemove', this.onMouseMove.bind(this))
     window.addEventListener('mousedown', this.handleDragStart.bind(this))
     window.addEventListener('mouseup', this.handleDragEnd.bind(this))
+    window.addEventListener('click', this.handleClick)
+  }
+
+  handleClick() {
+    if (this.state.cursorOver 
+      && this.props.enableHighlight 
+      && this.props.selectedCallback) 
+    {
+      this.props.selectedCallback(this.props.id);
+      this.setState({ cursorOver: false });
+    }
   }
 
   componentDidMount() {  
@@ -48,7 +60,15 @@ class EGVariable extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleClick);
+    window.removeEventListener('mousemove', this.onMouseMove.bind(this))
+    window.removeEventListener('mousedown', this.handleDragStart.bind(this))
+    window.removeEventListener('mouseup', this.handleDragEnd.bind(this))
+  }
+
   render() {
+    let highlight = this.state.cursorOver && this.props.enableHighlight;
     return (
       <text 
         className="noselect"
@@ -56,6 +76,7 @@ class EGVariable extends React.Component {
         x={this.state.x} 
         y={this.state.y} 
         id={this.props.id}
+        fill={highlight ? "blue" : "black"}
         onMouseEnter={() => this.setState({ cursorOver: true })}
         onMouseLeave={() => this.setState({ cursorOver: false })}
         ref={this.text}>

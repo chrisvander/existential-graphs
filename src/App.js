@@ -26,7 +26,7 @@ class App extends React.Component {
       initialCSS: 'initial',
       canvasOpen: true,
       popupOpen: false,
-      proof: {premises: ["(({Q}))(({P}){Q})"], conclusion: "{Q}", steps:[] }
+      proof: {premises: ["({Q})(({P}){Q})"], conclusion: "{Q}", steps:[] }
     };
   }
 
