@@ -98,7 +98,7 @@ class Canvas extends React.Component {
         },
         iterate: (id) => {
           console.log("ITERATION")
-          let successful = this.iteration(id, id);
+          let successful = this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
           if (successful) 
             this.setState({ 
               highlights: {
@@ -158,6 +158,11 @@ class Canvas extends React.Component {
     console.log("iteration(id, id)", copyID, insertID)
     let { steps, currentStep, data } = this.state;
     let step = this.copyStep(steps[currentStep]);
+    // If the insertID data is not in a subgraph of the copID data, return
+    if (!this.isInNestedGraph(step, insertID, copyID)) {
+      console.log("Insert selection is not in a subgraph of Copy selection");
+      return false;
+    }
     // use findID to find the data represented by the two IDs
     let copy = this.copyContents(this.findID(step, copyID));
     if (!copy) {
@@ -300,6 +305,24 @@ class Canvas extends React.Component {
       else return false;
     }
     else return false;
+  }
+
+
+  /* Given a step and two IDs, will return true if the data of ChildID is
+   * in a nested graph of parentID in the current step.
+   */
+  isInNestedGraph(step, childID, parentID) {
+    let parentStep = this.findParent(step, parentID);
+    if (!parentStep) {
+      console.log("Parent Data could not be found");
+      return false;
+    }
+    let childStep = this.findID(parentStep, childID);
+    if (!childStep) {
+      console.log("Child is not in nested graph of Parent");
+      return false;
+    }
+    return true;
   }
 
   /* Given a step or a cut, will copy the contents inside with new IDs
