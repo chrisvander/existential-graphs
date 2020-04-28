@@ -160,7 +160,7 @@ class Canvas extends React.Component {
       console.log("Insert ID could not be found in Iterate");
       return false;
     }
-    //insert.data = insert.data.concat(copy);
+    insert.data = insert.data.concat(copy);
     console.log(copy, insert);
     currentStep+=1;
     steps.push(step);
@@ -272,12 +272,17 @@ class Canvas extends React.Component {
     // Also updates the state.data map according to new generated IDs
     function copyDataMap(map) {
       let newMap = {};
-      let id = nanoid();
       for (let m in map) {
         // If an ID is found, generate a new one
         if (m === 'id') {
           console.log("ID FOUND", map[m])
-          newMap[m] = nanoid();
+          let id = nanoid();
+          newMap[m] = id;
+          // Add the new data to state.data via a deep copy
+          data[id] = {
+            type: "cut",
+            level: data[map[m]].level
+          }
         }
         // Otherwise, if not a data array, copy the contents
         else if (m !== 'data'){
@@ -299,6 +304,13 @@ class Canvas extends React.Component {
         if (typeof arr[a] === 'string') {
           let id = nanoid();
           newArr.push(id);
+          // Add the new data to state.data via a deep copy
+          data[id] = {
+            type: "var",
+            var: data[arr[a]].var,
+            x: data[arr[a]].x,
+            y: data[arr[a]].y,
+          }
         }
         // otherwise, call the other helper function to copy contents
         else {
@@ -309,6 +321,7 @@ class Canvas extends React.Component {
     }
     let newStep = copyDataMap(step);
     console.log(newStep, step);
+    this.setState({ data: data })
     return newStep;
   }
 
