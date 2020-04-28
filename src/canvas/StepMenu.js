@@ -25,18 +25,18 @@ class StepMenu extends React.Component {
         <div className="step-menu">
         <div style={{ color: this.getColor(forwardEnabled)}}>
           <div onClick={(event) => this.handleClick(event, 0, forwardEnabled)}>
-            <ReactSVG src="/assets/step-first.svg"/>
+            <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-first.svg"}/>
           </div>
           <div onClick={(event) => this.handleClick(event, currentStep - 1, forwardEnabled)}>
-            <ReactSVG src="/assets/step-prev.svg" />
+            <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-prev.svg"} />
           </div>
         </div>
         <div style={{ color: this.getColor(backEnabled)  }}>
           <div onClick={(event) => this.handleClick(event, currentStep + 1, backEnabled)}>
-            <ReactSVG src="/assets/step-next.svg" />
+            <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-next.svg"} />
           </div>
           <div onClick={(event) => this.handleClick(event, stepInfo.length - 1, backEnabled)}>
-            <ReactSVG src="/assets/step-last.svg" />
+            <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-last.svg"} />
           </div>
         </div>
         </div>
