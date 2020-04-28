@@ -91,15 +91,7 @@ class Canvas extends React.Component {
         },
         iterate: (id) => {
           console.log("ITERATION")
-          let successful = this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
@@ -559,7 +551,6 @@ class Canvas extends React.Component {
   }
 
   renderStep(stepIndex) {
-    console.log(this.state)
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
     if (step) {
@@ -612,7 +603,6 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {  
-
     this.panzoom = Panzoom(this.canvas.current, {
       maxZoom: 6,
       minZoom: 0.5
