@@ -7,6 +7,7 @@ import EGCut from './EGCut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
 import config from './config';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 const nanoid = require('nanoid').nanoid;
 
 // some defaults: 
@@ -86,15 +87,7 @@ class Canvas extends React.Component {
         },
         erase: (id) => {
           console.log("ERASURE")
-          let successful = this.erasure(id);
-          if (successful)
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.erasure(id);
         },
         iterate: (id) => {
           console.log("ITERATION")
@@ -110,27 +103,12 @@ class Canvas extends React.Component {
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
-          let successful = this.doubleCutRemove(id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.doubleCutRemove(id);
         },
         dcAdd: (id) => {
           console.log("DOUBLE CUT Add")
-          let successful = this.doubleCutAdd(id);
-          if (successful) 
-            this.setState({ 
-              highlights: {
-                cut: 'none', 
-                var: 'none'
-              },
-              interaction: true, 
-              cbFunction: null });
+          return this.doubleCutAdd(id);
+          
         }
       }
     }
@@ -146,7 +124,17 @@ class Canvas extends React.Component {
     this.setState({ 
       highlights: selectable, 
       interaction: false, 
-      cbFunction: this.state.functions[nameOfFunction] 
+      cbFunction: (id) => {
+        let successful = this.state.functions[nameOfFunction](id); 
+        if (successful) 
+          this.setState({ 
+            highlights: {
+              cut: 'none', 
+              var: 'none'
+            },
+            interaction: true, 
+            cbFunction: null });
+      }
     });
   }
 

@@ -8,7 +8,8 @@ class EGCut extends React.Component {
     this.BB = React.createRef();
     this.getBBoxData = this.getBBoxData.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.state = { highlight: false };
+    this.update = this.update.bind(this);
+    this.state = { highlight: false, bounding: {_x:0,_y:0,_w:0,_h:0} };
 
     this.eventListener = window.addEventListener('click', this.handleClick)
   }
@@ -35,13 +36,30 @@ class EGCut extends React.Component {
     return {};
   }
 
+  update() {
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        this.setState({ bounding: this.getBBoxData() });
+      }, 1);
+      setTimeout(() => {
+        clearInterval(this.interval);
+        this.interval = null;
+      }, 100);
+    }
+  }
+
   componentDidMount() { 
-    this.interval = setInterval(() => this.setState(this.getBBoxData()), 1);
+    this.update()
+  }
+
+  componentDidUpdate() {
+    this.update()
   }
 
   componentWillUnmount() {
     window.removeEventListener('click', this.handleClick);
-    clearInterval(this.interval);
+    if (this.interval)
+      clearInterval(this.interval);
   }
 
   render() {
@@ -50,7 +68,7 @@ class EGCut extends React.Component {
       childEl = <EGCut>{" "}</EGCut>
     }
     let highlight = this.state.highlight && this.props.enableHighlight;
-    let { _x, _y, _w, _h } = this.state;
+    let { _x, _y, _w, _h } = this.state.bounding;
     return (
       <React.Fragment>
         <rect
