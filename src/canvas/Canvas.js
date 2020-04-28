@@ -41,6 +41,7 @@ function initXY(step, level) {
           var: step[s], 
           x: Math.round(X/config.gridSize)*config.gridSize, 
           y: Math.round(Y/config.gridSize)*config.gridSize,
+          level: level
         }
         step[s] = id
         maxY = Y > maxY ? Y : maxY;
@@ -91,6 +92,7 @@ class Canvas extends React.Component {
         },
         iterate: (id) => {
           console.log("ITERATION")
+          return this.iteration(id, this.state.steps[this.state.currentStep].data[0].id);
         },
         dcRemove: (id) => {
           console.log("DOUBLE CUT Remove")
@@ -128,13 +130,45 @@ class Canvas extends React.Component {
     });
   }
 
+  /* Given a copyID and insertID, the iteration function creates a new step,
+   * and adds a copy of the data represented by copyID at the location of insertID
+   * only if the location of insertID is a child of copyID
+   */
+  iteration(copyID, insertID) {
+    let { steps, currentStep, data } = this.state;
+    let step = this.copyStep(steps[currentStep]);
+    // If the insertID data is not in a subgraph of the copID data, return
+    if (!this.isInNestedGraph(step, insertID, copyID)) {
+      console.log("Insert selection is not in a subgraph of Copy selection");
+      return false;
+    }
+    // use findID to find the data represented by the two IDs
+    let copy = this.copyContents(this.findID(step, copyID));
+    if (!copy) {
+      console.log("Copy ID could not be found in Iterate");
+      return false;
+    }
+    let insert = this.findID(step, insertID);
+    if (!insert) {
+      console.log("Insert ID could not be found in Iterate");
+      return false;
+    }
+    insert.data = insert.data.concat(copy);
+    // Change the levels of the copy data
+    this.changeCutLevel(step, copy.id, data[insert.id].level + 1)
+    // Update the state
+    currentStep+=1;
+    steps.push(step);
+    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    return true;
+  }
+
   erasure(id) {
     let { steps, currentStep, data } = this.state;
     // Create a new step
     let step = this.copyStep(steps[currentStep]);
     // Find the data that will be erased
     let erased = this.findID(step, id);
-    console.log(erased)
     if (!erased) {
       return false;
     }
@@ -185,8 +219,8 @@ class Canvas extends React.Component {
     }
     // Set the levels of the two cuts
     let level = data[ID].level
-    data[cut2_id] = { type: "cut", level: level };
-    data[cut1_id] = { type: "cut", level: level + 1 };
+    data[cut2_id] = { type: "cut", level: level + 1};
+    data[cut1_id] = { type: "cut", level: level};
     // increase the level of the inside cut along with all cuts inside of it by 2
     this.changeCutLevel(step, ID, 2)
 
@@ -233,6 +267,7 @@ class Canvas extends React.Component {
         if (!parent) {
           return false;
         }
+        this.changeCutLevel(step, secondCut[0].id, -2)
         // Remove the first cut from the data array
         const index = parent.data.indexOf(firstCut);
         if (index > -1) {
@@ -251,11 +286,95 @@ class Canvas extends React.Component {
     else return false;
   }
 
+
+  /* Given a step and two IDs, will return true if the data of ChildID is
+   * in a nested graph of parentID in the current step.
+   */
+  isInNestedGraph(step, childID, parentID) {
+    let parentStep = this.findParent(step, parentID);
+    if (!parentStep) {
+      console.log("Parent Data could not be found");
+      return false;
+    }
+    let childStep = this.findID(parentStep, childID);
+    if (!childStep) {
+      console.log("Child is not in nested graph of Parent");
+      return false;
+    }
+    return true;
+  }
+
+  /* Given a step or a cut, will copy the contents inside with new IDs
+   * and return the new data. This permits inserting new data into the graph.
+   * Levels for cuts will start at 0 and increase accordingly
+   */
+  copyContents(step) {
+    let { data } = this.state;
+    // Copies the data of a map and returns it
+    // Also updates the state.data map according to new generated IDs
+    function copyDataMap(map, level) {
+      let newMap = {};
+      for (let m in map) {
+        // If an ID is found, generate a new one
+        if (m === 'id') {
+          let id = nanoid();
+          newMap[m] = id;
+          // Add the new data to state.data via a deep copy
+          data[id] = {
+            type: "cut",
+            level: level
+          }
+        }
+        // Otherwise, if not a data array, copy the contents
+        else if (m !== 'data'){
+          newMap[m] = map[m]
+        }
+        // If a data array, copy using helper function
+        else {
+          newMap[m] = copyDataArray(map[m], level+1)
+        }
+      }
+      return newMap;
+    }
+    // Copies the data of an array and returns it
+    // Also updates state.data according to new generated IDs
+    function copyDataArray(arr, level) {
+      let newArr = [];
+      for (let a in arr) {
+        // If an ID found, generate a new one
+        if (typeof arr[a] === 'string') {
+          let id = nanoid();
+          newArr.push(id);
+          // Add the new data to state.data via a deep copy
+          data[id] = {
+            type: "var",
+            var: data[arr[a]].var,
+            x: data[arr[a]].x,
+            y: data[arr[a]].y,
+          }
+        }
+        // otherwise, call the other helper function to copy contents
+        else {
+          newArr.push(copyDataMap(arr[a], level))
+        }
+      }
+      return newArr;
+    }
+    let newStep = copyDataMap(step, 0);
+    this.setState({ data: data })
+    return newStep;
+  }
+
   /* Given a step and the ID of a cut, will iterate through all cuts within
    * that cut and change their level by a specified amount.
   */
   changeCutLevel(step, id, change) {
     let { data } = this.state
+    // If the ID is for a variable, only increase it's level
+    if (data[id].type === "var") {
+      data[id].level += change;
+      return
+    }
     // when true, the levels should change in the functions below
     let idFound = false
     // Changes the 
@@ -284,6 +403,10 @@ class Canvas extends React.Component {
         if (typeof arr[a] !== 'string') {
           // Change the level of the cut
           changeLevelMap(arr[a])
+        }
+        // If string is found, change the level of the variable
+        else if (idFound){
+          data[arr[a]].level += change;
         }
       }
     }
@@ -488,7 +611,6 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {  
-
     this.panzoom = Panzoom(this.canvas.current, {
       maxZoom: 6,
       minZoom: 0.5
