@@ -10,6 +10,7 @@
 }
 
 .noselect {
+  outline: none;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -25,7 +26,7 @@
   width: 200px;
   float: left;
   background-color: $white-gray;
-  margin: 10px;
+  margin: 20px;
   border-radius: 25px;
   padding: 15px;
   padding-left: 10px;
@@ -91,9 +92,74 @@
   div {
     display: inline-block;
     margin-top: 2.6px;
-    margin-left: 22px;
+    margin-left: 16px;
     &:first-child {
       margin-left: 0;
     }
+  }
+  .disabled {
+    background-color: #C3CBC2 !important;
+    box-shadow: none !important;
+    .undo-svg svg path {
+      fill: rgb(134,134,134);
+    }
+    cursor: not-allowed !important;
+  }
+  .undo-btn {
+    width: 60px;
+    height: 60px;
+    background-color: #A8B4A7;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.24);
+    border-radius: 50%;
+    position: relative;
+    margin-right: 17px;
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 1px 2px 0 rgba(0,0,0,0.35);
+    }
+    .undo-svg {
+      margin-top: 0;
+    }
+    .disabled {
+      background-color: #B7B7B7 !important;
+      box-shadow: none !important;
+      .redo-svg svg path {
+        fill: rgb(134,134,134);
+      }
+      cursor: not-allowed !important;
+    }
+    .redo-btn {
+      div { margin-top: 0; }
+      position: absolute;
+      bottom: 0;
+      right: -14px;
+      background-color: #B7B7B7;
+      border-radius: 50%;
+      line-height: 32px;
+      height: 29px;
+      width: 29px;
+      box-shadow: 0 1px 6px 0 rgba(0,0,0,0.29);
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 0.5px 3px 0 rgba(0,0,0,0.35);
+      }
+      .redo-svg {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+.dropdown-menu {
+  width: 100vw;
+  height: 40px;
+  background-color: #EEE;
+  padding-left: 15px;
+  .menu-title {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    float: left;
   }
 }

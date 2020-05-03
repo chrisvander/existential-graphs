@@ -6,8 +6,8 @@ import EGVariable from './EGVariable';
 import EGCut from './EGCut';
 import './Canvas.scss';
 import Panzoom from 'panzoom';
+import DropdownMenu from './DropdownMenu';
 import config from './config';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
 const nanoid = require('nanoid').nanoid;
 
 // some defaults: 
@@ -161,9 +161,9 @@ class Canvas extends React.Component {
     this.setState( { data: data });
     this.changeCutLevel(step, newCopyID, data[insert.id].level + 1)
     // Update the state
-    currentStep+=1;
+    currentStep += 1;
     steps.push(step);
-    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    this.setState({ steps: steps, currentStep: currentStep, data: data });
     return true;
   }
 
@@ -189,9 +189,9 @@ class Canvas extends React.Component {
       return false;
     }
     // Update the state
-    currentStep+=1;
+    currentStep += 1;
     steps.push(step);
-    this.setState({ steps: steps, currentStep: currentStep, data:data });
+    this.setState({ steps: steps, currentStep: currentStep, data: data });
     return true;
   }
 
@@ -677,7 +677,8 @@ class Canvas extends React.Component {
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel
     return (
-      <div>
+      <div className="noselect">
+        <DropdownMenu />
         <Toolbox 
           hidden={currentStep+1 !== steps.length}
           functions={this.state.functions}

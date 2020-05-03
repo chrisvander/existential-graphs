@@ -31,6 +31,18 @@ class StepMenu extends React.Component {
             <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-prev.svg"} />
           </div>
         </div>
+        <div>
+          <div className="undo-btn">
+            <div className="undo-svg">
+              <ReactSVG src={process.env.PUBLIC_URL + "/assets/undo.svg"} />
+            </div>
+            <div className="redo-btn">
+              <div className="redo-svg">
+                <ReactSVG src={process.env.PUBLIC_URL + "/assets/redo.svg"} />
+              </div>
+            </div>
+          </div>
+        </div>
         <div style={{ color: this.getColor(backEnabled)  }}>
           <div onClick={(event) => this.handleClick(event, currentStep + 1, backEnabled)}>
             <ReactSVG src={process.env.PUBLIC_URL + "/assets/step-next.svg"} />
