@@ -72,6 +72,8 @@ class Canvas extends React.Component {
         premises: premises,
         conclusion: conclusion
       },
+      changeHistory: [], 
+      redoHistory: [],
       steps: steps || [],
       data: data || {},
       currentStep: 0,
@@ -108,7 +110,9 @@ class Canvas extends React.Component {
   }
 
   startSelection(selectable, nameOfFunction) {
-    let { steps, currentStep } = this.state;
+    let { steps, currentStep, changeHistory } = this.state;
+    changeHistory = changeHistory.slice()
+    changeHistory.push({ steps: Array.from(steps) });
     // only allow steps to be conducted at the end of a proof
     if (currentStep+1 !== steps.length) {
       return
@@ -118,7 +122,10 @@ class Canvas extends React.Component {
       interaction: false, 
       cbFunction: (id) => {
         let successful = this.state.functions[nameOfFunction](id); 
-        // if (successful) 
+        if (successful) 
+          this.setState({ 
+            changeHistory: changeHistory, 
+            redoHistory: [] });
         this.setState({ 
           highlights: {
             cut: 'none', 
@@ -696,6 +703,13 @@ class Canvas extends React.Component {
           currentStep={this.state.currentStep} 
           stepInfo={this.state.steps} 
           setStep={s => this.setState({ currentStep: s, interaction: s === this.state.steps.length - 1 })}
+          state={this.state}
+          setState={(changeHistory, newSteps, redoHistory) => {
+            this.setState({ changeHistory: changeHistory, steps: newSteps, redoHistory: redoHistory, currentStep: newSteps.length - 1 });
+            console.log("CHANGE HISTORY")
+            console.log(changeHistory);
+            console.log(redoHistory);
+          }}
         />
       </div>
     );
