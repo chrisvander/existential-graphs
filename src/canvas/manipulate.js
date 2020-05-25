@@ -3,6 +3,22 @@ const nanoid = require('nanoid').nanoid;
 module.exports = (state) => { 
   return {
     state: state,
+
+    /*
+     * Adds an element with string "str"
+     */
+    createElement: function (cutID, str) {
+      console.log(cutID)
+      // let id = nanoid()
+      // state.data[id] = { 
+      //   type: "var",
+      //   var: state.step[s], 
+      //   x: 0, 
+      //   y: 0,
+      //   level: level
+      // }
+      return state;
+    },
     /* Given a copyID and insertID, the iteration function creates a new step,
      * and adds a copy of the data represented by copyID at the location of insertID
      * only if the location of insertID is a child of copyID

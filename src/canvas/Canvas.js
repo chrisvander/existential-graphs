@@ -177,6 +177,15 @@ class Canvas extends React.Component {
 
       const renderRecurse = (step) => {
         let jsx = [];
+        if (step.length === 0) {
+          let id = nanoid();
+          data[id] = {};
+          setXY(id, 0, 0);
+          data[id].type = "emptyvar";
+          data[id].var = "\xa0";
+          step.push(id);
+          this.setState({ data: data });
+        }
         for (let s in step) {
           if (step[s].type === "cut") {
             let level = data[step[s].id].level;
@@ -190,7 +199,7 @@ class Canvas extends React.Component {
               </EGCut>
             );
             jsx.push(groupElement);
-          } else {
+          } else if (this.state.data[step[s]].type === "var") {
             let el = this.state.data[step[s]];
             let level = data[step[s]].level;
             jsx.unshift(
@@ -202,6 +211,23 @@ class Canvas extends React.Component {
                 selectedCallback={this.state.cbFunction}
                 panzoom={this.panzoom}
                 interaction={this.state.interaction || this.highlightVar(level)}
+                getCoords={this.getSVGCoords}
+                setCoords={(x,y) => setXY(step[s],x,y)}
+                key={step[s]}>
+                {el.var}
+              </EGVariable>
+            );
+          } else if (this.state.data[step[s]].type === "emptyvar") {
+            let el = this.state.data[step[s]];
+            jsx.unshift(
+              <EGVariable 
+                x={el.x} 
+                y={el.y} 
+                id={step[s]} 
+                enableHighlight={false}
+                selectedCallback={() => {}}
+                panzoom={this.panzoom}
+                interaction={this.state.interaction}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
                 key={step[s]}>
