@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="15" viewBox="0 0 15 15">
   <defs>
-    <rect id="rect-1" width="-15" height="15" x="15" y="0"/>
+    <rect id="rect-1" width="15" height="15" x="15" y="0"/>
     <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="userSpaceOnUse">
       <rect width="15" height="15" x="0" y="0" fill="black"/>
       <use fill="white" xlink:href="#rect-1"/>
