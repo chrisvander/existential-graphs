@@ -19,7 +19,8 @@
     "react-notifications": "^1.6.0",
     "react-scripts": "3.4.1",
     "react-sizeme": "^2.6.12",
-    "react-svg": "^11.0.18"
+    "react-svg": "^11.0.18",
+    "react-transition-group": "1.x"
   },
   "scripts": {
     "start": "react-scripts start",

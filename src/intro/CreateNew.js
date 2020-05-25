@@ -21,6 +21,7 @@ class CreateNew extends React.Component {
     this.removePremise.bind(this)
     this.verify = this.verify.bind(this)
     this.create = this.create.bind(this)
+    this.filename = React.createRef()
   }
 
   componentDidMount() {
@@ -63,7 +64,7 @@ class CreateNew extends React.Component {
         console.log(premises[i])
       }
       conclusion = convertToEG(conclusion)
-      this.props.setupFunc(premises, conclusion, [])
+      this.props.setupFunc(this.filename.current.value, { premises, conclusion, steps: [] })
     }
   }
 
@@ -107,7 +108,7 @@ class CreateNew extends React.Component {
       <div className="content full-width">
         <h1>Create New</h1>
         <h2>File Name</h2>
-        <input />
+        <input ref={this.filename}/>
         <table className="formulaTable">
           
         </table>

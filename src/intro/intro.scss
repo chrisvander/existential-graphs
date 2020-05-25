@@ -88,3 +88,16 @@
     }
   }
 }
+
+.proofField {
+  box-shadow: 0 0 4px 0 rgba(0,0,0,0.3);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  &:hover {
+    color: #6611FF;
+  }
+}

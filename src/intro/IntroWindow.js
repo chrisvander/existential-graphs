@@ -3,7 +3,7 @@ import CreateNew from './CreateNew';
 import { ReactSVG } from 'react-svg';
 import './intro.scss';
 
-const IntroContent = () => (
+const IntroContent = ({ recentDocs }) => (
   <div className="content">
     <div className="column">
       <h1>Existential Graphs</h1>
@@ -14,6 +14,11 @@ const IntroContent = () => (
     <div className="divider" />
     <div className="column">
       <h1>Recent Proofs</h1>
+      {Object.keys(recentDocs).map(name => (
+        <div className="proofField" onClick={() => recentDocs[name].open()}>
+          {name}
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -24,6 +29,7 @@ class IntroWindow extends React.Component {
     this.createView = React.createRef();
     this.callCreate = this.callCreate.bind(this);
     this.animateAway = this.animateAway.bind(this);
+    this.openFile = this.openFile.bind(this);
     this.state = {
       createShown: false,
       floatingWindowCSS: 'floating-window shown'
@@ -41,18 +47,44 @@ class IntroWindow extends React.Component {
     this.createView.current.create();
   }
 
+  openFile() {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", ".egprf");
+    input.onchange = (evt) => {
+      console.log("ONCHANGE")
+      evt.stopPropagation();
+      evt.preventDefault();
+      var file = evt.target.files[0];
+      console.log(file);
+      var reader = new FileReader();
+      reader.addEventListener('load', (evt) => {
+        try {
+          let res = JSON.parse(evt.target.result);
+          console.log(res);
+          this.props.setupFunc(file.name.split(".egprf")[0], res);
+        } catch (e) {
+          console.error(e);
+          alert("Corrupt file or improper formatting.");
+        }
+      });
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
   render() {
     const { createShown, floatingWindowCSS } = this.state;
     return (
       <div className={floatingWindowCSS}>
-        {!createShown && <IntroContent />}
+        {!createShown && <IntroContent recentDocs={this.props.recentDocs}/>}
         {createShown && <CreateNew setupFunc={this.props.setupFunc} ref={this.createView}/>}
           {!createShown && (
             <div className="toolbar">
             <button onClick={() => this.setState({ createShown: true })}>
               New 
             </button>
-            <button>
+            <button onClick={this.openFile}>
               Open 
             </button>
             </div>

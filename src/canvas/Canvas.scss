@@ -156,11 +156,32 @@
   background-color: #EEE;
   padding-left: 15px;
   .menu-title {
-    height: 40px;
-    line-height: 40px;
+    height: 30px;
+    line-height: 30px;
     padding-left: 10px;
     padding-right: 10px;
+    border-radius: 8px;
     float: left;
     font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    &:hover {
+      box-shadow: inset -5px -5px 3px #F5F5F5, inset 5px 5px 3px #DADADA;
+    }
+    &:active {
+      box-shadow: inset -5px -5px 3px #F9F9F9, inset 5px 5px 3px #D4D4D4;
+      background-color: #EBEBEB;
+    }
   }
+}
+
+.example-appear {
+  opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
+  opacity: 1;
+  transition: 1.0s;
 }

@@ -1,22 +1,15 @@
 import React from 'react';
-import { ReactSVG } from 'react-svg';
-
-const menuItems = [
-  { title: 'File', items: [
-    { title: 'New' },
-    { title: 'Open' },
-    'separator',
-    { title: 'Export' }
-  ]},
-]
 
 class DropdownMenu extends React.Component {
   render() {
+    const menuItems = this.props.menuItems;
     return (
       <div className="dropdown-menu">
-        {menuItems.map(el => (
-          <div className="menu-title">{el.title}</div>
-        ))}
+        {menuItems.map(el => {
+            if (el.title) return <div className="menu-title" onClick={el.func}>{el.title}</div>;
+            else return <div className={el} />
+          }
+        )}
       </div>
     );
   }

@@ -9093,7 +9093,7 @@ react-svg@^11.0.18:
     "@tanem/svg-injector" "^8.0.48"
     prop-types "^15.7.2"
 
-react-transition-group@^1.2.0:
+react-transition-group@1.x, react-transition-group@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"
   integrity sha512-CWaL3laCmgAFdxdKbhhps+c0HRGF4c+hdM4H23+FI1QBNUyx/AMeIJGWorehPNSaKnQNOAxL7PQmqMu78CDj3Q==
