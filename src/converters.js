@@ -6,17 +6,32 @@ import verifySentence, {
 
 const operators = require('./operators.json')
 
+/**
+ * This file is responsible for holding many of the converters used throughout the 
+ * app.
+ */
+
+/**
+ * @param  {string} the string to add escape characters for
+ * @return {string} the string with all regex-safe characters
+ */
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-const binaryOperators = operators.binary
-let keys = Object.keys(binaryOperators);
+/**
+ * keys represents the ASCII notation for the input characters. 
+ * @type {array}
+ */
+let keys = Object.keys(operators.binary);
 keys = keys.map(el => escapeRegExp(el));
 const binarySymbReplace = new RegExp('(?:' + keys.join('|') + ')', 'g')
-
 const unaryOperators = operators.unary
 
+/**
+ * @param  {string} Fitch-style sentence notation.
+ * @return {string} TeX sentence notation.
+ */
 const convertToTeX = (formula) => {
   if (typeof formula === 'string' || formula instanceof String) {
     // filter out spaces
@@ -25,7 +40,7 @@ const convertToTeX = (formula) => {
     // replace all binary operators
     while ((symbol = binarySymbReplace.exec(formula)) !== null) {
       formula = formula.substr(0,symbol['index']) 
-                    + binaryOperators[symbol[0]] + ' '
+                    + operators.binary[symbol[0]] + ' '
                     + formula.substr(symbol['index'] + symbol[0].length);
     }
     // replace all unary operators
@@ -40,6 +55,14 @@ const convertToTeX = (formula) => {
   else return ""
 }
 
+/**
+ * @param  {string} statement
+ * @return {int} counts the number of unary operators in the given input.
+ *
+ * For example, if passed a statement !!(P | Q), we notice two unary operators 
+ * encapsulating the statement (the ! symbols, representing NOT). These would 
+ * be counted out.
+ */
 function countUnary(statement) {
   const matchesList = (val) => (op) => op === val;
   let c = 0;
@@ -49,6 +72,11 @@ function countUnary(statement) {
   return c;
 }
 
+/**
+ * @param  {string} the sentence being passed in, in Fitch-style notation.
+ * @param  {bool} whether to convert the statement to EG or just return without unary.
+ * @return {[type]}
+ */
 const stripUnary = (s, convertStatement) => {
   if (convertStatement == null) 
     convertStatement = true;
@@ -59,6 +87,10 @@ const stripUnary = (s, convertStatement) => {
   return "(".repeat(c) + statement + ")".repeat(c)
 }
 
+/**
+ * @param  {string} Fitch-style sentence notation 
+ * @return {string} EG-style sentence notation.
+ */
 const convertToEG = (formula) => {
   if ((typeof formula === 'string' || formula instanceof String) && verifySentence(formula)) {
     // filter out spaces
@@ -83,8 +115,9 @@ const convertToEG = (formula) => {
   else return null;
 }
 
-/*  Given a string and the index of the open parenthesis, this
- *  will return the index of the closed parenthesis
+/** 
+ * Given a string and the index of the open parenthesis, this
+ * will return the index of the closed parenthesis
  */
 const getMatchingParen = (formula, start) => {
   // hold the number of '(' minus the number of ')'
@@ -104,12 +137,14 @@ const getMatchingParen = (formula, start) => {
   }
 }
 
-/*  Converts a string representing an Existential Graph into
- *  a nested array. Acts recursively, calling iteslf again
- *  When a pair of parentehses are found. If given an index i,
- *  this will start from that index.
- *  For example: 
- *  "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
+/**  
+ * Converts a string representing an Existential Graph into
+ * a nested array. Acts recursively, calling iteslf again
+ * When a pair of parentehses are found. If given an index i,
+ * this will start from that index.
+ * 
+ * For example: 
+ * "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
  */
 const convertToArray = (formula, i = 0) => {
   if (typeof formula === 'string' || formula instanceof String) {
@@ -142,6 +177,9 @@ const convertToArray = (formula, i = 0) => {
   else return null
 }
 
+/**
+ * Export all converters
+ */
 export {
   convertToTeX,
   convertToEG,

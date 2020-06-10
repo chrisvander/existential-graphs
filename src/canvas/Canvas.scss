@@ -177,11 +177,11 @@
   }
 }
 
-.example-appear {
+.fadein-appear {
   opacity: 0.01;
 }
 
-.example-appear.example-appear-active {
+.fadein-appear.fadein-appear-active {
   opacity: 1;
   transition: 1.0s;
 }

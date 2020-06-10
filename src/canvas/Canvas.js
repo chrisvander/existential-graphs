@@ -12,6 +12,11 @@ import manipulate from './manipulate';
 import { CSSTransitionGroup } from 'react-transition-group';
 const nanoid = require('nanoid').nanoid;
 
+/**
+ * Where a lot of the action happens. This component renders the Canvas for 
+ * the Existential Graphs workspace. Meant to take up an entire page.
+ */
+
 // some defaults: 
 //    <text> blocks are automatically 22px high
 
@@ -263,6 +268,7 @@ class Canvas extends React.Component {
     this.setState({ });
     let step = this.state.steps[this.state.currentStep];
 
+    // center the canvas elements
     this.panzoom.moveTo(vw/2 - step.w, vh/2 - step.h);
     this.panzoom.zoomTo(vw/2 - step.w, vh/2 - step.h, 2);
   }
@@ -271,24 +277,30 @@ class Canvas extends React.Component {
     window.removeEventListener('resize', this);
   }
 
+  /**
+   * @param  {int} X on the DOM
+   * @param  {int} Y on the DOM
+   * @return {(int, int)} x,y pair representing point on Canvas
+   */
   getSVGCoords(domX, domY) {
     var pt = this.canvasContainer.current.createSVGPoint();
-
     pt.x = domX;
     pt.y = domY;
-
     return pt.matrixTransform(this.canvas.current.getScreenCTM().inverse());
   }
 
   render() {
     let { proof, data, steps, currentStep } = this.state; 
+    // every time a re-render happens, ensure top-level state is up-to-date
     this.props.saveProof({...proof, data, steps});
+    // zooming function does nothing unless panzoom is initialized
     let zoomWithWheel = () => {}
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel
+    // CSSTransitionGroup lets us have entry fade-in
     return (
       <CSSTransitionGroup
-        transitionName="example"
+        transitionName="fadein"
         transitionAppear={true}
         transitionAppearTimeout={500}
         transitionEnter={false}
