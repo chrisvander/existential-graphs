@@ -1,6 +1,5 @@
 import React from 'react';
 import config from './config';
-import EGVariable from './EGVariable';
 
 class EGCut extends React.Component {
   constructor(props) {
@@ -64,7 +63,6 @@ class EGCut extends React.Component {
   }
 
   render() {
-    let childEl = this.props.children;
     let highlight = this.state.highlight && this.props.enableHighlight;
     let { _x, _y, _w, _h } = this.state.bounding;
     return (

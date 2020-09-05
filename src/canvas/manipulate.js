@@ -1,14 +1,11 @@
 const nanoid = require('nanoid').nanoid;
 
-module.exports = (state) => { 
+module.exports = ({ state, getSelection }) => { 
   return {
     state: state,
 
-    /*
-     * Adds an element with string "str"
-     */
-    createElement: function (cutID, str) {
-      console.log(cutID)
+    insertion: async function () {
+      await getSelection({ 'cut': 'odd', 'var': 'odd' });
       // let id = nanoid()
       // state.data[id] = { 
       //   type: "var",
@@ -19,11 +16,14 @@ module.exports = (state) => {
       // }
       return state;
     },
+
     /* Given a copyID and insertID, the iteration function creates a new step,
      * and adds a copy of the data represented by copyID at the location of insertID
      * only if the location of insertID is a child of copyID
      */
-    iteration: function (copyID, insertID) {
+    iteration: async function () {
+      let copyID = await getSelection({ 'cut': 'all', 'var': 'all' });
+      let insertID = await getSelection({ 'cut': 'all', 'var': 'all' });
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
       // If the insertID data is not in a subgraph of the copID data, return
@@ -54,7 +54,8 @@ module.exports = (state) => {
       return { steps: steps, currentStep: currentStep, data: data };
     },
 
-    erasure: function (id) {
+    erasure: async function () {
+      let id = await getSelection({ 'cut': 'even', 'var': 'even' });
       let { steps, currentStep, data } = this.state;
       // Create a new step
       let step = this.copyStep(steps[currentStep]);
@@ -84,13 +85,14 @@ module.exports = (state) => {
     /* Adds a double cut given the ID of the data that will be inside the cut.
     *  Will only run if the current step is the last step.
     */
-    doubleCutAdd: function (ID) {
+    doubleCutAdd: async function () {
+      var id = await getSelection({ 'cut': 'all', 'var': 'all' });
       let { steps, currentStep, data } = this.state;
       // create a new step
       let step = this.copyStep(steps[currentStep]);
       // use findID to find the data represented by the id
       // this is the data that will be inside the two new cuts
-      let inside = this.findID(step, ID);
+      let inside = this.findID(step, id);
       if (!inside) {
         return null;
       }
@@ -108,14 +110,14 @@ module.exports = (state) => {
         type: "cut"
       }
       // Set the levels of the two cuts
-      let level = data[ID].level
+      let level = data[id].level
       data[cut2_id] = { type: "cut", level: level + 1};
       data[cut1_id] = { type: "cut", level: level};
       // increase the level of the inside cut along with all cuts inside of it by 2
-      this.changeCutLevel(step, ID, 2)
+      this.changeCutLevel(step, id, 2)
 
       // get the parent of the selection
-      let parent = this.findParent(step, ID)
+      let parent = this.findParent(step, id)
       if (!parent) {
         return null;
       }
@@ -138,13 +140,14 @@ module.exports = (state) => {
     *  the given ID with the contents of the second cut, only if they exist.
     *  Then adds the edited copy of the current step to the end of the step array.
     */
-    doubleCutRemove: function (cutID) {
+    doubleCutRemove: async function () {
+      let id = await getSelection({ 'cut': 'all' });
       let { steps, currentStep, data } = this.state;
       // Create a new step
       let step = this.copyStep(steps[currentStep]);
 
       // use findID to find the cut with the given ID
-      let firstCut = this.findID(step, cutID);
+      let firstCut = this.findID(step, id);
       // If it is actually a cut and has another cut inside
       if (firstCut && firstCut.type === "cut") {
         let secondCut = firstCut.data;
@@ -152,7 +155,7 @@ module.exports = (state) => {
           // Get the data inside the second cut
           let newContents = secondCut[0].data;
           // Get the parent of the original cut being removed
-          let parent = this.findParent(step, cutID)
+          let parent = this.findParent(step, id)
           if (!parent) {
             return null;
           }

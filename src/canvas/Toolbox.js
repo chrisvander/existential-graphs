@@ -7,28 +7,28 @@ class Toolbox extends React.Component {
       functions: [
         {
           str: "Iterate",
-          func: 'iterate',
-          highlight: { 'cut': 'all', 'var': 'all' }
+          func: 'iteration',
+          highlight: false
         },
         {
           str: "Remove Double Cut",
-          func: 'dcRemove',
-          highlight: { 'cut': 'all' }
+          func: 'doubleCutRemove',
+          highlight: false
         },
         {
           str: "Add Double Cut",
-          func: 'dcAdd',
-          highlight: { 'cut': 'all', 'var': 'all' }
+          func: 'doubleCutAdd',
+          highlight: false
         },
-        // {
-        //   str: "Insertion",
-        //   func: 'insert',
-        //   highlight: { 'cut': 'odd', 'var': 'odd' }
-        // },
+        {
+          str: "Insertion",
+          func: 'insertion',
+          highlight: false
+        },
         {
           str: "Erasure",
-          func: 'erase',
-          highlight: { 'cut': 'even', 'var': 'even' }
+          func: 'erasure',
+          highlight: false
         }
       ]
     };
@@ -38,12 +38,27 @@ class Toolbox extends React.Component {
   }
 
   render() {
-    if (this.props.hidden) return <React.Fragment />;
+    let { hidden, modifyCanvas } = this.props;
+    if (hidden) return <React.Fragment />;
     return (
       <div className="toolbox" ref={this.canvas}>
         <h3>Tools</h3>
-        {this.state.functions.map(el => (
-          <div className="tool" onClick={() => this.props.setSelection(el.highlight, el.func)}>{el.str}</div>
+        {this.state.functions.map((el, i) => (
+          <div 
+            className="tool"
+            style={el.highlight ? { backgroundColor: '#AFAFAA' } : {}} 
+            onClick={() => {
+              let new_func = this.state.functions;
+              new_func[i].highlight = true;
+              modifyCanvas(el.func, () => {
+                let new_func = this.state.functions;
+                new_func[i].highlight = false;
+                this.setState({ functions: new_func });
+              });
+              this.setState({ functions: new_func });
+            }
+          }
+          >{el.str}</div>
         ))}
       </div>
     );

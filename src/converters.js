@@ -104,7 +104,7 @@ const convertToEG = (formula) => {
       let symConversion = operators.eg[binary[3]];
       return symConversion.replace(/\$1/g, left).replace(/\$2/g, right)
     } else if (parenthesis) {
-      if (countUnary(formula) != 0) {
+      if (countUnary(formula) !== 0) {
         return stripUnary(formula)
       }
       return convertToEG(parenthesis[1]);

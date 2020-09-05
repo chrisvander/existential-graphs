@@ -71,7 +71,9 @@ class Canvas extends React.Component {
     this.changePos = this.changePos.bind(this);
     this.getSVGCoords = this.getSVGCoords.bind(this);
     this.highlightCut = this.highlightCut.bind(this);
-    this.startSelection = this.startSelection.bind(this);
+    this.modifyCanvas = this.modifyCanvas.bind(this);
+
+    this.getSelection = this.getSelection.bind(this);
 
     let { premises, conclusion, steps, data } = this.props.proof;
     console.log(steps.length - 1)
@@ -91,58 +93,73 @@ class Canvas extends React.Component {
         var: 'none'
       },
       cbFunction: null,
+      finishCB: null,
       interaction: true,
       functions: {
-        insert: (id) => {
-          console.log("INSERTION")
-        },
-        erase: (id) => {
-          console.log("ERASURE")
-          return manipulate(this.state).erasure(id);
-        },
-        iterate: (id) => {
-          console.log("ITERATION")
-          return manipulate(this.state).iteration(id, this.state.steps[this.state.currentStep].data[0].id);
-        },
-        dcRemove: (id) => {
-          console.log("DOUBLE CUT Remove")
-          return manipulate(this.state).doubleCutRemove(id);
-        },
-        dcAdd: (id) => {
-          console.log("DOUBLE CUT Add")
-          return manipulate(this.state).doubleCutAdd(id);
-          
-        }
+        insertion: () => manipulate(this).insertion(),
+        erasure: () => manipulate(this).erasure(),
+        iteration: () => manipulate(this).iteration(),
+        doubleCutRemove: () => manipulate(this).doubleCutRemove(),
+        doubleCutAdd: () => manipulate(this).doubleCutAdd()
       }
     }
   }
 
-  startSelection(selectable, nameOfFunction) {
-    let { steps, currentStep, changeHistory } = this.state;
+  /**
+   * Function to enable selection of a cut or variable.
+   * @param  {Object} selectConfig  object that contains highlight selection params
+   *
+   * selectConfig object should look like { 'cut': 'all', 'var': 'all' }
+   * Omitted 'cut' or 'var' will result in either not allowing selection. Beyond 'all',
+   * 'even' or 'odd' level cuts can be specified.
+   */
+  getSelection(selectConfig) {
+    return new Promise((resolve, reject) => {
+      let { steps, currentStep } = this.state;
+      // only allow steps to be conducted at the end of a proof
+      if (currentStep+1 !== steps.length) {
+        return
+      }
+      this.setState({ 
+        highlights: selectConfig, 
+        interaction: false, 
+        cbFunction: (id) => {
+          if (this.state.finishCB) 
+            this.state.finishCB();
+          this.setState({  
+            highlights: {
+              cut: 'none', 
+              var: 'none'
+            },
+            interaction: true, 
+            cbFunction: null });
+          resolve(id);
+        }
+      });
+    });
+  }
+
+  modifyCanvas(nameOfFunction, finishedCb) {
+    // before we modify the canvas, let's save the current state
+    let { steps, changeHistory } = this.state;
     changeHistory = changeHistory.slice()
     changeHistory.push({ steps: Array.from(steps) });
-    // only allow steps to be conducted at the end of a proof
-    if (currentStep+1 !== steps.length) {
-      return
+    // okay, now we call the requested function from Toolbox
+    // 
+    // cancel any previous actions
+    if (this.state.cbFunction) {
+      this.state.cbFunction(null);
     }
-    this.setState({ 
-      highlights: selectable, 
-      interaction: false, 
-      cbFunction: (id) => {
-        let state = this.state.functions[nameOfFunction](id); 
-        if (state) 
-          this.setState({ 
-            changeHistory: changeHistory, 
-            redoHistory: [],
-            ...state });
-        this.setState({  
-          highlights: {
-            cut: 'none', 
-            var: 'none'
-          },
-          interaction: true, 
-          cbFunction: null });
+    this.setState({ finishCB: finishedCb }, () => {
+      this.state.functions[nameOfFunction]().then(state => {
+      if (state) {
+        // now we can apply the new changeHistory
+        this.setState({ 
+          changeHistory: changeHistory, 
+          redoHistory: [],
+          ...state });
       }
+      });
     });
   }
 
@@ -311,7 +328,7 @@ class Canvas extends React.Component {
           <Toolbox 
             hidden={currentStep+1 !== steps.length}
             functions={this.state.functions}
-            setSelection={this.startSelection}
+            modifyCanvas={this.modifyCanvas}
           />
           <svg 
             ref={this.canvasContainer}
