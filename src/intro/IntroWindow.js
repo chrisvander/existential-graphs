@@ -15,8 +15,14 @@ const IntroContent = ({ recentDocs }) => (
     <div className="column">
       <h1>Recent Proofs</h1>
       {Object.keys(recentDocs).map(name => (
-        <div className="proofField" onClick={() => recentDocs[name].open()}>
-          {name}
+        <div className="proofField" style={{ display: 'flex', justifyContent: 'space-between' }} >
+          <span onClick={() => recentDocs[name].open()}>
+            {name}
+          </span>
+          <span 
+            style={{ color: 'gray' }} 
+            onClick={() => recentDocs[name].delete()}
+          >Delete</span>
         </div>
       ))}
     </div>

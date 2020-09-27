@@ -114,23 +114,27 @@ class CreateNew extends React.Component {
         </table>
         <h2>Premises</h2>
         <table className="formulaTable">
-          <tr>
-              <td>
-                Formula
+          <tbody>
+            <tr>
+                <td>
+                  Formula
+                </td>
+              <td>TeX notation</td><td>EG notation</td><td className="close"/>
+            </tr>
+            {premises.map((formula,i) => this.getFormulaCell(formula, i))}
+            <tr>
+              <td className="interactive" onClick={() => this.setState({ premises: premises.concat(['']) }) }>
+                <span className="plus" />Add New Premise
               </td>
-            <td>TeX notation</td><td>EG notation</td><td className="close"/>
-          </tr>
-          {premises.map((formula,i) => this.getFormulaCell(formula, i))}
-          <tr>
-            <td className="interactive" onClick={() => this.setState({ premises: premises.concat(['']) }) }>
-              <span className="plus" />Add New Premise
-            </td>
-            <td/><td/><td className="close"/>
-          </tr>
+              <td/><td/><td className="close"/>
+            </tr>
+          </tbody>
         </table>
         <h2>Conclusion</h2>
         <table className="formulaTable">
-          {this.getFormulaCell(conclusion)}
+          <tbody>
+            {this.getFormulaCell(conclusion)}
+          </tbody>
         </table>
       </div>
     );

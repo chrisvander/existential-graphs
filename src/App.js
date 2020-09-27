@@ -81,6 +81,13 @@ class App extends React.Component {
         });
         this.openCanvas();
       }
+      recents[keys[i]].delete = () => {
+        let rArray = localStorage.getItem('recentDocs');
+        rArray = rArray ? JSON.parse(rArray) : {}
+        delete rArray[keys[i]];
+        localStorage.setItem('recentDocs', JSON.stringify(rArray));
+        this.setState({ recentDocs: rArray });
+      }
     }
     return recents;
   }
