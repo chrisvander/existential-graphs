@@ -184,3 +184,44 @@
   opacity: 1;
   transition: 1.0s;
 }
+
+.insertOverlay {
+  border-radius: 25px;
+  padding: 15px;
+  background-color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0.5px 3px 0 rgba(0,0,0,0.35);
+  h1 {
+    font-size: 2.4rem;
+  }
+  .check {
+    width: inherit;
+    height: inherit;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .buttons {
+    margin-top: 20px;
+    float: right;
+    button {
+      border-radius: 15px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.mainCanvas {
+  transition: 
+    0.5s filter ease-in-out, 
+    0.5s -webkit-filter ease-in-out !important;
+  background-color: rgb(255,255,255);
+}
+
+.mainCanvas.disabled {
+  pointer-events: none;
+  filter: brightness(0.5);
+  backdrop-filter: brightness(0.5);
+}

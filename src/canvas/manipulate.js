@@ -29,7 +29,8 @@ module.exports = ({ state, getSelection, getInsertionPoint }) => {
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
       // If the insertID data is not in a subgraph of the copID data, return
-      if (!this.isInNestedGraph(step, insertID, copyID)) {
+      let parentID = this.findParent(step, copyID).id;
+      if (!this.isInNestedGraph(step, insertID, parentID)) {
         console.log("Insert selection is not in a subgraph of Copy selection");
         return null;
       }
@@ -44,6 +45,7 @@ module.exports = ({ state, getSelection, getInsertionPoint }) => {
         console.log("Insert ID could not be found in Iterate");
         return null;
       }
+      console.log(copy)
       insert.data = insert.data.concat(copy);
       let newCopyID = copy;
       if (typeof copy !== 'string')

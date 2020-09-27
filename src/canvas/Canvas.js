@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertToArray } from '../converters';
+import { convertToArray, convertToTeX, convertToEG } from '../converters';
 import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
 import EGVariable from './EGVariable';
@@ -10,6 +10,10 @@ import DropdownMenu from './DropdownMenu';
 import config from './config';
 import manipulate from './manipulate';
 import { CSSTransitionGroup } from 'react-transition-group';
+// KATEX
+import 'katex/dist/katex.min.css';
+import TeX from '@matejmazur/react-katex';
+
 const nanoid = require('nanoid').nanoid;
 
 /**
@@ -105,7 +109,9 @@ class Canvas extends React.Component {
         doubleCutRemove: () => manipulate(this).doubleCutRemove(),
         doubleCutEnclose: () => manipulate(this).doubleCutEnclose(),
         doubleCutAdd: () => manipulate(this).doubleCutAdd(),
-      }
+      },
+      formula: '',
+      fitchNotation: false
     }
   }
 
@@ -247,7 +253,7 @@ class Canvas extends React.Component {
     currentStep.push(id);
     this.setState({ data });
   }
-  
+
   removeElement(id) {
     let { steps } = this.state;
     steps[this.state.currentStep].push(id);
@@ -383,6 +389,8 @@ class Canvas extends React.Component {
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel
     // CSSTransitionGroup lets us have entry fade-in
+    let tex = convertToTeX(this.state.formula);
+    let eg = convertToEG(this.state.formula);
     return (
       <CSSTransitionGroup
         transitionName="fadein"
@@ -390,7 +398,43 @@ class Canvas extends React.Component {
         transitionAppearTimeout={500}
         transitionEnter={false}
         transitionLeaveTimeout={300}>
-        <div key={'main-div'} className="noselect">
+        <div className="insertOverlay">
+          <h1>Formula to Insert</h1>
+          <input 
+            name="notation" 
+            type="checkbox" 
+            className="check" 
+            onChange={ (e) => this.setState({ fitchNotation: !this.state.fitchNotation }) } />
+          <label for="notation">&nbsp;Use Fitch-style notation</label><br />
+          {this.state.fitchNotation ? (
+              <div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td style={{ width: '40%' }}>
+                        <input onChange={ (e) => this.setState({ formula: e.target.value }) } />
+                      </td>
+                      <td>
+                        {tex && <TeX math={tex} />}
+                      </td>
+                    </tr>
+                    <tr />
+                  </tbody>
+                </table>
+                To insert: {eg && <TeX math={eg} />}
+              </div>
+            ) : (
+              <div>
+                <input onChange={ (e) => this.setState({ formula: e.target.value }) } /><br />
+                To insert: <TeX math={this.state.formula} />
+              </div>
+            )}
+          <span className='buttons'>
+            <button>Insert</button>
+            <button>Cancel</button>
+          </span>
+        </div>
+        <div key={'main-div'} className="mainCanvas noselect">
           <DropdownMenu 
             menuItems={this.props.menuItems}/>
           <Toolbox 
