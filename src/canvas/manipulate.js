@@ -1,11 +1,13 @@
 const nanoid = require('nanoid').nanoid;
 
-module.exports = ({ state, getSelection }) => { 
+module.exports = ({ state, getSelection, getInsertionPoint }) => { 
   return {
     state: state,
 
     insertion: async function () {
-      await getSelection({ 'cut': 'odd', 'var': 'odd' });
+      let { id, x, y } = await getInsertionPoint();
+      console.log(id, x, y)
+      // await getSelection({ 'cut': 'odd', 'var': 'odd' });
       // let id = nanoid()
       // state.data[id] = { 
       //   type: "var",
@@ -139,21 +141,16 @@ module.exports = ({ state, getSelection }) => {
     *  Will only run if the current step is the last step.
     */
     doubleCutAdd: async function () {
-      var id = await getSelection({ 'cut': 'all', 'var': 'all' });
+      let { id, x, y } = await getInsertionPoint();
       let { steps, currentStep, data } = this.state;
       // create a new step
       let step = this.copyStep(steps[currentStep]);
-      // use findID to find the data represented by the id
-      // this is the data that will be inside the two new cuts
-      let inside = this.findID(step, id);
-      if (!inside) {
-        return null;
-      }
       // create a new cut with another one inside it
       let cut1_id = nanoid();
       let cut2_id = nanoid();
+      let empty_id = nanoid();
       let cut2 = {
-        data: [inside],
+        data: [empty_id],
         id: cut2_id,
         type: "cut"
       }
@@ -163,28 +160,30 @@ module.exports = ({ state, getSelection }) => {
         type: "cut"
       }
       // Set the levels of the two cuts
-      let level = data[id].level
-      data[cut2_id] = { type: "cut", level: level + 1};
-      data[cut1_id] = { type: "cut", level: level};
-      // increase the level of the inside cut along with all cuts inside of it by 2
-      this.changeCutLevel(step, id, 2)
+      let level = id ? data[id].level : -1;
+      data[cut2_id] = { type: "cut", level: level + 2 };
+      data[cut1_id] = { type: "cut", level: level + 1 };
+      data[empty_id] = {
+        x, y,
+        type: "emptyvar", 
+        var: "\xa0",
+        level: level + 3 
+      };
 
       // get the parent of the selection
-      let parent = this.findParent(step, id)
-      if (!parent) {
-        return null;
+      if (id) {
+        let stepEl = this.findID(step, id);
+        // append new cuts
+        stepEl.data.push(cut1);
       }
-      // Add the contents of the new cuts to the data array
-      // after removing the original contents
-      const index = parent.data.indexOf(inside);
-      if (index > -1) {
-        parent.data.splice(index, 1);
+      else {
+        step.data.push(cut1);
       }
-      parent.data = parent.data.concat(cut1);
+      
       // Change the state data accordingly
-      currentStep+=1;
+      currentStep += 1;
       steps.push(step);
-      return { steps: steps, currentStep: currentStep, data:data };
+      return { steps: steps, currentStep: currentStep, data: data };
     },
 
     /* Removes a double cut given the ID of the outside cut.

@@ -71,8 +71,10 @@ class Canvas extends React.Component {
     this.getSVGCoords = this.getSVGCoords.bind(this);
     this.highlightCut = this.highlightCut.bind(this);
     this.modifyCanvas = this.modifyCanvas.bind(this);
+    this.getInsertionPoint = this.getInsertionPoint.bind(this);
     this.cancelSelection = this.cancelSelection.bind(this);
     this.createElement = this.createElement.bind(this);
+    this.clickedCanvas = this.clickedCanvas.bind(this);
 
     this.getSelection = this.getSelection.bind(this);
 
@@ -90,7 +92,8 @@ class Canvas extends React.Component {
       moveListeners: [],
       highlights: {
         cut: 'none', // 'none', 'odd', 'even', 'all'
-        var: 'none'
+        var: 'none',
+        canvas: false
       },
       cbFunction: null,
       finishCB: null,
@@ -107,6 +110,48 @@ class Canvas extends React.Component {
   }
 
   /**
+   * Function to select a point on the canvas or inside a cut, where the x,y coordinate
+   * gets returned along with a cut ID, if selected.
+   */
+  getInsertionPoint() {
+    let getCanvasInsertion = new Promise((resolve, reject) => {
+      this.setState({
+        canvasCb: (x,y) => {
+          this.setState({ canvasCb: null })
+          resolve({ x, y });
+          
+          setTimeout(() => {
+            if (this.state.cbFunction) {
+              this.state.cbFunction(null);
+              this.setState({ cbFunction: null });
+            }
+          }, 50);
+        }
+      })
+    });
+    return new Promise(async (resolve, reject) => {
+      let data = await Promise.all([this.getSelection({
+        'cut': 'all',
+        'var': 'none',
+        'canvas': true
+      }), getCanvasInsertion])
+      this.setState({  
+        highlights: {
+          cut: 'none', 
+          var: 'none',
+          canvas: false
+        },
+        finishCB: null,
+        canvasCb: null,
+        interaction: true, 
+        cbFunction: null }, () => {
+          let [id, { x, y }] = data;
+          resolve({ id, x, y });
+        });
+    })
+  }
+
+  /**
    * Function to enable selection of a cut or variable.
    * @param  {Object} selectConfig  object that contains highlight selection params
    *
@@ -117,6 +162,7 @@ class Canvas extends React.Component {
   getSelection(selectConfig) {
     return new Promise((resolve, reject) => {
       let { steps, currentStep } = this.state;
+      console.log(selectConfig)
       // only allow steps to be conducted at the end of a proof
       if (currentStep+1 !== steps.length) {
         return
@@ -131,12 +177,12 @@ class Canvas extends React.Component {
           this.setState({  
             highlights: {
               cut: 'none', 
-              var: 'none'
+              var: 'none',
+              canvas: false
             },
             finishCB: null,
             interaction: true, 
-            cbFunction: null });
-          resolve(id);
+            cbFunction: null }, () => resolve(id));
         }
       });
     });
@@ -198,13 +244,12 @@ class Canvas extends React.Component {
     data[id].y = y || 0;
     data[id].type = type;
     data[id].var = text;
-    console.log(text,type,currentStep)
     currentStep.push(id);
     this.setState({ data });
   }
-
+  
   removeElement(id) {
-    let { data, steps } = this.state;
+    let { steps } = this.state;
     steps[this.state.currentStep].push(id);
   }
 
@@ -322,8 +367,15 @@ class Canvas extends React.Component {
     return pt.matrixTransform(this.canvas.current.getScreenCTM().inverse());
   }
 
+  clickedCanvas(e) {
+    if (this.state.canvasCb) {
+      let { x, y } = this.getSVGCoords(e.pageX,e.pageY)
+      this.state.canvasCb(x,y);
+    }
+  }
+
   render() {
-    let { proof, data, steps, currentStep } = this.state;
+    let { proof, data, steps, currentStep, highlight } = this.state;
     // every time a re-render happens, ensure top-level state is up-to-date
     this.props.saveProof({...proof, data, steps});
     // zooming function does nothing unless panzoom is initialized
@@ -350,7 +402,14 @@ class Canvas extends React.Component {
           <svg 
             ref={this.canvasContainer}
             className="canvas noselect" 
-            onWheel={zoomWithWheel} >
+            onWheel={zoomWithWheel} 
+            onClick={this.clickedCanvas}
+            onMouseEnter={() => this.setState({ highlight: true })}
+            onMouseLeave={() => this.setState({ highlight: false })}
+            style={this.state.canvasCb ? {
+              cursor: 'crosshair',
+              backgroundColor: highlight ? "#BAC8B9" : "white"
+            } : {}}>
             <g ref={this.canvas}>
               {this.panzoom && this.renderStep(this.state.currentStep)}
             </g>

@@ -76,8 +76,8 @@ class EGCut extends React.Component {
           strokeOpacity="1"
           stroke="black"
           fill={highlight ? "#9AA899" : "white"}
-          onMouseEnter={() => this.setState({ highlight: true })}
-          onMouseLeave={() => this.setState({ highlight: false })}
+          onMouseEnter={(e) => this.setState({ highlight: true })}
+          onMouseLeave={(e) => this.setState({ highlight: false })}
           rx={config.cutCornerRadius.toString()} 
           ry={config.cutCornerRadius.toString()}
         />

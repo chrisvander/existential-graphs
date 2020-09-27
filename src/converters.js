@@ -78,6 +78,9 @@ function countUnary(statement) {
  * @return {[type]}
  */
 const stripUnary = (s, convertStatement) => {
+
+  console.log(s)
+  console.log(convertStatement)
   if (convertStatement == null) 
     convertStatement = true;
   let c = countUnary(s);
@@ -105,7 +108,7 @@ const convertToEG = (formula) => {
       return symConversion.replace(/\$1/g, left).replace(/\$2/g, right)
     } else if (parenthesis) {
       if (countUnary(formula) !== 0) {
-        return stripUnary(formula)
+        return stripUnary(formula.substr(1,formula.length-2), true);
       }
       return convertToEG(parenthesis[1]);
     } else if (unary) {
