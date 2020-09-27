@@ -33,7 +33,6 @@ function initXY(step, level) {
   // in between two variables, so that we can evenly place 
   // them initially across the screen
   function initXYRecurse(step, level, gapSize) {
-    console.log(data)
     for (let s in step) {
       if (step[s] instanceof Array && step[s].length > 0) {
         let id = nanoid()
@@ -72,11 +71,12 @@ class Canvas extends React.Component {
     this.getSVGCoords = this.getSVGCoords.bind(this);
     this.highlightCut = this.highlightCut.bind(this);
     this.modifyCanvas = this.modifyCanvas.bind(this);
+    this.cancelSelection = this.cancelSelection.bind(this);
+    this.createElement = this.createElement.bind(this);
 
     this.getSelection = this.getSelection.bind(this);
 
     let { premises, conclusion, steps, data } = this.props.proof;
-    console.log(steps.length - 1)
     this.state = {
       proof: {
         premises: premises,
@@ -100,7 +100,8 @@ class Canvas extends React.Component {
         erasure: () => manipulate(this).erasure(),
         iteration: () => manipulate(this).iteration(),
         doubleCutRemove: () => manipulate(this).doubleCutRemove(),
-        doubleCutAdd: () => manipulate(this).doubleCutAdd()
+        doubleCutEnclose: () => manipulate(this).doubleCutEnclose(),
+        doubleCutAdd: () => manipulate(this).doubleCutAdd(),
       }
     }
   }
@@ -124,13 +125,15 @@ class Canvas extends React.Component {
         highlights: selectConfig, 
         interaction: false, 
         cbFunction: (id) => {
-          if (this.state.finishCB) 
+          if (this.state.finishCB) {
             this.state.finishCB();
+          }
           this.setState({  
             highlights: {
               cut: 'none', 
               var: 'none'
             },
+            finishCB: null,
             interaction: true, 
             cbFunction: null });
           resolve(id);
@@ -145,22 +148,22 @@ class Canvas extends React.Component {
     changeHistory = changeHistory.slice()
     changeHistory.push({ steps: Array.from(steps) });
     // okay, now we call the requested function from Toolbox
-    // 
-    // cancel any previous actions
-    if (this.state.cbFunction) {
-      this.state.cbFunction(null);
-    }
     this.setState({ finishCB: finishedCb }, () => {
       this.state.functions[nameOfFunction]().then(state => {
-      if (state) {
-        // now we can apply the new changeHistory
-        this.setState({ 
-          changeHistory: changeHistory, 
-          redoHistory: [],
-          ...state });
-      }
+        if (state) {
+          // now we can apply the new changeHistory
+          this.setState({ 
+            changeHistory: changeHistory, 
+            redoHistory: [],
+            ...state });
+        }
       });
     });
+  }
+
+  cancelSelection() {
+    let { cbFunction } = this.state;
+    if (cbFunction) cbFunction();
   }
 
   changePos(id, x, y) {
@@ -187,6 +190,24 @@ class Canvas extends React.Component {
     return false;
   }
 
+  createElement(text, type, currentStep, x, y) {
+    let { data } = this.state;
+    let id = nanoid();
+    data[id] = {};
+    data[id].x = x || 0;
+    data[id].y = y || 0;
+    data[id].type = type;
+    data[id].var = text;
+    console.log(text,type,currentStep)
+    currentStep.push(id);
+    this.setState({ data });
+  }
+
+  removeElement(id) {
+    let { data, steps } = this.state;
+    steps[this.state.currentStep].push(id);
+  }
+
   renderStep(stepIndex) {
     let { data } = this.state;
     let step = this.state.steps[stepIndex]
@@ -200,13 +221,7 @@ class Canvas extends React.Component {
       const renderRecurse = (step) => {
         let jsx = [];
         if (step.length === 0) {
-          let id = nanoid();
-          data[id] = {};
-          setXY(id, 0, 0);
-          data[id].type = "emptyvar";
-          data[id].var = "\xa0";
-          step.push(id);
-          this.setState({ data: data });
+          this.createElement("\xa0", "emptyvar", step, 0, 0);
         }
         for (let s in step) {
           if (step[s].type === "cut") {
@@ -216,6 +231,7 @@ class Canvas extends React.Component {
                 level={level} 
                 enableHighlight={this.highlightCut(level)}
                 id={step[s].id}
+                key={step[s].id}
                 selectedCallback={this.state.cbFunction}>
                 {renderRecurse(step[s].data)}
               </EGCut>
@@ -239,7 +255,7 @@ class Canvas extends React.Component {
                 {el.var}
               </EGVariable>
             );
-          } else if (this.state.data[step[s]].type === "emptyvar") {
+          } else if (this.state.data[step[s]].type === "emptyvar" && step.length === 1) {
             let el = this.state.data[step[s]];
             jsx.unshift(
               <EGVariable 
@@ -307,7 +323,7 @@ class Canvas extends React.Component {
   }
 
   render() {
-    let { proof, data, steps, currentStep } = this.state; 
+    let { proof, data, steps, currentStep } = this.state;
     // every time a re-render happens, ensure top-level state is up-to-date
     this.props.saveProof({...proof, data, steps});
     // zooming function does nothing unless panzoom is initialized
@@ -329,6 +345,7 @@ class Canvas extends React.Component {
             hidden={currentStep+1 !== steps.length}
             functions={this.state.functions}
             modifyCanvas={this.modifyCanvas}
+            cancelSelection={this.cancelSelection}
           />
           <svg 
             ref={this.canvasContainer}
@@ -344,7 +361,12 @@ class Canvas extends React.Component {
             setStep={s => this.setState({ currentStep: s, interaction: s === this.state.steps.length - 1 })}
             state={this.state}
             setState={(changeHistory, newSteps, redoHistory) => {
-              this.setState({ changeHistory: changeHistory, steps: newSteps, redoHistory: redoHistory, currentStep: newSteps.length - 1 });
+              this.setState({ 
+                changeHistory: changeHistory, 
+                steps: newSteps, 
+                redoHistory: redoHistory, 
+                currentStep: newSteps.length - 1 
+              });
             }}
           />
         </div>

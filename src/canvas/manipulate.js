@@ -38,7 +38,7 @@ module.exports = ({ state, getSelection }) => {
         return null;
       }
       let insert = this.findID(step, insertID);
-      if (!insert) {
+      if (!insert.data) {
         console.log("Insert ID could not be found in Iterate");
         return null;
       }
@@ -56,6 +56,7 @@ module.exports = ({ state, getSelection }) => {
 
     erasure: async function () {
       let id = await getSelection({ 'cut': 'even', 'var': 'even' });
+      if (id==null) return this.state;
       let { steps, currentStep, data } = this.state;
       // Create a new step
       let step = this.copyStep(steps[currentStep]);
@@ -80,6 +81,58 @@ module.exports = ({ state, getSelection }) => {
       currentStep += 1;
       steps.push(step);
       return { steps: steps, currentStep: currentStep, data: data };
+    },
+
+    /* Adds a double cut given the ID of the data that will be inside the cut.
+    *  Will only run if the current step is the last step.
+    */
+    doubleCutEnclose: async function () {
+      var id = await getSelection({ 'cut': 'all', 'var': 'all' });
+      let { steps, currentStep, data } = this.state;
+      // create a new step
+      let step = this.copyStep(steps[currentStep]);
+      // use findID to find the data represented by the id
+      // this is the data that will be inside the two new cuts
+      let inside = this.findID(step, id);
+      if (!inside) {
+        return null;
+      }
+      // create a new cut with another one inside it
+      let cut1_id = nanoid();
+      let cut2_id = nanoid();
+      let cut2 = {
+        data: [inside],
+        id: cut2_id,
+        type: "cut"
+      }
+      let cut1 = {
+        data: [cut2],
+        id: cut1_id,
+        type: "cut"
+      }
+      // Set the levels of the two cuts
+      let level = data[id].level
+      data[cut2_id] = { type: "cut", level: level + 1};
+      data[cut1_id] = { type: "cut", level: level};
+      // increase the level of the inside cut along with all cuts inside of it by 2
+      this.changeCutLevel(step, id, 2)
+
+      // get the parent of the selection
+      let parent = this.findParent(step, id)
+      if (!parent) {
+        return null;
+      }
+      // Add the contents of the new cuts to the data array
+      // after removing the original contents
+      const index = parent.data.indexOf(inside);
+      if (index > -1) {
+        parent.data.splice(index, 1);
+      }
+      parent.data = parent.data.concat(cut1);
+      // Change the state data accordingly
+      currentStep+=1;
+      steps.push(step);
+      return { steps: steps, currentStep: currentStep, data:data };
     },
 
     /* Adds a double cut given the ID of the data that will be inside the cut.
