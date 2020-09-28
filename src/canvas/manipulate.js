@@ -1,6 +1,6 @@
 const nanoid = require('nanoid').nanoid;
 
-module.exports = ({ state, getSelection, getInsertionPoint, requestInput }) => { 
+export default ({ state, getSelection, getInsertionPoint, requestInput }) => { 
   return {
     state: state,
 
@@ -34,7 +34,10 @@ module.exports = ({ state, getSelection, getInsertionPoint, requestInput }) => {
     iteration: async function () {
       let copyID = await getSelection({ 'cut': 'all', 'var': 'all' });
       if (!copyID) return null;
-      let insertID = await getSelection({ 'cut': 'all', 'var': 'all' });
+      let insertData = await getInsertionPoint();
+      if (!insertData) return null;
+      let { id, x, y } = insertData;
+      let insertID = id;
       if (!insertID) return null;
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
@@ -51,22 +54,20 @@ module.exports = ({ state, getSelection, getInsertionPoint, requestInput }) => {
         return null;
       }
       let insert = this.findID(step, insertID);
-      console.log(insert)
       if (!insert.data) {
         console.log("Insert ID could not be found in Iterate");
         return null;
       }
-      console.log(copy)
       insert.data = insert.data.concat(copy);
       let newCopyID = copy;
       if (typeof copy !== 'string')
-        newCopyID =  copy.id
+        newCopyID = copy.id
       // Change the levels of the copy data
       this.changeCutLevel(step, newCopyID, data[insert.id].level + 1)
       // Update the state
       currentStep += 1;
       steps.push(step);
-      return { steps: steps, currentStep: currentStep, data: data };
+      return { steps: steps, currentStep: currentStep, data: this.offsetPosition(data, step, copy.id) };
     },
 
     erasure: async function () {
@@ -509,6 +510,17 @@ module.exports = ({ state, getSelection, getInsertionPoint, requestInput }) => {
         }
       }
       return findIDMap(searchedStep);
+    },
+
+    /**
+     * Provided a data array, adds an x,y offset to the elements contained
+     * inside the provided id for visual differentiation
+     * @return {data} Data object
+     */
+    offsetPosition: function(data, step, id) {
+      let toSearch = this.findID(step, id);
+      console.log(data)
+      return data;
     }
   };
 }
