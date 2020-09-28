@@ -42,9 +42,14 @@ export default ({ state, getSelection, getInsertionPoint, requestInput }) => {
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
       // If the insertID data is not in a subgraph of the copyID data, return
+      let levelOffset = 1;
       if (!this.isInNestedGraph(step, insertID, copyID)) {
-        console.log("Insert selection is not in a subgraph of Copy selection");
-        return null;
+        if (insertID === this.findParent(step, copyID).id) {
+          levelOffset = 0;
+        } else {
+          console.log("Insert selection is not in a subgraph of Copy selection");
+          return null;
+        }
       }
       // use findID to find the data represented by the two IDs
       let copy = this.copyContents(this.findID(step, copyID));
@@ -63,7 +68,7 @@ export default ({ state, getSelection, getInsertionPoint, requestInput }) => {
       if (typeof copy !== 'string')
         newCopyID = copy.id
       // Change the levels of the copy data
-      this.changeCutLevel(step, newCopyID, data[insert.id].level + 1)
+      this.changeCutLevel(step, newCopyID, data[insert.id].level + levelOffset)
       // Update the state
       currentStep += 1;
       steps.push(step);
@@ -254,7 +259,6 @@ export default ({ state, getSelection, getInsertionPoint, requestInput }) => {
         console.log("Parent Data could not be found");
         return false;
       }
-      if (childID === parentStep.id) return true;
       let childStep = this.findID(parentStep, childID);
       if (!childStep) {
         console.log("Child is not in nested graph of Parent");
