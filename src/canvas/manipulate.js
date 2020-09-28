@@ -1,12 +1,20 @@
 const nanoid = require('nanoid').nanoid;
 
-module.exports = ({ state, getSelection, getInsertionPoint }) => { 
+module.exports = ({ state, getSelection, getInsertionPoint, requestInput }) => { 
   return {
     state: state,
 
     insertion: async function () {
-      let { id, x, y } = await getInsertionPoint();
+      let pt = await getInsertionPoint();
+      console.log(pt)
+      if (!pt) return null;
+      let { id, x, y } = pt;
+      let input = await requestInput();
+      if (!input) return null;
+
       console.log(id, x, y)
+      console.log(input)
+
       // await getSelection({ 'cut': 'odd', 'var': 'odd' });
       // let id = nanoid()
       // state.data[id] = { 
@@ -25,22 +33,25 @@ module.exports = ({ state, getSelection, getInsertionPoint }) => {
      */
     iteration: async function () {
       let copyID = await getSelection({ 'cut': 'all', 'var': 'all' });
+      if (!copyID) return null;
       let insertID = await getSelection({ 'cut': 'all', 'var': 'all' });
+      if (!insertID) return null;
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
-      // If the insertID data is not in a subgraph of the copID data, return
-      let parentID = this.findParent(step, copyID).id;
-      if (!this.isInNestedGraph(step, insertID, parentID)) {
+      // If the insertID data is not in a subgraph of the copyID data, return
+      if (!this.isInNestedGraph(step, insertID, copyID)) {
         console.log("Insert selection is not in a subgraph of Copy selection");
         return null;
       }
       // use findID to find the data represented by the two IDs
       let copy = this.copyContents(this.findID(step, copyID));
+      console.log(copy)
       if (!copy) {
         console.log("Copy ID could not be found in Iterate");
         return null;
       }
       let insert = this.findID(step, insertID);
+      console.log(insert)
       if (!insert.data) {
         console.log("Insert ID could not be found in Iterate");
         return null;
@@ -144,6 +155,7 @@ module.exports = ({ state, getSelection, getInsertionPoint }) => {
     */
     doubleCutAdd: async function () {
       let { id, x, y } = await getInsertionPoint();
+      if (!x || !y) return null;
       let { steps, currentStep, data } = this.state;
       // create a new step
       let step = this.copyStep(steps[currentStep]);
@@ -241,6 +253,7 @@ module.exports = ({ state, getSelection, getInsertionPoint }) => {
         console.log("Parent Data could not be found");
         return false;
       }
+      if (childID === parentStep.id) return true;
       let childStep = this.findID(parentStep, childID);
       if (!childStep) {
         console.log("Child is not in nested graph of Parent");

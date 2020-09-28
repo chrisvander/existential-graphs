@@ -76,6 +76,7 @@ class Canvas extends React.Component {
     this.highlightCut = this.highlightCut.bind(this);
     this.modifyCanvas = this.modifyCanvas.bind(this);
     this.getInsertionPoint = this.getInsertionPoint.bind(this);
+    this.requestInput = this.requestInput.bind(this);
     this.cancelSelection = this.cancelSelection.bind(this);
     this.createElement = this.createElement.bind(this);
     this.clickedCanvas = this.clickedCanvas.bind(this);
@@ -111,6 +112,7 @@ class Canvas extends React.Component {
         doubleCutAdd: () => manipulate(this).doubleCutAdd(),
       },
       formula: '',
+      eg: '',
       fitchNotation: false
     }
   }
@@ -124,13 +126,12 @@ class Canvas extends React.Component {
       this.setState({
         canvasCb: (x,y) => {
           this.setState({ canvasCb: null })
-          resolve({ x, y });
           
           setTimeout(() => {
             if (this.state.cbFunction) {
               this.state.cbFunction(null);
-              this.setState({ cbFunction: null });
-            }
+              this.setState({ cbFunction: null }, () => resolve({ x, y }));
+            } else resolve({ x, y });
           }, 50);
         }
       })
@@ -141,6 +142,9 @@ class Canvas extends React.Component {
         'var': 'none',
         'canvas': true
       }), getCanvasInsertion])
+      if (this.state.finishCB) {
+        this.state.finishCB();
+      }
       this.setState({  
         highlights: {
           cut: 'none', 
@@ -168,7 +172,6 @@ class Canvas extends React.Component {
   getSelection(selectConfig) {
     return new Promise((resolve, reject) => {
       let { steps, currentStep } = this.state;
-      console.log(selectConfig)
       // only allow steps to be conducted at the end of a proof
       if (currentStep+1 !== steps.length) {
         return
@@ -177,16 +180,12 @@ class Canvas extends React.Component {
         highlights: selectConfig, 
         interaction: false, 
         cbFunction: (id) => {
-          if (this.state.finishCB) {
-            this.state.finishCB();
-          }
           this.setState({  
             highlights: {
               cut: 'none', 
               var: 'none',
               canvas: false
             },
-            finishCB: null,
             interaction: true, 
             cbFunction: null }, () => resolve(id));
         }
@@ -202,6 +201,9 @@ class Canvas extends React.Component {
     // okay, now we call the requested function from Toolbox
     this.setState({ finishCB: finishedCb }, () => {
       this.state.functions[nameOfFunction]().then(state => {
+        if (this.state.finishCB) {
+          this.state.finishCB();
+        }
         if (state) {
           // now we can apply the new changeHistory
           this.setState({ 
@@ -214,8 +216,10 @@ class Canvas extends React.Component {
   }
 
   cancelSelection() {
-    let { cbFunction } = this.state;
+    let { cbFunction, canvasCb, finishCB } = this.state;
     if (cbFunction) cbFunction();
+    if (canvasCb) canvasCb();
+    if (finishCB) finishCB();
   }
 
   changePos(id, x, y) {
@@ -380,8 +384,21 @@ class Canvas extends React.Component {
     }
   }
 
+  requestInput() {
+    return new Promise((resolve, reject) => {
+      this.setState({ 
+        showOverlay: true,
+        cbFunction: (formula) => {
+          if (formula == null) resolve(null);
+          else resolve(formula);
+          this.setState({ showOverlay: false });
+        } 
+      });
+    });
+  }
+
   render() {
-    let { proof, data, steps, currentStep, highlight } = this.state;
+    let { proof, data, steps, currentStep, highlight, showOverlay } = this.state;
     // every time a re-render happens, ensure top-level state is up-to-date
     this.props.saveProof({...proof, data, steps});
     // zooming function does nothing unless panzoom is initialized
@@ -398,13 +415,15 @@ class Canvas extends React.Component {
         transitionAppearTimeout={500}
         transitionEnter={false}
         transitionLeaveTimeout={300}>
-        <div className="insertOverlay">
+        <div className={`insertOverlay${showOverlay ? ' shown' : ''}`}>
           <h1>Formula to Insert</h1>
           <input 
             name="notation" 
             type="checkbox" 
             className="check" 
-            onChange={ (e) => this.setState({ fitchNotation: !this.state.fitchNotation }) } />
+            onChange={ (e) => {
+              this.setState({ fitchNotation: !this.state.fitchNotation }); 
+            }} />
           <label for="notation">&nbsp;Use Fitch-style notation</label><br />
           {this.state.fitchNotation ? (
               <div>
@@ -412,7 +431,7 @@ class Canvas extends React.Component {
                   <tbody>
                     <tr>
                       <td style={{ width: '40%' }}>
-                        <input onChange={ (e) => this.setState({ formula: e.target.value }) } />
+                        <input onChange={ (e) => this.setState({ formula: e.target.value, eg }) } />
                       </td>
                       <td>
                         {tex && <TeX math={tex} />}
@@ -425,16 +444,16 @@ class Canvas extends React.Component {
               </div>
             ) : (
               <div>
-                <input onChange={ (e) => this.setState({ formula: e.target.value }) } /><br />
+                <input onChange={ (e) => this.setState({ formula: e.target.value, eg: e.target.value }) } /><br />
                 To insert: <TeX math={this.state.formula} />
               </div>
             )}
           <span className='buttons'>
-            <button>Insert</button>
-            <button>Cancel</button>
+            <button onClick={() => this.state.cbFunction(this.state.eg)}>Insert</button>
+            <button onClick={() => this.state.cbFunction(null)}>Cancel</button>
           </span>
         </div>
-        <div key={'main-div'} className="mainCanvas noselect">
+        <div key={'main-div'} className={`mainCanvas noselect${showOverlay ? ' disabled' : ''}`}>
           <DropdownMenu 
             menuItems={this.props.menuItems}/>
           <Toolbox 
