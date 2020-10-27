@@ -69,13 +69,17 @@ class EGVariable extends React.Component {
 
   render() {
     let highlight = this.state.cursorOver && this.props.enableHighlight;
+    let reject = this.props.selectedCallback != null && this.state.cursorOver && !this.props.enableHighlight;
+    let fill = "black";
+    if (highlight) fill = "blue";
+    else if (reject) fill = "red";
     return (
       <text 
         className="noselect"
         x={this.state.x} 
         y={this.state.y} 
         id={this.props.id}
-        fill={highlight ? "blue" : "black"}
+        fill={fill}
         onMouseEnter={() => this.setState({ cursorOver: true })}
         onMouseLeave={() => this.setState({ cursorOver: false })}
         ref={this.text}>

@@ -10,8 +10,7 @@ class EGCut extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.update = this.update.bind(this);
     this.state = { 
-      highlight: false, 
-      reject: false,
+      highlight: false,
       bounding: {_x:0,_y:0,_w:0,_h:0}
     };
 
@@ -68,10 +67,10 @@ class EGCut extends React.Component {
 
   render() {
     let highlight = this.state.highlight && this.props.enableHighlight;
-    let reject = this.state.highlight && !this.props.enableHighlight;
+    let reject = this.props.selectedCallback != null && this.state.highlight && !this.props.enableHighlight;
     let stroke = "black";
     if (highlight) stroke = "blue";
-    if (reject) stroke = "red";
+    else if (reject) stroke = "red";
     let { _x, _y, _w, _h } = this.state.bounding;
     return (
       <React.Fragment>
