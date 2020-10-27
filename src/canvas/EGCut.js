@@ -9,7 +9,11 @@ class EGCut extends React.Component {
     this.getBBoxData = this.getBBoxData.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.update = this.update.bind(this);
-    this.state = { highlight: false, bounding: {_x:0,_y:0,_w:0,_h:0} };
+    this.state = { 
+      highlight: false, 
+      reject: false,
+      bounding: {_x:0,_y:0,_w:0,_h:0}
+    };
 
     window.addEventListener('click', this.handleClick)
   }
@@ -74,8 +78,8 @@ class EGCut extends React.Component {
           height={_h}
           fillOpacity="0.7" 
           strokeOpacity="1"
-          stroke="black"
-          fill={highlight ? "#9AA899" : "white"}
+          stroke={highlight ? "blue" : "black"}
+          fill={highlight ? "#DFDFDA" : "white"}
           onMouseEnter={(e) => this.setState({ highlight: true })}
           onMouseLeave={(e) => this.setState({ highlight: false })}
           rx={config.cutCornerRadius.toString()} 

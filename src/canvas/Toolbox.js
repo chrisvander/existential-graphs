@@ -11,6 +11,10 @@ class Toolbox extends React.Component {
           func: 'iteration',
         },
         {
+          str: "Deiterate",
+          func: 'deiteration',
+        },
+        {
           str: "Wrap in Double Cut",
           func: 'doubleCutEnclose',
         },

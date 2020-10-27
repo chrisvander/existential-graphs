@@ -1,30 +1,41 @@
+import { convertToArray } from '../converters';
+
 const nanoid = require('nanoid').nanoid;
 
-export default ({ state, getSelection, getInsertionPoint, requestInput }) => { 
+export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }) => { 
   return {
     state: state,
 
     insertion: async function () {
-      let pt = await getInsertionPoint();
-      console.log(pt)
-      if (!pt) return null;
+      let { steps, currentStep, data } = this.state;
+      // create a new step
+      let step = this.copyStep(steps[currentStep]);
+
+      let pt = await getInsertionPoint({ 'cut': 'even', canvas: false });
+      if (!pt || !pt.id) return null;
       let { id, x, y } = pt;
       let input = await requestInput();
       if (!input) return null;
 
-      console.log(id, x, y)
-      console.log(input)
+      let initializedData = initXY(convertToArray(input), state.data[id].level + 1);
 
-      // await getSelection({ 'cut': 'odd', 'var': 'odd' });
-      // let id = nanoid()
-      // state.data[id] = { 
-      //   type: "var",
-      //   var: state.step[s], 
-      //   x: 0, 
-      //   y: 0,
-      //   level: level
-      // }
-      return state;
+      let insert = this.findID(step, id);
+      if (!insert.data) {
+        console.log("Insert ID could not be found in Iterate");
+        return null;
+      }
+      insert.data = insert.data.concat(initializedData.stepZero.data);
+      for (let i in initializedData.data) {
+        let obj = initializedData.data[i];
+        if (obj.type === 'var') {
+          obj.x += x;
+          obj.y += y;
+        }
+      }
+
+      steps.push(step);
+
+      return { steps, currentStep: currentStep + 1, data: { ...data, ...initializedData.data }};
     },
 
     /* Given a copyID and insertID, the iteration function creates a new step,
@@ -53,11 +64,11 @@ export default ({ state, getSelection, getInsertionPoint, requestInput }) => {
       }
       // use findID to find the data represented by the two IDs
       let copy = this.copyContents(this.findID(step, copyID));
-      console.log(copy)
       if (!copy) {
         console.log("Copy ID could not be found in Iterate");
         return null;
       }
+      
       let insert = this.findID(step, insertID);
       if (!insert.data) {
         console.log("Insert ID could not be found in Iterate");
@@ -67,17 +78,30 @@ export default ({ state, getSelection, getInsertionPoint, requestInput }) => {
       let newCopyID = copy;
       if (typeof copy !== 'string')
         newCopyID = copy.id
+
+      data[newCopyID].x = x;
+      data[newCopyID].y = y;
+
       // Change the levels of the copy data
       this.changeCutLevel(step, newCopyID, data[insert.id].level + levelOffset)
+      console.log(step)
       // Update the state
       currentStep += 1;
       steps.push(step);
-      return { steps: steps, currentStep: currentStep, data: this.offsetPosition(data, step, copy.id) };
+      return { steps: steps, currentStep: currentStep, data: data };
+    },
+
+    deiteration: async function () {
+      let { steps, currentStep, data } = this.state;
+
+
+
+      return { steps: steps, currentStep: currentStep, data: data };
     },
 
     erasure: async function () {
       let id = await getSelection({ 'cut': 'even', 'var': 'even' });
-      if (id==null) return this.state;
+      if (id == null) return this.state;
       let { steps, currentStep, data } = this.state;
       // Create a new step
       let step = this.copyStep(steps[currentStep]);

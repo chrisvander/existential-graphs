@@ -21,11 +21,6 @@ const nanoid = require('nanoid').nanoid;
  * the Existential Graphs workspace. Meant to take up an entire page.
  */
 
-// some defaults: 
-//    <text> blocks are automatically 22px high
-
-const TEXT_H = 22;
-
 function initXY(step, level) {
   let data = {}
   let currentX = 0
@@ -61,7 +56,7 @@ function initXY(step, level) {
     }
     return step
   }
-  return { stepZero: { data: initXYRecurse(step, level), h: maxY + TEXT_H, w: maxX }, data: data }
+  return { stepZero: { data: initXYRecurse(step, level), h: maxY, w: maxX }, data: data }
 }
 
 class Canvas extends React.Component {
@@ -71,6 +66,7 @@ class Canvas extends React.Component {
     this.canvasContainer = React.createRef();
 
     this.renderStep = this.renderStep.bind(this);
+    this.checkLevelIntegrity = this.checkLevelIntegrity.bind(this);
     this.changePos = this.changePos.bind(this);
     this.getSVGCoords = this.getSVGCoords.bind(this);
     this.highlightCut = this.highlightCut.bind(this);
@@ -80,6 +76,7 @@ class Canvas extends React.Component {
     this.cancelSelection = this.cancelSelection.bind(this);
     this.createElement = this.createElement.bind(this);
     this.clickedCanvas = this.clickedCanvas.bind(this);
+    this.initXY = initXY;
 
     this.getSelection = this.getSelection.bind(this);
 
@@ -107,6 +104,7 @@ class Canvas extends React.Component {
         insertion: () => manipulate(this).insertion(),
         erasure: () => manipulate(this).erasure(),
         iteration: () => manipulate(this).iteration(),
+        deiteration: () => manipulate(this).deiteration(),
         doubleCutRemove: () => manipulate(this).doubleCutRemove(),
         doubleCutEnclose: () => manipulate(this).doubleCutEnclose(),
         doubleCutAdd: () => manipulate(this).doubleCutAdd(),
@@ -121,7 +119,7 @@ class Canvas extends React.Component {
    * Function to select a point on the canvas or inside a cut, where the x,y coordinate
    * gets returned along with a cut ID, if selected.
    */
-  getInsertionPoint() {
+  getInsertionPoint(cutConfig) {
     let getCanvasInsertion = new Promise((resolve, reject) => {
       this.setState({
         canvasCb: (x,y) => {
@@ -140,7 +138,8 @@ class Canvas extends React.Component {
       let data = await Promise.all([this.getSelection({
         'cut': 'all',
         'var': 'none',
-        'canvas': true
+        'canvas': true,
+        ...cutConfig
       }), getCanvasInsertion])
       if (this.state.finishCB) {
         this.state.finishCB();
@@ -210,9 +209,33 @@ class Canvas extends React.Component {
             changeHistory: changeHistory, 
             redoHistory: [],
             ...state });
+          this.checkLevelIntegrity();
         }
       });
     });
+  }
+
+  checkLevelIntegrity() {
+    let { steps, data, currentStep } = this.state;
+    let step = steps[currentStep];
+    function verifyLevel(dobj, level) {
+      for (let i in dobj) {
+        let ob = dobj[i];
+        let ids = []
+        if (ob.type && ob.type === 'cut') {
+          verifyLevel(ob.data, level+1)
+          ids.push(ob.id);
+        }
+        else ids.push(ob);
+        for (let i in ids) {
+          data[ids[i]].level = level;
+        }
+
+      }
+      return dobj
+    }
+    verifyLevel(step.data, 0);
+    this.setState({ data });
   }
 
   cancelSelection() {
@@ -348,6 +371,7 @@ class Canvas extends React.Component {
     let { steps } = this.state;
     if (steps.length === 0) {
       let { premises } = this.state.proof;
+      console.log(premises)
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
       this.setState({ steps: steps, data: data });
@@ -416,38 +440,36 @@ class Canvas extends React.Component {
         transitionEnter={false}
         transitionLeaveTimeout={300}>
         <div className={`insertOverlay${showOverlay ? ' shown' : ''}`}>
-          <h1>Formula to Insert</h1>
-          <input 
-            name="notation" 
-            type="checkbox" 
-            className="check" 
-            onChange={ (e) => {
-              this.setState({ fitchNotation: !this.state.fitchNotation }); 
-            }} />
-          <label for="notation">&nbsp;Use Fitch-style notation</label><br />
-          {this.state.fitchNotation ? (
-              <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td style={{ width: '40%' }}>
-                        <input onChange={ (e) => this.setState({ formula: e.target.value, eg }) } />
-                      </td>
-                      <td>
-                        {tex && <TeX math={tex} />}
-                      </td>
-                    </tr>
-                    <tr />
-                  </tbody>
-                </table>
-                To insert: {eg && <TeX math={eg} />}
-              </div>
-            ) : (
-              <div>
-                <input onChange={ (e) => this.setState({ formula: e.target.value, eg: e.target.value }) } /><br />
-                To insert: <TeX math={this.state.formula} />
-              </div>
-            )}
+          <h2>Fitch-Style Formula to Insert</h2>
+          {false && (<React.Fragment>
+            <input 
+              name="notation" 
+              type="checkbox" 
+              className="check" 
+              onChange={ (e) => {
+                this.setState({ fitchNotation: !this.state.fitchNotation }); 
+              }} />
+              <label for="notation">&nbsp;Use Fitch-style notation</label><br /></React.Fragment>)}
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td style={{ width: '40%' }}>
+                    <input onChange={ (e) => this.setState({ formula: e.target.value, eg: convertToEG(e.target.value) }) } />
+                  </td>
+                  <td>
+                    {tex && <TeX math={tex} />}
+                  </td>
+                </tr>
+                <tr />
+              </tbody>
+            </table>
+            To insert: {eg && <TeX math={eg} />}
+          </div>
+          { false && <div>
+            <input onChange={ (e) => this.setState({ formula: e.target.value, eg: e.target.value }) } /><br />
+            To insert: <TeX math={this.state.formula} />
+          </div>}
           <span className='buttons'>
             <button onClick={() => this.state.cbFunction(this.state.eg)}>Insert</button>
             <button onClick={() => this.state.cbFunction(null)}>Cancel</button>
@@ -471,7 +493,7 @@ class Canvas extends React.Component {
             onMouseLeave={() => this.setState({ highlight: false })}
             style={this.state.canvasCb ? {
               cursor: 'crosshair',
-              backgroundColor: highlight ? "#BAC8B9" : "white"
+              backgroundColor: "white"
             } : {}}>
             <g ref={this.canvas}>
               {this.panzoom && this.renderStep(this.state.currentStep)}

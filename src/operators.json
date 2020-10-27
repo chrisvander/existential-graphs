@@ -5,6 +5,7 @@
     "->": "\\rightarrow",
     "$": "\\rightarrow",
     "&": "\\land",
+    "^": "\\land",
     "|": "\\lor"
   },
   "unary": {

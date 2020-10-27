@@ -72,7 +72,6 @@ class EGVariable extends React.Component {
     return (
       <text 
         className="noselect"
-        pointerEvents={this.props.interaction ? null : 'none'}
         x={this.state.x} 
         y={this.state.y} 
         id={this.props.id}

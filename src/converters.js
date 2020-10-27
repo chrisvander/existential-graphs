@@ -78,9 +78,6 @@ function countUnary(statement) {
  * @return {[type]}
  */
 const stripUnary = (s, convertStatement) => {
-
-  console.log(s)
-  console.log(convertStatement)
   if (convertStatement == null) 
     convertStatement = true;
   let c = countUnary(s);
