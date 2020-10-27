@@ -79,6 +79,7 @@ class Canvas extends React.Component {
     this.clickedCanvas = this.clickedCanvas.bind(this);
     this.initXY = initXY;
 
+    this.moveVars = {};
     this.getSelection = this.getSelection.bind(this);
 
     let { premises, conclusion, steps, data } = this.props.proof;
@@ -289,12 +290,12 @@ class Canvas extends React.Component {
 
   renderStep(stepIndex) {
     let { data } = this.state;
-    let step = this.state.steps[stepIndex]
+    let step = this.state.steps[stepIndex];
     if (step) {
       const setXY = (id,x,y) => {
         data[id].x = x;
         data[id].y = y;
-        this.setState({ data: data })
+        this.setState({ data: data });
       }
 
       const renderRecurse = (step) => {
@@ -305,11 +306,26 @@ class Canvas extends React.Component {
         for (let s in step) {
           if (step[s].type === "cut") {
             let level = data[step[s].id].level;
+            const ids = [];
+            const getIds = (step) => {
+              if (step.data) 
+                for (let i in step.data)
+                  getIds(step.data[i]);
+              else ids.push(step);
+            }
+            getIds(step[s])
             let groupElement = (
               <EGCut 
                 level={level} 
                 enableHighlight={this.highlightCut(level)}
                 id={step[s].id}
+                panzoom={this.panzoom}
+                getCoords={this.getSVGCoords}
+                setCoords={(x,y) => {
+                  ids.forEach(id => {
+                    this.moveVars[id](x,y);
+                  });
+                }}
                 key={step[s].id}
                 selectedCallback={this.state.cbFunction}>
                 {renderRecurse(step[s].data)}
@@ -330,6 +346,7 @@ class Canvas extends React.Component {
                 interaction={this.state.interaction || this.highlightVar(level)}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
+                subscribeMove={f => this.moveVars[step[s]] = f}
                 key={step[s]}>
                 {el.var}
               </EGVariable>
@@ -347,6 +364,7 @@ class Canvas extends React.Component {
                 interaction={this.state.interaction}
                 getCoords={this.getSVGCoords}
                 setCoords={(x,y) => setXY(step[s],x,y)}
+                subscribeMove={f => this.moveVars[step[s]] = f}
                 key={step[s]}>
                 {el.var}
               </EGVariable>
@@ -356,7 +374,7 @@ class Canvas extends React.Component {
         return jsx;
       }
       renderRecurse.bind(this);
-      return renderRecurse(step.data)
+      return renderRecurse(step.data, (f)=>{})
     }
   }
 

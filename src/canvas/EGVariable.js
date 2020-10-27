@@ -34,6 +34,12 @@ class EGVariable extends React.Component {
 
   componentDidMount() {  
     this.text.current.style.cursor = "pointer";
+    this.props.subscribeMove((x,y) => {
+      let newx = this.state.x + x;
+      let newy = this.state.y + y;
+      this.props.setCoords(newx, newy);
+      this.setState({ x: newx, y: newy });
+    })
   }
 
   handleDragStart(evt) {
@@ -56,7 +62,7 @@ class EGVariable extends React.Component {
       x = Math.round(x/config.gridSize)*config.gridSize
       y = Math.round(y/config.gridSize)*config.gridSize
       this.props.setCoords(x, y);
-      this.setState({ x: x, y: y })
+      this.setState({ x: x, y: y });
     }
   }
 
