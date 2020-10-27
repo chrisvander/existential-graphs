@@ -15,9 +15,10 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       if (!pt || !pt.id) return null;
       let { id, x, y } = pt;
       let input = await requestInput();
-      if (!input) return null;
+      if (input == null || !input) return null;
 
       let initializedData = initXY(convertToArray(input), state.data[id].level + 1);
+      console.log(initializedData.stepZero)
 
       let insert = this.findID(step, id);
       if (!insert.data) {
@@ -152,6 +153,12 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
         id: cut1_id,
         type: "cut"
       }
+      // Set the levels of the two cuts
+      let level = data[id].level
+      data[cut2_id] = { type: "cut", level: level + 1};
+      data[cut1_id] = { type: "cut", level: level};
+      // increase the level of the inside cut along with all cuts inside of it by 2
+      this.changeCutLevel(step, id, 2)
 
       // get the parent of the selection
       let parent = this.findParent(step, id)
@@ -246,6 +253,7 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
           if (!parent) {
             return null;
           }
+          this.changeCutLevel(step, secondCut[0].id, -2)
           // Remove the first cut from the data array
           const index = parent.data.indexOf(firstCut);
           if (index > -1) {
@@ -353,6 +361,55 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       let newStep = copyDataMap(step, 0);
       this.state.data = data;
       return newStep;
+    },
+
+    /* Given a step and the ID of a cut, will iterate through all cuts within
+     * that cut and change their level by a specified amount.
+    */
+    changeCutLevel: function (step, id, change) {
+      let { data } = this.state
+      // If the ID is for a variable, only increase it's level
+      if (data[id] && data[id].type === "var") {
+        data[id].level += change;
+        return
+      }
+      // when true, the levels should change in the functions below
+      let idFound = false
+      // Changes the 
+      function changeLevelMap(map) {
+        // get the id for the current map
+        let mapID;
+        if (map.id) {
+          mapID = map.id
+          // if it matches the id being searched, update the boolean
+          if (mapID === id) {
+            idFound = true;
+          }
+        }
+        // If the ID has been found, update the level of the current cut
+        if (idFound) {
+          data[mapID].level += change;
+        }
+        // call the function of the data array if it exists
+        if (map.data){
+          changeLevelArray(map.data);
+        }
+      }
+      function changeLevelArray(arr) {
+        for (let a in arr) {
+          // If a non-string is found (a cut)
+          if (typeof arr[a] !== 'string') {
+            // Change the level of the cut
+            changeLevelMap(arr[a])
+          }
+          // If string is found, change the level of the variable
+          else if (idFound){
+            data[arr[a]].level += change;
+          }
+        }
+      }
+      changeLevelArray(step.data)
+      this.state.data = data;
     },
 
     // Performs a deep copy of oldStep into newStep, used to not change previous steps

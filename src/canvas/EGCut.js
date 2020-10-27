@@ -68,6 +68,10 @@ class EGCut extends React.Component {
 
   render() {
     let highlight = this.state.highlight && this.props.enableHighlight;
+    let reject = this.state.highlight && !this.props.enableHighlight;
+    let stroke = "black";
+    if (highlight) stroke = "blue";
+    if (reject) stroke = "red";
     let { _x, _y, _w, _h } = this.state.bounding;
     return (
       <React.Fragment>
@@ -78,7 +82,7 @@ class EGCut extends React.Component {
           height={_h}
           fillOpacity="0.7" 
           strokeOpacity="1"
-          stroke={highlight ? "blue" : "black"}
+          stroke={stroke}
           fill={highlight ? "#DFDFDA" : "white"}
           onMouseEnter={(e) => this.setState({ highlight: true })}
           onMouseLeave={(e) => this.setState({ highlight: false })}

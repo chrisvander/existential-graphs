@@ -22,6 +22,7 @@ const nanoid = require('nanoid').nanoid;
  */
 
 function initXY(step, level) {
+  if (!level) level = 0
   let data = {}
   let currentX = 0
   let currentY = 0
@@ -371,7 +372,6 @@ class Canvas extends React.Component {
     let { steps } = this.state;
     if (steps.length === 0) {
       let { premises } = this.state.proof;
-      console.log(premises)
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
       this.setState({ steps: steps, data: data });
@@ -431,7 +431,7 @@ class Canvas extends React.Component {
       zoomWithWheel = this.panzoom.zoomWithWheel
     // CSSTransitionGroup lets us have entry fade-in
     let tex = convertToTeX(this.state.formula);
-    let eg = convertToEG(this.state.formula);
+    let eg = convertToEG(`(${this.state.formula})`);
     return (
       <CSSTransitionGroup
         transitionName="fadein"
