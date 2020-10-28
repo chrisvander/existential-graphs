@@ -225,19 +225,20 @@ class Canvas extends React.Component {
         let ob = dobj[i];
         let ids = []
         if (ob.type && ob.type === 'cut') {
-          verifyLevel(ob.data, level+1)
+          dobj[i].data = verifyLevel(ob.data, level+1);
           ids.push(ob.id);
         }
         else ids.push(ob);
         for (let i in ids) {
           data[ids[i]].level = level;
         }
-
       }
+      if (dobj.length > 1)
+        dobj = dobj.filter(el => el.id || (!el.id && data[el].var !== '\xa0'));
       return dobj
     }
-    verifyLevel(step.data, 0);
-    this.setState({ data });
+    steps[currentStep].data = verifyLevel(step.data, 0);
+    this.setState({ steps, data });
   }
 
   cancelSelection() {
@@ -305,6 +306,9 @@ class Canvas extends React.Component {
         }
         for (let s in step) {
           if (step[s].type === "cut") {
+            if (!data[step[s].id]) {
+              data[step[s].id] = { var: " ", type: "emptyvar" };
+            }
             let level = data[step[s].id].level;
             const ids = [];
             const getIds = (step) => {
@@ -433,7 +437,7 @@ class Canvas extends React.Component {
         cbFunction: (formula) => {
           if (formula == null) resolve(null);
           else resolve(formula);
-          this.setState({ showOverlay: false });
+          this.setState({ showOverlay: false, cbFunction: null });
         } 
       });
     });
@@ -450,6 +454,7 @@ class Canvas extends React.Component {
     // CSSTransitionGroup lets us have entry fade-in
     let tex = convertToTeX(this.state.formula);
     let eg = convertToEG(`(${this.state.formula})`);
+
     return (
       <CSSTransitionGroup
         transitionName="fadein"

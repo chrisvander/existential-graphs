@@ -91,9 +91,35 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
 
     deiteration: async function () {
       let { steps, currentStep, data } = this.state;
+      let step = this.copyStep(steps[currentStep]);
 
+      let deiterID = await getSelection({ 'cut': 'all', 'var': 'all' });
+      if (!deiterID) return null;
 
+      let erased = this.findID(step, deiterID);
+      if (!erased) {
+        return null;
+      }
 
+      // replace with actual tree check
+      const foundSubtree = true;
+      if (!foundSubtree) return null;
+      
+      // Get the parent of the erased section
+      let parent = this.findParent(step, deiterID)
+      if (!parent) {
+        return null;
+      }
+      // Remove the erased data from the parent's data array
+      const index = parent.data.indexOf(erased);
+      if (index > -1)
+        parent.data.splice(index, 1);
+      else {
+        return null;
+      }
+
+      steps.push(step);
+      currentStep += 1;
       return { steps: steps, currentStep: currentStep, data: data };
     },
 
