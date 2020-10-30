@@ -392,6 +392,9 @@ class Canvas extends React.Component {
     let { steps } = this.state;
     if (steps.length === 0) {
       let { premises } = this.state.proof;
+      console.log(premises)
+      console.log(premises.join(''))
+      console.log(convertToArray(premises.join('')));
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
       this.setState({ steps: steps, data: data });

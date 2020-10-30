@@ -76,7 +76,7 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       let newCopyID = copy;
       if (typeof copy !== 'string')
         newCopyID = copy.id
-      
+
       data[newCopyID].x = x;
       data[newCopyID].y = y;
 
@@ -98,8 +98,50 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
         return null;
       }
 
-      // replace with actual tree check
-      const foundSubtree = true;
+      const equalTrees = (tree1, tree2) => {
+        if (typeof tree1 === 'string') {
+          if (typeof tree2 === 'string' && 
+            data[tree1].var === data[tree2].var) {
+            return true;
+          }
+          return false;
+        }
+
+        let matchedIDs = []
+        const matchBranch = (branch, secondTree) => {
+          for (let j in secondTree.data) {
+            if (!matchedIDs.includes(j) && 
+              equalTrees(branch, secondTree.data[j])) {
+              return true;
+            }
+          }
+          return false;
+        }
+        let res = tree1.data.map(el => matchBranch(el, tree2));
+        return res.every(Boolean);
+      }
+
+      const checkForSubgraph = (structure, tree) => {
+        for (let i in structure.data) {
+          let subtree = structure.data[i];
+          if (
+            typeof tree === 'string' && 
+            typeof subtree === 'string' && 
+            subtree !== tree &&
+            data[tree].var === data[subtree].var
+          ) {
+            return true;
+          } else if (subtree.id !== tree.id && equalTrees(subtree, tree)) {
+            return true;
+          }
+        }
+        if (structure.id) {
+          return checkForSubgraph(this.findParent(step, structure.id), tree);
+        }
+        return false;
+      }
+      
+      const foundSubtree = checkForSubgraph(this.findParent(step, deiterID), erased);
       if (!foundSubtree) return null;
       
       // Get the parent of the erased section

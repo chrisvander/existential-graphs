@@ -115,28 +115,6 @@ const convertToEG = (formula) => {
   else return null;
 }
 
-/** 
- * Given a string and the index of the open parenthesis, this
- * will return the index of the closed parenthesis
- */
-const getMatchingParen = (formula, start) => {
-  // hold the number of '(' minus the number of ')'
-  let parens = 0
-  let j = start
-  while (j < formula.length) {
-    if (formula[j] === '(') {
-      parens++
-    }
-    else if (formula[j] === ')') {
-      parens--
-      // if parens is 0, then the current ')' matches the start parenthesis
-      if (parens === 0)
-        return j
-    }
-    j++
-  }
-}
-
 /**  
  * Converts a string representing an Existential Graph into
  * a nested array. Acts recursively, calling iteslf again
@@ -146,36 +124,46 @@ const getMatchingParen = (formula, start) => {
  * For example: 
  * "((({P})){Q}{R}){P}" => [ [ [['P']],'Q','R' ],'P' ]
  */
-const convertToArray = (formula, i = 0) => {
+const convertToArray = (formula) => {
   if (typeof formula === 'string' || formula instanceof String) {
     // hold the array of the current level that will be returned
-    let arr = []
-    // loop through the string
-    while (i < formula.length) {
-      // if closing parenthesis, return the array for this subexpression
-      if (formula[i] === '(') {
-        // find the matching pair of parentheses of the subexpression
-        let j = getMatchingParen(formula, i)
-        // push the subexpression into the array
-        let subExp = formula.substr(i+1, j-1)
-        if (subExp)
-          arr.push(convertToArray(formula.substr(i+1, j-1)))
-        i = j
+    function consume(c) {
+      if (formula.length > 0 && c === formula[0]) {
+        formula = formula.substring(1);
+        return true;
       }
-      // if a variable is found, push it to the array
-      else if (formula[i] === '{') {
-        let text = formula[++i];
-        if (text === '}') arr.push('\u00A0')
-        else arr.push(text)
-        i++
-      }
-      i++
+      return false;
     }
-    // return the array that values the current expression
-    return arr
+
+    function parseExpression(expr) {
+      let arr = []
+      while (true) {
+        if (consume('(')) {
+          arr.push(parseExpression(formula));
+          if (!consume(')')) 
+            return null;
+        } else if (consume('{')) {
+          let st = "";
+          while (formula.length > 0 && !consume('}')) {
+            st = st.concat(formula[0]);
+            formula = formula.substring(1);
+          }
+          if (st.length === 0) arr.push('\u00A0');
+          arr.push(st);
+          
+        }
+        if (formula.length === 0 || (formula[0] !== '(' && formula[0] !== '{')) {
+          break;
+        }
+      }
+      return arr;
+    }
+    return parseExpression(formula);
   }
   else return null
 }
+
+console.log(convertToArray('((({P}(({Q}({R})))))({T}))({T}){P}'))
 
 /**
  * Export all converters
