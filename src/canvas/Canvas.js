@@ -226,6 +226,7 @@ class Canvas extends React.Component {
         let ids = []
         if (ob.type && ob.type === 'cut') {
           dobj[i].data = verifyLevel(ob.data, level+1);
+          data[dobj[i].id].level = level;
           ids.push(ob.id);
         }
         else ids.push(ob);
@@ -306,9 +307,6 @@ class Canvas extends React.Component {
         }
         for (let s in step) {
           if (step[s].type === "cut") {
-            if (!data[step[s].id]) {
-              data[step[s].id] = { var: " ", type: "emptyvar" };
-            }
             let level = data[step[s].id].level;
             const ids = [];
             const getIds = (step) => {

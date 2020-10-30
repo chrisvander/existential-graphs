@@ -54,11 +54,8 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       let { steps, currentStep, data } = this.state;
       let step = this.copyStep(steps[currentStep]);
       // If the insertID data is not in a subgraph of the copyID data, return
-      let levelOffset = 1;
       if (!this.isInNestedGraph(step, insertID, copyID)) {
-        if (insertID === this.findParent(step, copyID).id) {
-          levelOffset = 0;
-        } else {
+        if (insertID !== this.findParent(step, copyID).id) {
           console.log("Insert selection is not in a subgraph of Copy selection");
           return null;
         }
@@ -79,7 +76,7 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       let newCopyID = copy;
       if (typeof copy !== 'string')
         newCopyID = copy.id
-
+      
       data[newCopyID].x = x;
       data[newCopyID].y = y;
 
