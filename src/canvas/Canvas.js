@@ -82,13 +82,13 @@ class Canvas extends React.Component {
     this.moveVars = {};
     this.getSelection = this.getSelection.bind(this);
 
-    let { premises, conclusion, steps, data } = this.props.proof;
+    let { premises, conclusion, steps, data, changeHistory } = this.props.proof;
     this.state = {
       proof: {
         premises: premises,
         conclusion: conclusion
       },
-      changeHistory: [], 
+      changeHistory: changeHistory || [], 
       redoHistory: [],
       steps: steps || [],
       data: data || {},
@@ -445,16 +445,16 @@ class Canvas extends React.Component {
   }
 
   render() {
-    let { proof, data, steps, currentStep, highlight, showOverlay } = this.state;
+    let { proof, data, steps, currentStep, highlight, showOverlay, changeHistory } = this.state;
     // every time a re-render happens, ensure top-level state is up-to-date
-    this.props.saveProof({...proof, data, steps});
+    this.props.saveProof({ ...proof, data, steps, changeHistory });
     // zooming function does nothing unless panzoom is initialized
     let zoomWithWheel = () => {}
     if (this.panzoom)
       zoomWithWheel = this.panzoom.zoomWithWheel
     // CSSTransitionGroup lets us have entry fade-in
     let tex = convertToTeX(this.state.formula);
-    let eg = convertToEG(`(${this.state.formula})`);
+    let eg = convertToEG(this.state.formula);
 
     return (
       <CSSTransitionGroup

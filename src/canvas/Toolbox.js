@@ -57,10 +57,13 @@ class Toolbox extends React.Component {
                 cancelSelection();
               }
               else {
-                this.setState({ selected: i });
-                modifyCanvas(el.func, () => {
-                  this.setState({ selected: null });
-                });
+                const newSelection = () => {
+                  this.setState({ selected: i });
+                  modifyCanvas(el.func, () => {
+                    this.setState({ selected: null });
+                  });
+                }
+                newSelection();
               }
             }
           }
