@@ -9,6 +9,7 @@ class StepMenu extends React.Component {
     this.performUndo = this.performUndo.bind(this);
     this.state = {};
   }
+  
   handleClick(event, step, disabled) {
     event.preventDefault();
     if (!disabled) {

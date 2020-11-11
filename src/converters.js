@@ -81,6 +81,8 @@ const stripUnary = (s, convertStatement) => {
   if (convertStatement == null) 
     convertStatement = true;
   let c = countUnary(s);
+  console.log(c)
+  console.log(s)
   let statement = s.substr(c)
   if (convertStatement) statement = convertToEG(statement)
   else statement = '{' + statement + '}'
@@ -92,27 +94,31 @@ const stripUnary = (s, convertStatement) => {
  * @return {string} EG-style sentence notation.
  */
 const convertToEG = (formula) => {
+  if (!verifySentence(formula)) return null;
   if ((typeof formula === 'string' || formula instanceof String) && verifySentence(formula)) {
     // filter out spaces
     formula = formula.replace(/\s/g, '')
     let binary = binaryRegex.exec(formula)
     let parenthesis = parenthesisRegex.exec(formula)
-    let unary = atomicRegex.exec(formula)
+    let atom = atomicRegex.exec(formula)
     if (binary) {
       let left = convertToEG(binary[1])
       let right = convertToEG(binary[4])
       let symConversion = operators.eg[binary[3]];
       return symConversion.replace(/\$1/g, left).replace(/\$2/g, right)
-    } else if (parenthesis) {
-      if (countUnary(formula) !== 0) {
-        return stripUnary(formula.substr(1,formula.length-2), true);
-      }
-      return convertToEG(parenthesis[1]);
-    } else if (unary) {
-      return stripUnary(formula, false);
-    } else return null;
-  }
-  else return null;
+    } else if (formula[0] === '(') {
+      let res = convertToEG(formula.substr(1,formula.length-2));
+      if (res) return res;
+      else return null;
+    } else if (Object.keys(unaryOperators).includes(formula[0])) {
+      let res = convertToEG(formula.substr(1))
+      if (res) return '(' + res + ')';
+      else return null;
+    } else if (atom) {
+      return '{' + atom[0] + '}'
+    }
+    return null;
+  } else return null;
 }
 
 /**  

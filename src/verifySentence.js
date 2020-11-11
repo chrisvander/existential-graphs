@@ -20,10 +20,11 @@ function arrToRegex(arr) {
 const uReg = arrToRegex(Object.keys(unary));
 const regexStr = `^(${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))(${arrToRegex(Object.keys(binary))})(${uReg}*[A-Za-z]+|${uReg}*\\((.*)\\))$`
 let binaryRegex = new RegExp(regexStr) // eslint-disable-line
-let atomicRegex = new RegExp(`^${uReg}*[A-Za-z]+$`)
+let atomicRegex = new RegExp(`^([A-Za-z])*`)
 let parenthesisRegex = new RegExp(`^${uReg}*\\((.*)\\)$`)
 
 function verifyRecursive(sentence) {
+  console.log(sentence)
   let res
   if (sentence.match(atomicRegex)) return true;
   else if ((res = binaryRegex.exec(sentence)) !== null) {
