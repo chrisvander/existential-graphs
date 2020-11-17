@@ -2,6 +2,7 @@ import React from 'react';
 import { convertToArray, convertToTeX, convertToEG } from '../converters';
 import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
+import GoalView from './GoalView';
 import EGVariable from './EGVariable';
 import EGCut from './EGCut';
 import './Canvas.scss';
@@ -292,9 +293,8 @@ class Canvas extends React.Component {
     steps[this.state.currentStep].push(id);
   }
 
-  renderStep(stepIndex) {
+  renderStep(step) {
     let { data } = this.state;
-    let step = this.state.steps[stepIndex];
     if (step) {
       const setXY = (id,x,y) => {
         let { data } = this.state;
@@ -392,18 +392,16 @@ class Canvas extends React.Component {
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     // if there are no existing steps, init first step
-    let { steps } = this.state;
+    let { steps, proof } = this.state;
+    let { premises, conclusion } = proof;
+
     if (steps.length === 0) {
-      let { premises } = this.state.proof;
-      console.log(premises)
-      console.log(premises.join(''))
-      console.log(convertToArray(premises.join('')));
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
       this.setState({ steps: steps, data: data });
     }
     // required to use setState to trigger re-render after creation of panzoom
-    this.setState({ });
+    this.setState({  });
     let step = this.state.steps[this.state.currentStep];
 
     // center the canvas elements
@@ -511,6 +509,10 @@ class Canvas extends React.Component {
             modifyCanvas={this.modifyCanvas}
             cancelSelection={this.cancelSelection}
           />
+          <GoalView 
+            conclusion={proof.conclusion} 
+            complete={true}
+            disabled/>
           <svg 
             ref={this.canvasContainer}
             className="canvas noselect" 
@@ -523,7 +525,7 @@ class Canvas extends React.Component {
               backgroundColor: "white"
             } : {}}>
             <g ref={this.canvas}>
-              {this.panzoom && this.renderStep(this.state.currentStep)}
+              {this.panzoom && this.renderStep(steps[currentStep])}
             </g>
           </svg>
           <StepMenu 
