@@ -210,8 +210,10 @@ class Canvas extends React.Component {
           this.setState({ 
             changeHistory: changeHistory, 
             redoHistory: [],
-            ...state });
-          this.checkLevelIntegrity();
+            ...state }, () => {
+              this.checkLevelIntegrity();
+              this.modifyCanvas(nameOfFunction, () => {});
+            });
         }
       });
     });
@@ -295,6 +297,7 @@ class Canvas extends React.Component {
     let step = this.state.steps[stepIndex];
     if (step) {
       const setXY = (id,x,y) => {
+        let { data } = this.state;
         data[id].x = x;
         data[id].y = y;
         this.setState({ data: data });

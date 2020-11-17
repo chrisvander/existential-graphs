@@ -54,16 +54,14 @@ class Toolbox extends React.Component {
             style={selected === i ? { backgroundColor: '#AFAFAA' } : {}} 
             onClick={() => {
               if (this.state.selected === i) {
+                this.setState({ selected: null });
                 cancelSelection();
               }
               else {
-                const newSelection = () => {
-                  this.setState({ selected: i });
-                  modifyCanvas(el.func, () => {
-                    this.setState({ selected: null });
-                  });
-                }
-                newSelection();
+                this.setState({ selected: i });
+                modifyCanvas(el.func, () => {
+                  // this.setState({ selected: null });
+                });
               }
             }
           }

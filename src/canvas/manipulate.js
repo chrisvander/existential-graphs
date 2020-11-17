@@ -18,7 +18,6 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       if (input == null || !input) return null;
 
       let initializedData = initXY(convertToArray(input), state.data[id].level + 1);
-      console.log(initializedData.stepZero)
 
       let insert = this.findID(step, id);
       if (!insert.data) {
@@ -35,7 +34,6 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
       }
 
       steps.push(step);
-
       return { steps, currentStep: currentStep + 1, data: { ...data, ...initializedData.data }};
     },
 
@@ -164,7 +162,7 @@ export default ({ state, getSelection, getInsertionPoint, requestInput, initXY }
 
     erasure: async function () {
       let id = await getSelection({ 'cut': 'even', 'var': 'even' });
-      if (id == null) return this.state;
+      if (id == null) return null;
       let { steps, currentStep, data } = this.state;
       // Create a new step
       let step = this.copyStep(steps[currentStep]);
