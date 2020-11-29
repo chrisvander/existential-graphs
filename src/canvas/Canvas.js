@@ -11,6 +11,8 @@ import DropdownMenu from './DropdownMenu';
 import config from './config';
 import manipulate from './manipulate';
 import { CSSTransitionGroup } from 'react-transition-group';
+import Switch from "react-switch";
+
 // KATEX
 import 'katex/dist/katex.min.css';
 import TeX from '@matejmazur/react-katex';
@@ -398,6 +400,7 @@ class Canvas extends React.Component {
     if (steps.length === 0) {
       let { stepZero, data } = initXY(convertToArray(premises.join('')), 0);
       steps.push(stepZero);
+      console.log(stepZero, data)
       this.setState({ steps: steps, data: data });
     }
     // required to use setState to trigger re-render after creation of panzoom
@@ -447,6 +450,7 @@ class Canvas extends React.Component {
 
   render() {
     let { proof, data, steps, currentStep, highlight, showOverlay, changeHistory } = this.state;
+    let { fitchStyle, setStyle } = this.props;
     // every time a re-render happens, ensure top-level state is up-to-date
     this.props.saveProof({ ...proof, data, steps, changeHistory });
     // zooming function does nothing unless panzoom is initialized
@@ -457,6 +461,19 @@ class Canvas extends React.Component {
     let tex = convertToTeX(this.state.formula);
     let eg = convertToEG(this.state.formula);
 
+    const swi = (
+      <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+        <span style={{ paddingRight: 12 }}>Fitch-Style Notation</span>
+        <span>
+          <Switch 
+            onChange={setStyle} 
+            checked={fitchStyle}
+            onColor="#9AA899"
+             />
+        </span>
+      </div>
+    );
+
     return (
       <CSSTransitionGroup
         transitionName="fadein"
@@ -465,17 +482,9 @@ class Canvas extends React.Component {
         transitionEnter={false}
         transitionLeaveTimeout={300}>
         <div className={`insertOverlay${showOverlay ? ' shown' : ''}`}>
-          <h2>Fitch-Style Formula to Insert</h2>
-          {false && (<React.Fragment>
-            <input 
-              name="notation" 
-              type="checkbox" 
-              className="check" 
-              onChange={ (e) => {
-                this.setState({ fitchNotation: !this.state.fitchNotation }); 
-              }} />
-              <label for="notation">&nbsp;Use Fitch-style notation</label><br /></React.Fragment>)}
-          <div>
+          <h2>{fitchStyle && 'Fitch-Style Formula'} {!fitchStyle && 'Graph'} to Insert</h2>
+          { swi }
+          { fitchStyle && <div>
             <table>
               <tbody>
                 <tr>
@@ -490,8 +499,8 @@ class Canvas extends React.Component {
               </tbody>
             </table>
             To insert: {eg && <TeX math={eg} />}
-          </div>
-          { false && <div>
+          </div>}
+          { !fitchStyle && <div>
             <input onChange={ (e) => this.setState({ formula: e.target.value, eg: e.target.value }) } /><br />
             To insert: <TeX math={this.state.formula} />
           </div>}

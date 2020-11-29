@@ -20,7 +20,7 @@ class App extends React.Component {
       initialCSS: 'initial',
       canvasOpen: false,
       popupOpen: false,
-      fitchStyle: true,
+      fitchStyle: localStorage.getItem('fitchStyle') === 'true',
       filename: '',
       proof: {
         premises: [],
@@ -106,6 +106,7 @@ class App extends React.Component {
   }
 
   setStyle(bool) {
+    localStorage.setItem('fitchStyle', bool);
     this.setState({ fitchStyle: bool });
   }
 
@@ -115,6 +116,8 @@ class App extends React.Component {
         <div className="App">
           <Canvas 
             menuItems={this.menuItems}
+            fitchStyle={this.state.fitchStyle}
+            setStyle={this.setStyle}
             saveProof={this.saveProof(this.state.filename)} 
             proof={this.state.proof} />
         </div>

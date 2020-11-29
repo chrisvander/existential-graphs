@@ -85,7 +85,7 @@ const wrapVarsTeX = (formula) => {
           let newExpr = parseExpression()
           str += newExpr
           if (newExpr === "")
-            str += "{}"
+            str += "{\u00A0}"
           if (!consume(')')) 
             return null;
           str += ")"
@@ -218,7 +218,7 @@ const convertToArray = (formula) => {
   else return null
 }
 
-console.log(wrapVarsTeX('(((P((Q(R)))))(T))(T)P'))
+console.log(wrapVarsTeX('()'))
 
 /**
  * Export all converters
