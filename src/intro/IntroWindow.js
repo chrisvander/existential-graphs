@@ -1,6 +1,7 @@
 import React from 'react';
 import CreateNew from './CreateNew';
 import { ReactSVG } from 'react-svg';
+import Switch from "react-switch";
 import './intro.scss';
 
 const IntroContent = ({ recentDocs }) => (
@@ -81,18 +82,35 @@ class IntroWindow extends React.Component {
 
   render() {
     const { createShown, floatingWindowCSS } = this.state;
+    const swi = (
+      <React.Fragment>
+        <div style={{ paddingRight: 20 }} >
+          <Switch 
+            onChange={this.props.setStyle} 
+            checked={this.props.proofStyle}
+            onColor="#9AA899"
+             />
+        </div>
+        <span style={{ paddingRight: 12 }}>Fitch-Style Notation</span>
+      </React.Fragment>
+    );
     return (
       <div className={floatingWindowCSS}>
         {!createShown && <IntroContent recentDocs={this.props.recentDocs}/>}
-        {createShown && <CreateNew setupFunc={this.props.setupFunc} ref={this.createView}/>}
+        {createShown && 
+          <CreateNew 
+            useFitchNotation={this.props.proofStyle}
+            setupFunc={this.props.setupFunc} 
+            ref={this.createView}/>}
           {!createShown && (
             <div className="toolbar">
-            <button onClick={() => this.setState({ createShown: true })}>
-              New 
-            </button>
-            <button onClick={this.openFile}>
-              Open 
-            </button>
+              <button onClick={() => this.setState({ createShown: true })}>
+                New 
+              </button>
+              <button onClick={this.openFile}>
+                Open 
+              </button>
+              {swi}
             </div>
           )}
           {createShown && (
@@ -106,6 +124,7 @@ class IntroWindow extends React.Component {
               <button onClick={this.callCreate}>
                 Create 
               </button>
+              {swi}
             </div>
           )}
       </div>

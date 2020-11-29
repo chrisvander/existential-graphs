@@ -55,6 +55,55 @@ const convertToTeX = (formula) => {
   else return ""
 }
 
+const wrapVarsTeX = (formula) => {
+  if (typeof formula === 'string' || formula instanceof String) {
+    function consume(c) {
+      if (formula.length > 0 && c === formula[0]) {
+        formula = formula.substring(1);
+        return true;
+      }
+      return false;
+    }
+
+    function parseId() {
+      let str = "{"
+      while (formula.length > 0 
+        && formula[0] !== '(' 
+        && formula[0] !== ')') {
+
+        str += formula[0]
+        consume(formula[0])
+      }
+      return str + "}";
+    }
+
+    function parseExpression() {
+      let str = ""
+      while (true) {
+        if (consume('(')) {
+          str += "("
+          let newExpr = parseExpression()
+          str += newExpr
+          if (newExpr === "")
+            str += "{}"
+          if (!consume(')')) 
+            return null;
+          str += ")"
+        } else if (formula[0] !== ")") {
+          str += parseId()
+        } else break;
+        if (formula.length === 0) {
+          break;
+        }
+      }
+      return str;
+    }
+
+    return parseExpression();
+  }
+  else return null
+}
+
 /**
  * @param  {string} statement
  * @return {int} counts the number of unary operators in the given input.
@@ -169,7 +218,7 @@ const convertToArray = (formula) => {
   else return null
 }
 
-console.log(convertToArray('((({P}(({Q}({R})))))({T}))({T}){P}'))
+console.log(wrapVarsTeX('(((P((Q(R)))))(T))(T)P'))
 
 /**
  * Export all converters
@@ -178,5 +227,6 @@ export {
   convertToTeX,
   convertToEG,
   convertToArray,
+  wrapVarsTeX,
   verifySentence
 }

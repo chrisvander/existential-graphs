@@ -14,11 +14,13 @@ class App extends React.Component {
     this.openCanvas = this.openCanvas.bind(this);
     this.saveProof = this.saveProof.bind(this);
     this.getRecents = this.getRecents.bind(this);
+    this.setStyle = this.setStyle.bind(this);
     this.introWindow = React.createRef();
     this.state = {
       initialCSS: 'initial',
       canvasOpen: false,
       popupOpen: false,
+      fitchStyle: true,
       filename: '',
       proof: {
         premises: [],
@@ -103,6 +105,10 @@ class App extends React.Component {
     this.setState({ popupOpen: true })
   }
 
+  setStyle(bool) {
+    this.setState({ fitchStyle: bool });
+  }
+
   render() {
     if (this.state.canvasOpen) {
       return (
@@ -137,7 +143,9 @@ class App extends React.Component {
         <IntroWindow 
           ref={this.introWindow} 
           recentDocs={this.state.recentDocs}
-          setupFunc={this.setupProof}/>
+          setupFunc={this.setupProof}
+          setStyle={this.setStyle}
+          proofStyle={this.state.fitchStyle} />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import verify from '../verifySentence';
-import { convertToTeX, convertToEG } from '../converters';
+import { convertToTeX, convertToEG, wrapVarsTeX } from '../converters';
 // KATEX
 import 'katex/dist/katex.min.css';
 import TeX from '@matejmazur/react-katex';
@@ -55,15 +55,13 @@ class CreateNew extends React.Component {
   }
 
   create() {
-    console.log("Creating...")
-    console.log("Verification concluded " + this.verify())
+    let { useFitchNotation } = this.props;
     if (this.verify()) {
       let { premises, conclusion } = this.state;
       for (let i in premises) {
-        premises[i] = convertToEG(premises[i])
-        console.log(premises[i])
+        premises[i] = useFitchNotation ? convertToEG(premises[i]) : wrapVarsTeX(premises[i])
       }
-      conclusion = convertToEG(conclusion)
+      conclusion = useFitchNotation ? convertToEG(conclusion) : wrapVarsTeX(conclusion)
       this.props.setupFunc(this.filename.current.value, { premises, conclusion, steps: [] })
     }
   }
@@ -72,7 +70,11 @@ class CreateNew extends React.Component {
     let tex, eg
     if (verify(formula)) {
       tex = convertToTeX(formula);
-      eg = convertToEG(formula);
+      if (this.props.useFitchNotation)
+        eg = convertToEG(formula);
+      else {
+        eg = convertToEG(formula);
+      }
     }
     let closeBtn = <td 
       className="close interactive" 
@@ -94,9 +96,9 @@ class CreateNew extends React.Component {
         <td>
           {tex && <TeX math={tex} />}
         </td>
-        <td>
+        {this.props.useFitchNotation && <td>
           {eg && <TeX math={eg} />}
-        </td>
+        </td>}
         { closeBtn }
       </tr>
     );
@@ -119,14 +121,17 @@ class CreateNew extends React.Component {
                 <td>
                   Formula
                 </td>
-              <td>TeX notation</td><td>EG notation</td><td className="close"/>
+              {this.props.useFitchNotation && <td>TeX notation</td>}
+              <td>EG notation</td>
+              <td className="close"/>
             </tr>
             {premises.map((formula,i) => this.getFormulaCell(formula, i))}
             <tr>
               <td className="interactive" onClick={() => this.setState({ premises: premises.concat(['']) }) }>
                 <span className="plus" />Add New Premise
               </td>
-              <td/><td/><td className="close"/>
+              {this.props.useFitchNotation && <td/>}
+              <td/><td className="close"/>
             </tr>
           </tbody>
         </table>

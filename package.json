@@ -20,6 +20,7 @@
     "react-scripts": "^4.0.0",
     "react-sizeme": "^2.6.12",
     "react-svg": "^11.0.18",
+    "react-switch": "^5.0.1",
     "react-transition-group": "1.x"
   },
   "scripts": {
