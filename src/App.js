@@ -28,7 +28,6 @@ class App extends React.Component {
       recentDocs: this.getRecents()
     };
     
-    console.log(this.state.recentDocs)
     // this.state = {
     //   initialCSS: 'initial',
     //   canvasOpen: true,
@@ -72,23 +71,6 @@ class App extends React.Component {
   getRecents() {
     let recents = localStorage.getItem('recentDocs');
     recents = recents ? JSON.parse(recents) : {}
-    let keys = Object.keys(recents)
-    for (let i in keys) {
-      recents[keys[i]].open = () => {
-        this.setState({ 
-          filename: keys[i],
-          proof: recents[keys[i]] 
-        });
-        this.openCanvas();
-      }
-      recents[keys[i]].delete = () => {
-        let rArray = localStorage.getItem('recentDocs');
-        rArray = rArray ? JSON.parse(rArray) : {}
-        delete rArray[keys[i]];
-        localStorage.setItem('recentDocs', JSON.stringify(rArray));
-        this.setState({ recentDocs: rArray });
-      }
-    }
     return recents;
   }
 
@@ -131,6 +113,24 @@ class App extends React.Component {
             proof={this.state.proof} />
         </div>
       );
+    }
+    let { recentDocs } = this.state;
+    let keys = Object.keys(recentDocs)
+    for (let i in keys) {
+      recentDocs[keys[i]].open = () => {
+        this.setState({ 
+          filename: keys[i],
+          proof: recentDocs[keys[i]] 
+        });
+        this.openCanvas();
+      }
+      recentDocs[keys[i]].delete = () => {
+        let rArray = localStorage.getItem('recentDocs');
+        rArray = rArray ? JSON.parse(rArray) : {}
+        delete rArray[keys[i]];
+        localStorage.setItem('recentDocs', JSON.stringify(rArray));
+        this.setState({ recentDocs: rArray });
+      }
     }
     return (
       <div className={this.state.initialCSS}>
