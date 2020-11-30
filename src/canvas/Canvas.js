@@ -1,5 +1,5 @@
 import React from 'react';
-import { convertToArray, convertToTeX, convertToEG } from '../converters';
+import { convertToArray, convertToTeX, convertToEG, wrapVarsTeX } from '../converters';
 import Toolbox from './Toolbox';
 import StepMenu from './StepMenu';
 import GoalView from './GoalView';
@@ -501,8 +501,8 @@ class Canvas extends React.Component {
             To insert: {eg && <TeX math={eg} />}
           </div>}
           { !fitchStyle && <div>
-            <input onChange={ (e) => this.setState({ formula: e.target.value, eg: e.target.value }) } /><br />
-            To insert: <TeX math={this.state.formula} />
+            <input onChange={ (e) => this.setState({ formula: e.target.value, eg: wrapVarsTeX(e.target.value) }) } /><br />
+            To insert: <TeX math={this.state.eg} />
           </div>}
           <span className='buttons'>
             <button onClick={() => this.state.cbFunction(this.state.eg)}>Insert</button>
