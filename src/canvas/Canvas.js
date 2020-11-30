@@ -217,6 +217,9 @@ class Canvas extends React.Component {
               this.checkLevelIntegrity();
               this.modifyCanvas(nameOfFunction, () => {});
             });
+        } else {
+          this.checkLevelIntegrity();
+          this.modifyCanvas(nameOfFunction, () => {});
         }
       });
     });
