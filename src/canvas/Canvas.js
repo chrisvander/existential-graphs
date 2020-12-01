@@ -198,20 +198,20 @@ class Canvas extends React.Component {
   }
 
   modifyCanvas(nameOfFunction, finishedCb) {
-    // before we modify the canvas, let's save the current state
     let { steps, changeHistory } = this.state;
     changeHistory = changeHistory.slice()
     changeHistory.push({ steps: Array.from(steps) });
     // okay, now we call the requested function from Toolbox
     this.setState({ finishCB: finishedCb }, () => {
       this.state.functions[nameOfFunction]().then(state => {
+        // before we modify the canvas, let's save the current state
         if (this.state.finishCB) {
           this.state.finishCB();
         }
         if (state) {
           // now we can apply the new changeHistory
           this.setState({ 
-            changeHistory: changeHistory, 
+            changeHistory, 
             redoHistory: [],
             ...state }, () => {
               this.checkLevelIntegrity();
@@ -546,6 +546,7 @@ class Canvas extends React.Component {
             setStep={s => this.setState({ currentStep: s, interaction: s === this.state.steps.length - 1 })}
             state={this.state}
             setState={(changeHistory, newSteps, redoHistory) => {
+              this.cancelSelection();
               this.setState({ 
                 changeHistory: changeHistory, 
                 steps: newSteps, 
