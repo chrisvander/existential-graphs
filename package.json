@@ -10,7 +10,6 @@
     "gh-pages": "^2.2.0",
     "katex": "^0.11.1",
     "nanoid": "^3.1.31",
-    "node-sass": "^4.14.0",
     "panzoom": "^9.2.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
@@ -21,7 +20,8 @@
     "react-sizeme": "^2.6.12",
     "react-svg": "^11.0.18",
     "react-switch": "^5.0.1",
-    "react-transition-group": "1.x"
+    "react-transition-group": "1.x",
+    "sass": "^1.49.0"
   },
   "scripts": {
     "start": "react-scripts start",
