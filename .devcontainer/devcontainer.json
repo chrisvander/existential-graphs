@@ -18,7 +18,8 @@
 		"dbaeumer.vscode-eslint",
 		"vinirossa.vscode-gitandgithub-pack",
 		"lauren.react-pack",
-		"nickytonline.gatsby-extension-pack"
+		"nickytonline.gatsby-extension-pack",
+		"gamunu.vscode-yarn"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
